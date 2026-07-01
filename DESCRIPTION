@@ -35,6 +35,6 @@ Additional_repositories: https://posit-dev.r-universe.dev
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
-URL: https://github.com/apsmunro/r4clinstats
+URL: https://github.com/apsmunro/r4clinstats, https://apsmunro.github.io/r4clinstats/
 BugReports: https://github.com/apsmunro/r4clinstats/issues
 Config/roxygen2/version: 8.0.0
