@@ -1,0 +1,233 @@
+---
+title: "R for Clinical Statistics: Tidy Data in Practice"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Reshape between long and wide with pivot, and join two tables: the moves that make repeated measurements easy."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(tidyr)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+data("labs", package = "r4clinstats")
+```
+
+## Welcome
+
+This is where tidy data earns its keep. You'll meet a second table, `labs`, that records the same patients measured again and again over time, and you'll learn the two moves that make that kind of data easy: **pivoting** (reshaping between long and wide) and **joining** (linking two tables on a shared column).
+
+The usual promises hold: nothing here can break, red text is normal, and **Hint** then **Solution** are a click away.
+
+## Meet the labs
+
+Press **Run Code** to see the new table:
+
+```{r meet-labs, exercise=TRUE}
+glimpse(labs)
+```
+
+This is **long** data: one row per measurement, not one row per patient. Each patient appears several times, once for each `visit` (0, 1 and 2) and each `measure` (systolic blood pressure and weight). It is perfectly tidy, and yet this shape makes some questions awkward, as you're about to see.
+
+## The shape problem
+
+Say you want each patient's change in blood pressure from their first visit to their last. In the long shape, visit 0 and visit 2 sit on *different rows*, so there is no single row to subtract one from the other. Take a look at just the blood-pressure rows:
+
+```{r filter-sbp, exercise=TRUE}
+labs |>
+  filter(measure == "sbp")
+```
+
+Three rows per patient, stacked. To compare visits, you want them spread across one row each. That is a job for `pivot_wider()`.
+
+## Reshaping with `pivot_wider()`
+
+`pivot_wider()` turns rows into columns. We first narrow to the three columns we care about (`id`, `visit`, `value`), then spread the visits out. **Fill in which column holds the numbers** to spread:
+
+```{r pivot-value, exercise=TRUE, exercise.blanks="___+"}
+labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = ____)
+```
+
+```{r pivot-value-hint}
+# The blood-pressure numbers to spread across the new columns live in: value
+```
+
+```{r pivot-value-solution}
+labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value)
+```
+
+```{r pivot-value-check}
+grade_this({
+  pass_if_equal(message = "That's the payoff: one row per patient, a column for each visit. Visits 0 and 2 now sit side by side, ready to subtract.")
+  fail("Almost: the numbers to spread out are in the `value` column.")
+})
+```
+
+Two blanks live in that call. **Now fill in which column supplies the new column names**, one per visit:
+
+```{r pivot-names, exercise=TRUE, exercise.blanks="___+"}
+labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = ____, values_from = value)
+```
+
+```{r pivot-names-hint}
+# You want one new column per visit, so the names come from: visit
+```
+
+```{r pivot-names-solution}
+labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value)
+```
+
+```{r pivot-names-check}
+grade_this({
+  pass_if_equal(message = "Exactly. `names_from` picks the column whose values become new headings; `values_from` picks what fills the cells.")
+  fail("Not quite: you want one column per visit, so `names_from` is `visit`.")
+})
+```
+
+## Linking two tables with `left_join()`
+
+`labs` holds the measurements but little about the patients themselves. Their age, sex and arm live over in `patients`. A **join** brings the two together, matching rows by a column they share, here `id`. Run this:
+
+```{r join-demo, exercise=TRUE}
+labs |>
+  left_join(patients, by = "id")
+```
+
+Every lab row now carries that patient's `age`, `sex`, `arm` and the rest, looked up from `patients`. `left_join()` keeps every row on the left (`labs`) and adds the matching columns from the right.
+
+Your turn. **Fill in the column the two tables share** so each lab row picks up its patient details:
+
+```{r join-key, exercise=TRUE, exercise.blanks="___+"}
+labs |>
+  left_join(patients, by = "____")
+```
+
+```{r join-key-hint}
+# Both tables carry a patient identifier column called: id
+```
+
+```{r join-key-solution}
+labs |>
+  left_join(patients, by = "id")
+```
+
+```{r join-key-check}
+grade_this({
+  pass_if_equal(message = "Joined. `id` is the link the tables have in common, so R lines them up on it.")
+  fail("Almost: the column both tables share is `id`.")
+})
+```
+
+## When a join finds nothing
+
+A join only works if the key matches on both sides. If one table calls the column `id` (`P001`, `P002`, and so on) while the other calls it `patient_id`, or stores it as a plain number, R finds no matches and every added column comes back empty (`NA`). The fix is the design habit from earlier: give a column the same name and the same type in every table you will join on, and settle it once when you set the tables up.
+
+## Practice
+
+Two tables and the two new moves. Write each one yourself; the **Hint** and **Solution** are there when you want them.
+
+**1.** Earlier you spread the blood-pressure rows. Do the same for **weight**: keep the weight rows, narrow to `id`, `visit` and `value`, then spread the visits across columns.
+
+```{r pr-pivot, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-pivot-hint}
+# Same shape as the sbp example, with measure == "weight":
+# labs |> filter(measure == "weight") |> select(id, visit, value) |>
+#   pivot_wider(names_from = visit, values_from = value)
+```
+
+```{r pr-pivot-solution}
+labs |>
+  filter(measure == "weight") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value)
+```
+
+```{r pr-pivot-check}
+grade_this({
+  pass_if_equal(message = "Same move as the blood-pressure table, now for weight: one row per patient, a column per visit.")
+  fail("Close. Keep the weight rows, narrow to `id`, `visit`, `value`, then `pivot_wider(names_from = visit, values_from = value)`.")
+})
+```
+
+**2.** Add each patient's treatment `arm` onto the `labs` table. Keep every lab row, and bring across only the `arm` column.
+
+```{r pr-join, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-join-hint}
+# Select just the columns you need from patients before joining:
+# labs |> left_join(select(patients, id, arm), by = "id")
+```
+
+```{r pr-join-solution}
+labs |>
+  left_join(select(patients, id, arm), by = "id")
+```
+
+```{r pr-join-check}
+grade_this({
+  pass_if_equal(message = "Each lab row now carries its patient's arm. Selecting `id` and `arm` first keeps the join tidy.")
+  fail("Almost. Join `select(patients, id, arm)` onto `labs` by `\"id\"`, so only the arm comes across.")
+})
+```
+
+**3.** Using a join, count how many lab measurements fall under each treatment `arm`.
+
+```{r pr-count-arm, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-count-arm-hint}
+# Join first, then count. You can use the full patients table here:
+# labs |> left_join(patients, by = "id") |> count(arm)
+```
+
+```{r pr-count-arm-solution}
+labs |>
+  left_join(patients, by = "id") |>
+  count(arm)
+```
+
+```{r pr-count-arm-check}
+grade_this({
+  pass_if_equal(message = "Join then count: the measurements split by treatment arm. Two tables, one tally.")
+  fail("Close. Join `patients` onto `labs` by `\"id\"`, then `count(arm)`.")
+})
+```
+
+## Recap
+
+Two moves, both about *shape* rather than content:
+
+- **`pivot_wider()`** spreads one column into many, and **`pivot_longer()`** does the reverse
+- **`left_join()`** links two tables on a shared column
+
+Reshaping and joining are what make repeated-measures and multi-table clinical data workable, and both go far more smoothly when the tables were tidy to begin with. That thread runs through everything so far.

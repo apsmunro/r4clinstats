@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" role="img" aria-label="A course exercise: type real R code, run it in a safe sandbox, and get instant kind feedback.">
+  <style>
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+
+  <line x1="502" y1="44" x2="502" y2="276" stroke="#e9edf0" stroke-width="2"/>
+
+  <!-- Exercise card -->
+  <rect x="28" y="30" width="448" height="260" rx="12" fill="#ffffff" stroke="#d5dbe0" stroke-width="1.5"/>
+  <path d="M28 70 V42 a12 12 0 0 1 12 -12 H464 a12 12 0 0 1 12 12 V70 Z" fill="#2C3E50"/>
+  <text x="48" y="55" class="sans" font-size="14" font-weight="600" fill="#ffffff">Wrangling I &#183; Exercise</text>
+
+  <!-- code box -->
+  <rect x="48" y="86" width="408" height="84" rx="6" fill="#f6f8f9" stroke="#e3e8eb"/>
+  <text x="64" y="116" class="mono" font-size="15" fill="#2C3E50">patients |&gt;</text>
+  <text x="64" y="144" class="mono" font-size="15"><tspan fill="#2C3E50">&#160;&#160;filter(arm == </tspan><tspan fill="#18BC9C">"Active"</tspan><tspan fill="#2C3E50">)</tspan></text>
+
+  <!-- run button -->
+  <rect x="48" y="190" width="116" height="34" rx="6" fill="#18BC9C"/>
+  <text x="106" y="212" class="sans" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Run Code</text>
+
+  <!-- feedback -->
+  <circle cx="60" cy="250" r="11" fill="#18BC9C"/>
+  <path d="M55 250 l3.4 3.6 l7.2 -8" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="80" y="255" class="sans" font-size="15" font-weight="600" fill="#2C3E50">Exactly right.</text>
+
+  <!-- right panel -->
+  <text x="524" y="58" class="sans" font-size="18" font-weight="700" fill="#2C3E50">How it works</text>
+
+  <circle cx="536" cy="99" r="10" fill="#18BC9C"/>
+  <path d="M531 99 l3.1 3.3 l6.6 -7.4" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="556" y="104" class="sans" font-size="15" fill="#2C3E50">Type real code</text>
+
+  <circle cx="536" cy="149" r="10" fill="#18BC9C"/>
+  <path d="M531 149 l3.1 3.3 l6.6 -7.4" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="556" y="154" class="sans" font-size="15" fill="#2C3E50">Run it in a safe sandbox</text>
+
+  <circle cx="536" cy="199" r="10" fill="#18BC9C"/>
+  <path d="M531 199 l3.1 3.3 l6.6 -7.4" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="556" y="204" class="sans" font-size="15" fill="#2C3E50">Get instant, kind feedback</text>
+</svg>

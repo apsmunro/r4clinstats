@@ -1,0 +1,302 @@
+---
+title: "R for Clinical Statistics: The Building Blocks of R"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Before you wrangle: what an object is, the handful of value types you'll meet, and why type matters."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+```
+
+## Welcome
+
+The same three promises as ever, because they don't stop being true:
+
+> **You cannot break anything.** Every box is a safe sandbox. Run it, get it wrong, run it again.
+>
+> **Red text is not failure.** An error message is R asking for a small adjustment, nothing more.
+>
+> **You are never stuck.** Every exercise has a **Hint**, then a **Solution**. Use them freely.
+
+This lesson is the vocabulary the rest of the course leans on. By the end you'll know what an **object** is, the few **types** of value R cares about, and why getting the type right saves you grief later. It's gentle on purpose, mostly run-and-see.
+
+## Meet your patients
+
+Here's the dataset we'll use throughout. Press **Run Code**:
+
+```{r glimpse-meet, exercise=TRUE}
+glimpse(patients)
+```
+
+That's a **data frame**: a stack of columns, each one a single kind of value, lined up so every row is one patient. `glimpse()` shows each column's type in angle brackets: `<chr>` for text, `<dbl>` and `<int>` for numbers. Those types are what this lesson is about.
+
+## Objects: giving things names
+
+In R you do almost everything by putting a value into a named **object** with the arrow `<-`. Run this:
+
+```{r assign-demo, exercise=TRUE}
+my_value <- 42
+my_value
+```
+
+The first line says *"let `my_value` be 42"*; the second line shows it. Once a value has a name, you can use it again and again.
+
+Your turn. **Fill in any number**, then run:
+
+```{r assign-weight, exercise=TRUE, exercise.blanks="___+"}
+weight <- ____
+weight
+```
+
+```{r assign-weight-hint}
+# Pick any number and put it after the arrow, for example:
+# weight <- 70
+```
+
+```{r assign-weight-solution}
+weight <- 70
+weight
+```
+
+```{r assign-weight-check}
+grade_this({
+  if (is.numeric(.result) && length(.result) == 1) {
+    pass("That's an object. `weight` now holds {.result}, ready to reuse.")
+  }
+  fail("Put a single number after the arrow, for example `weight <- 70`.")
+})
+```
+
+## What *type* is it?
+
+Every column has a **type**, and R treats each type differently. The commonest are:
+
+- **character**, text like `id` or `sex` (shown as `<chr>`)
+- **numeric**, numbers like `age` or `sbp` (`<dbl>` or `<int>`)
+- **logical**, `TRUE` / `FALSE` answers
+- **factor**, a category with a fixed set of options (more in a moment)
+- and **`NA`**, meaning *missing*, which can sit inside any of them.
+
+Ask R the type of a column with `class()`. Run this:
+
+```{r class-demo, exercise=TRUE}
+class(patients$age)
+```
+
+The `patients$age` part means *"the `age` column of `patients`"*, and R answers `"numeric"`. Now you: **fill in the column name** to check the type of `sex`:
+
+```{r class-col, exercise=TRUE, exercise.blanks="___+"}
+class(patients$____)
+```
+
+```{r class-col-hint}
+# Type the column name exactly as it appears in glimpse(patients): sex
+```
+
+```{r class-col-solution}
+class(patients$sex)
+```
+
+```{r class-col-check}
+grade_this({
+  if (identical(.result, "NULL")) {
+    fail("That column name isn't in `patients`. Check the spelling against glimpse(patients).")
+  }
+  pass_if_equal(message = "Yes, `sex` is stored as text, which R labels `chr`, short for character.")
+})
+```
+
+## Factors: categories with an order
+
+Some categories have a natural sequence. `smoker` is one: **Never**, then **Former**, then **Current**. Stored as plain text, R would sort them alphabetically, which is meaningless here. A **factor** fixes that by recording the categories *and their order*.
+
+**Fill in the last level** so the order runs Never, Former, Current:
+
+```{r factor-smoker, exercise=TRUE, exercise.blanks="___+"}
+factor(patients$smoker,
+       levels = c("Never", "Former", "____"),
+       ordered = TRUE)
+```
+
+```{r factor-smoker-hint}
+# The three levels in order are Never, Former and Current.
+# Fill in the last one, spelled exactly as in the data.
+```
+
+```{r factor-smoker-solution}
+factor(patients$smoker,
+       levels = c("Never", "Former", "Current"),
+       ordered = TRUE)
+```
+
+```{r factor-smoker-check}
+grade_this({
+  if (any(is.na(.result))) {
+    fail("Almost: some values became NA, which means a level name doesn't match the data exactly. Check the capitals: it should be Current.")
+  }
+  pass_if_equal(message = "Perfect. `smoker` is now an *ordered* factor: Never < Former < Current. R now knows these run in a sequence.")
+})
+```
+
+Look at the bottom of the output: `Levels: Never < Former < Current`. That `<` is R confirming it knows the order.
+
+## Yes / no answers: logical values
+
+Ask a question of a column and R answers `TRUE` or `FALSE` for every row. **Fill in the age cut-off** to flag patients older than 65:
+
+```{r logical-age, exercise=TRUE, exercise.blanks="___+"}
+patients$age > ____
+```
+
+```{r logical-age-hint}
+# Type the cut-off as a plain number, with no quotes: 65
+```
+
+```{r logical-age-solution}
+patients$age > 65
+```
+
+```{r logical-age-check}
+grade_this({
+  pass_if_equal(message = "There you go: a column of TRUE/FALSE answers, one per patient. That's a *logical* vector, and it's what `filter()` quietly uses (your next lesson).")
+  fail("Not quite: we want patients older than 65, so the number is 65, with no quotes.")
+})
+```
+
+## Why the type matters
+
+Get the type wrong and ordinary things stop working. Picture an age that was typed into a text box, so it arrived as **text** rather than a **number**:
+
+```
+age_text <- "65"     # note the quotes: this is text, not a number
+
+age_text + 1
+#> Error: non-numeric argument to binary operator
+```
+
+R can't add 1 to the word "65". The cure is to collect `age` as a number in the first place, the same design point from the tidy-data lesson. When something later refuses to add up or sort properly, the type is the first thing to check.
+
+## Practice
+
+Three to finish, and no blanks this time. Write each one yourself. The **Hint** and **Solution** are there if you want them.
+
+**1.** Create an object called `x` that holds the value `10`, then print it.
+
+```{r make-x, exercise=TRUE}
+# Your code here
+
+```
+
+```{r make-x-hint}
+# Put 10 into x with the arrow, then type x on its own line to show it:
+# x <- 10
+# x
+```
+
+```{r make-x-solution}
+x <- 10
+x
+```
+
+```{r make-x-check}
+grade_this({
+  env <- .envir_result
+  if (exists("x", envir = env, inherits = FALSE)) {
+    val <- get("x", envir = env)
+    if (is.numeric(val) && length(val) == 1 && val == 10) {
+      pass("That's it. `x` now holds 10, and you can reuse it anywhere from here on.")
+    }
+    fail("You've made `x`, but it should hold the number 10. Try `x <- 10`.")
+  }
+  fail("I can't find an object called `x`. Create one with `x <- 10`, then type `x` on the next line to print it.")
+})
+```
+
+**2.** Create an object called `size` that holds the three words `"small"`, `"medium"` and `"large"`, in that order.
+
+```{r make-size, exercise=TRUE}
+# Your code here
+
+```
+
+```{r make-size-hint}
+# Collect several values with c(), keeping each word in quotes:
+# size <- c("small", "medium", "large")
+```
+
+```{r make-size-solution}
+size <- c("small", "medium", "large")
+size
+```
+
+```{r make-size-check}
+grade_this({
+  env <- .envir_result
+  if (!exists("size", envir = env, inherits = FALSE)) {
+    fail("I can't find an object called `size`. Build it with `size <- c(\"small\", \"medium\", \"large\")`.")
+  }
+  val <- get("size", envir = env)
+  if (identical(val, c("small", "medium", "large"))) {
+    pass("Three text values, in order, under one name. That is a character vector.")
+  }
+  fail("Close. `size` should be the three words small, medium and large, in that order, each in quotes.")
+})
+```
+
+**3.** Now turn `size` into an **ordered factor** that runs from `small` up to `large`.
+
+```{r mk-factor-setup}
+size <- c("small", "medium", "large")
+```
+
+```{r mk-factor, exercise=TRUE}
+# size already exists. Make it an ordered factor:
+
+```
+
+```{r mk-factor-hint}
+# Give factor() the levels in the order you want, and switch ordering on:
+# factor(size, levels = c("small", "medium", "large"), ordered = TRUE)
+```
+
+```{r mk-factor-solution}
+factor(size, levels = c("small", "medium", "large"), ordered = TRUE)
+```
+
+```{r mk-factor-check}
+grade_this({
+  if (!is.factor(.result)) {
+    fail("The result should be a factor. Wrap `size` in `factor(...)`.")
+  }
+  if (!is.ordered(.result)) {
+    fail("Almost there. Add `ordered = TRUE` so the sizes have a direction, from small up to large.")
+  }
+  if (!identical(levels(.result), c("small", "medium", "large"))) {
+    fail("Check the level order. It should run small, then medium, then large.")
+  }
+  pass("An ordered factor: small < medium < large. R now treats the sizes as a sequence, not three loose labels.")
+})
+```
+
+## Recap
+
+You now have the words the rest of the course uses without stopping to explain:
+
+- an **object** holds a value under a name (`<-`)
+- a **data frame** is columns of values, one type each, lined up in rows
+- the types you'll meet are **character**, **numeric**, **logical** and **factor**, with **`NA`** for missing
+- `class()` tells you which one you've got
+
+None of the later lessons assume more than this. With the vocabulary in place, you're ready to start wrangling.

@@ -1,0 +1,39 @@
+url: https://apsmunro.github.io/r4clinstats/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+home:
+  title: Learn R for clinical work, by doing it
+  description: >
+    A gentle, interactive R course for clinicians and clinical researchers.
+    Write real code against synthetic clinical data and get instant, kind feedback.
+
+navbar:
+  structure:
+    left:  [getstarted, tryit, reference]
+    right: [search, github]
+  components:
+    getstarted:
+      text: Get started
+      href: articles/getting-started.html
+    tryit:
+      text: Try it in your browser
+      href: articles/try-in-your-browser.html
+    reference:
+      text: "Functions & data"
+      href: reference/index.html
+
+reference:
+- title: Take the course
+  desc: The three functions a learner uses.
+  contents:
+  - learn
+  - check_setup
+  - use_local_library
+- title: Datasets
+  desc: Synthetic, reproducible clinical data used throughout the lessons.
+  contents:
+  - patients
+  - labs

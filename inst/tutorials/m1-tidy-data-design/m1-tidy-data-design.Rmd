@@ -1,0 +1,139 @@
+---
+title: "R for Clinical Statistics: Tidy Data as Design"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "The one idea about table shape that makes every later lesson easier, and why you decide it before collecting any data."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Welcome
+
+This lesson is mostly reading, with a couple of lines to run. It carries one idea, the most useful one in the whole course, and every later lesson leans on it.
+
+The same promises still hold: nothing here can break, and you move at your own pace.
+
+## What "tidy" means
+
+A table is **tidy** when it follows two simple rules:
+
+- **each row is one observation** (here, one patient), and
+- **each column is one variable** (one fact about that patient).
+
+Here is a tidy clinical table:
+
+```
+  id     age  sex     arm      smoker
+  P001    63  Female  Active   Never
+  P002    71  Male    Placebo  Former
+  P003    58  Female  Active   Current
+```
+
+One patient per row. One fact per column. A third rule rides along quietly: **every value in a column is the same kind of thing.** The `age` column is all numbers, the `sex` column is all text. Keep to these and the tools in the coming lessons simply work. Break them and you spend your evening fighting the data instead of analysing it.
+
+## One column, one variable
+
+The "one fact per column" rule is the one people break most. Suppose blood pressure is written the way it appears on a chart, systolic over diastolic in a single box:
+
+```
+  id     bp
+  P001   120/80
+  P002   138/85
+  P003   142/90
+```
+
+That `bp` column holds *two* facts, and it arrives as text. Watch what happens when you try the most basic summary. **Run this.** You will get red text, and that is exactly the point:
+
+```{r bp-text, exercise=TRUE}
+bp <- c("120/80", "138/85", "142/90")
+mean(bp)
+```
+
+R cannot average `"120/80"`, because it is a piece of text rather than a number. The tidy version gives each fact its own number column:
+
+```
+  id     sbp  dbp
+  P001   120   80
+  P002   138   85
+  P003   142   90
+```
+
+Now the summary works. **Run it:**
+
+```{r bp-number, exercise=TRUE}
+sbp <- c(120, 138, 142)
+mean(sbp)
+```
+
+One variable per column, the right type in each, and the question answers itself.
+
+## The same data, two shapes
+
+Tidy still leaves you a choice of shape. Take one patient's blood pressure at three visits. Here it is **long**, one row per measurement:
+
+```
+  id     visit   sbp
+  P001       0   150
+  P001       1   142
+  P001       2   138
+```
+
+And here is the very same information **wide**, one row per patient with the visits spread across columns:
+
+```
+  id      sbp_0   sbp_1   sbp_2
+  P001      150     142     138
+```
+
+Both are tidy. Long form is the natural way to record and store repeated measurements, and most tools prefer it. Wide form is easier to read across, and it is what you want when you set visit 0 beside visit 2 to compare them. Moving between the two shapes is an everyday task, and you will do it yourself in Module 5.
+
+## When the form lets you down
+
+Now the cautionary tale. Imagine a study where `sex` was collected as a free-text box rather than a fixed choice. People type what they like, and the one variable arrives looking like this:
+
+```
+sex:  "M"   "Male"   "male"   "1"   " m "   "Female"   "F"   "female"
+```
+
+Ask R to count how many of each, and instead of two groups you get eight:
+
+```
+  # what you wanted        # what you got
+  Female  52                "M"       18
+  Male    48                "Male"    14
+                            "male"     9
+                            "1"       12
+                            " m "      4
+                            "F"       28
+                            "Female"  11
+                            "female"  13
+```
+
+One variable, eight groups, and not one of them ready to analyse. R did exactly what was asked of it. The mess was built at the moment the form allowed free text, and someone now has to clean it up by hand. That clean-up is a real skill, and Module 6 covers it, though the cheapest fix is to never make the mess.
+
+## Design the table before you collect it
+
+Here is the habit worth taking from this lesson. The shape of your data is decided when you design the collection form, well before any analysis. So work backwards:
+
+- **Start from the analysis you plan to run.** Sketch the table it needs: one row per what, which columns, each holding which single fact.
+- **Use fixed choices, not free text,** for anything you will later count or group by. A dropdown of `Female` / `Male` can never become eight groups.
+- **Give each fact its own column,** and keep each column to one type.
+
+Spend ten minutes on this before data collection starts and you save yourself weeks of cleaning later. Design the tidy table at the beginning, and there is nothing to rescue at the end.
+
+## Recap
+
+One idea, carried through the rest of the course:
+
+- **tidy** means one row per observation, one column per variable, one type per column
+- the same tidy data can sit in a **long** or a **wide** shape, and you move between them as the question demands
+- you secure all of this by **designing the collection form backwards from your analysis**, choosing fixed options over free text
+
+Next you start writing R in earnest, in **The building blocks of R**.

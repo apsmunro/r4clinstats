@@ -1,0 +1,71 @@
+---
+title: "Get started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Get started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This guide takes you from a blank computer to your first lesson. It assumes no prior experience with R. Set aside about fifteen minutes the first time.
+
+## 1. Install R and RStudio
+
+Both are free.
+
+- **R** is the engine. Download it from [CRAN](https://cran.r-project.org/) and install it like any other program.
+- **RStudio** is the comfortable workspace you run R in. Download [RStudio Desktop](https://posit.co/download/rstudio-desktop/) and install that too.
+
+Open RStudio once both are in place. You will see a panel called the **Console**, with a `>` prompt. That is where the commands below go: type or paste a line, then press Enter.
+
+## 2. Install the course
+
+The course is an R package called `r4clinstats`. It is not on CRAN, so you install it from GitHub. Paste these two lines into the Console:
+
+```r
+install.packages("remotes")
+remotes::install_github("apsmunro/r4clinstats")
+```
+
+The first line fetches a small helper. The second downloads the course and the packages it needs. This can take a few minutes the first time, and some red progress text along the way is normal.
+
+## 3. Check your setup
+
+Load the package and run the built-in check:
+
+```r
+library(r4clinstats)
+check_setup()
+```
+
+`check_setup()` looks over your machine, confirms the pieces are in place, and offers to install anything missing. That includes `gradethis`, which gives you the feedback in each exercise and comes from Posit's R-universe rather than CRAN. Say yes to any prompts.
+
+## 4. Start learning
+
+```r
+learn()        # list the lessons
+learn("m0")    # open the first one
+```
+
+`learn()` shows the menu. `learn("m0")` opens a lesson in your browser, where you read a little, run real code in the boxes, and get feedback as you go. Start at **m0** and work along in order.
+
+That is everything. The rest you learn by doing.
+
+## If something goes wrong
+
+A few things trip people up. None of them are your fault.
+
+**"No tutorials found for package 'r4clinstats'."** Your R session is holding an older view of the package. In RStudio, choose **Session ▸ Restart R**, then run `library(r4clinstats)` and try `learn("m0")` again.
+
+**Install fails on a work or managed computer.** Some workplaces store your documents in OneDrive, or lock down where programs may write, which R does not get along with. Run this once:
+
+```r
+library(r4clinstats)
+use_local_library()
+```
+
+It sets up a private folder for your R packages in a location that always works, then asks you to restart R. After restarting, repeat step 2.
+
+**A package will not install from CRAN.** Behind some hospital and university firewalls, `check_setup()` reports what it cannot reach and names the fix, usually pointing R at Posit's package mirror.
+
+Still stuck? Open an issue at the [project page](https://github.com/apsmunro/r4clinstats/issues) and describe what you saw.

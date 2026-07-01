@@ -1,0 +1,39 @@
+# Starting-point CI. Builds the datasets, then runs R CMD check (which runs the
+# testthat harness). Tutorials that need gradethis are exercised by the harness
+# only where it is installed; gradethis comes from R-universe via
+# Additional_repositories in DESCRIPTION.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+name: R-CMD-check
+
+jobs:
+  R-CMD-check:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck, any::usethis
+          needs: check
+
+      - name: Build datasets
+        run: |
+          source("data-raw/patients.R")
+          source("data-raw/labs.R")
+        shell: Rscript {0}
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true

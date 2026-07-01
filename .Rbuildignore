@@ -1,0 +1,13 @@
+^data-raw$
+^pkgdown$
+^_pkgdown\.yml$
+^docs$
+^vignettes/articles$
+^renv$
+^renv\.lock$
+^\.github$
+^\.git$
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^LICENSE\.md$

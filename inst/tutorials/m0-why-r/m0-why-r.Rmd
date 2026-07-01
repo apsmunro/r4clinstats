@@ -1,0 +1,86 @@
+---
+title: "R for Clinical Statistics: Why R for Clinical Data"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "What a script buys you, why code beats clicking for clinical work, and your first line of R."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Welcome
+
+Welcome to the course. This first lesson has nothing to solve. It sets out why R is worth your time, and ends with you running a line of it.
+
+Three promises hold for every lesson from here on:
+
+> **You cannot break anything.** Every box is a safe sandbox. Run something, get it wrong, run it again. That is how everyone learns this.
+>
+> **Red text is not failure.** An error message is R asking for a small change. People who have used R for years still see them every day.
+>
+> **You are never stuck.** Most boxes you simply run. Where there is something to work out, a **Hint** and then a **Solution** sit one click away.
+
+You do not need to install anything to take these lessons. R is already running, here in the page.
+
+## One small change to the analysis
+
+Picture a familiar afternoon. You have a spreadsheet of trial patients and a table of results worked out by hand: select a range, type a formula, drag it down, sort a column, copy the number into your report. It is done.
+
+Then your supervisor asks one reasonable question: *what does it look like with the under-18s left out?*
+
+In a spreadsheet that means doing the whole thing again. Re-filter, re-sort, re-copy every figure, and hope you repeat each step exactly as before. Every redo is a fresh chance for a small slip, and nobody looking at the result can see whether you made one.
+
+In R the same change is a single line:
+
+```
+patients |> filter(age >= 18)
+```
+
+Add that one line, run the script again, and every table and figure downstream rebuilds itself from the filtered data. The change is visible, it is exact, and it took seconds.
+
+## Why this matters for clinical work
+
+R is a set of written instructions, a **script**, rather than a sequence of clicks. That difference buys three things that count in clinical research:
+
+- **A record.** The script *is* your method section. Anyone can read exactly what you did, step by step.
+- **Repeatability.** New data, a new exclusion, a reviewer's request: re-run the script and the results rebuild the same way every time.
+- **Review.** A colleague can check your analysis line by line, the way they would check a calculation.
+
+R is also free, open, and runs on any computer, so the analysis you write today will still open and run on someone else's machine years from now. None of this requires you to be a programmer. Writing your steps down is something you already do on paper.
+
+## Your first line of R
+
+Here is R doing real work in one line. From five patient ages, count how many are adults. Press **Run Code**:
+
+```{r count-adults, exercise=TRUE}
+sum(c(17, 34, 52, 9, 23) >= 18)
+```
+
+Read it from the inside out. The `>= 18` part asks *"is this age 18 or over?"* of each number and gets back `TRUE` or `FALSE`. `sum()` then counts the `TRUE`s. Three of these five patients are adults, and R told you so in one line.
+
+That is the same kind of one-liner from a moment ago, now under your own hands. Change the ages and run it again. Nothing you type here can do any harm.
+
+## Where to read more
+
+You need none of these to follow the course. When you want to go further, four resources are worth your time, and I will point back to them at the end:
+
+- **[HealthyR: R for Health Data Science](https://argoshare.is.ed.ac.uk/healthyr_book/)** is the closest companion to this course, written around clinical examples and home to the `finalfit` package we will use for tables.
+- **[R for Data Science](https://r4ds.hadley.nz/)** is the standard introduction to the tidyverse, the toolkit this whole course is built on.
+- **[The Epidemiologist R Handbook](https://epirhandbook.com/)** is a practical reference for cleaning and analysing real health data.
+- **[R Graphics Cookbook](https://r-graphics.org/)** is the book to open when you want a particular plot.
+
+## Recap
+
+You have made a start:
+
+- a **script** is your analysis written down, so it can be recorded, re-run and reviewed
+- changing the analysis later can be one line instead of an afternoon
+- you ran your first line of R, and counted something useful with it
+
+Next is **Tidy data as design**, the one idea about how a table is shaped that makes everything afterwards easier.

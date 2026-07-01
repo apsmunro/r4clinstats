@@ -1,0 +1,306 @@
+---
+title: "R for Clinical Statistics: Wrangling Clinical Data"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Your first hands-on lesson: pick rows, count groups, and sort a clinical dataset, one safe step at a time."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+# The teaching dataset ships with the package; see data-raw/patients.R.
+# 100 synthetic trial patients, one row each. No real patient data.
+data("patients", package = "r4clinstats")
+```
+
+## Welcome
+
+This is your first time *doing* R rather than reading about it. A few promises before we start:
+
+> **You cannot break anything.** Every box below is a safe sandbox. Run code, get it wrong, run it again. That is exactly how everyone learns this.
+>
+> **Red text is not failure.** Error messages are normal and expected, even for people who have used R for years. They are just R asking you to adjust something small.
+>
+> **You are never stuck.** Every exercise has a **Hint** button, and then a **Solution** button. Use them freely and without guilt.
+
+In this lesson you'll learn to do three things to a real clinical dataset: **pick the rows you want**, **count groups**, and **sort**. That's the backbone of nearly every analysis you'll ever do.
+
+## Meet your patients
+
+We'll work with a dataset called `patients`, a (made-up) clinical trial with 100 people in it. Before touching it, one idea that will save you months of pain later.
+
+This dataset is **tidy**, which means:
+
+- **each row is one observation** (here, one patient), and
+- **each column is one variable** (`age`, `sex`, the treatment `arm`, and so on).
+
+That tidy shape is the whole reason the commands below will "just work." And here's the part most courses skip: **you decide this shape when you design your data-collection form, not when you sit down to analyse.** Sketch the table you'll need *before* you collect a single data point, working backwards from the analysis you're planning. We'll come back to this.
+
+Enough talk. Press **Run Code** to look at the data:
+
+```{r meet, exercise=TRUE}
+glimpse(patients)
+```
+
+`glimpse()` gives you a sideways summary: every column, its type (`<chr>` = text, `<dbl>` = number), and the first few values. You can see all 100 patients are there, each described by 7 variables.
+
+## The pipe: `|>`
+
+Almost all modern R is written with the **pipe**, which looks like `|>`. Read it out loud as the words **"and then"**.
+
+It takes whatever is on its left and feeds it into the function on its right. So this:
+
+```{r pipe-demo, exercise=TRUE}
+patients |>
+  filter(age > 70)
+```
+
+reads as: *"take `patients`, **and then** keep only the rows where age is over 70."* Press **Run Code** and you'll get just the older patients.
+
+That's it. That's the pipe. You'll use it constantly.
+
+<div style="font-size: 0.9em; color: #666;">
+*(You may see older code that uses `%>%` instead of `|>`. They do the same job; `|>` is the newer, built-in version.)*
+</div>
+
+## Picking rows with `filter()`
+
+`filter()` keeps only the rows that match a condition. You just saw it with a number (`age > 70`). Now try it with **text**.
+
+The trial has two treatment arms, `"Placebo"` and `"Active"`. **Fill in the blank** so the code keeps only the patients on the active drug, then press **Run Code** and **Submit Answer**:
+
+```{r filter-arm, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  filter(arm == "____")
+```
+
+```{r filter-arm-hint}
+# The treatment arms are written with a capital first letter.
+# Look back at the data with glimpse(). Is the value "Active" or "active"?
+```
+
+```{r filter-arm-solution}
+patients |>
+  filter(arm == "Active")
+```
+
+```{r filter-arm-check}
+grade_this({
+  if (is.data.frame(.result) && nrow(.result) == 0) {
+    fail("That ran, but it returned 0 patients. R is case-sensitive, so active and Active are different to it. Check the capital letter.")
+  }
+  pass_if_equal(message = "Exactly right. Those are the {nrow(.result)} patients on the active drug. Notice you matched text with a *double* `==`, not a single `=`.")
+  fail("Close. Make sure you're keeping the `Active` arm. Try the Hint if you'd like a nudge.")
+})
+```
+
+Notice the **double equals** `==`. In R, `==` means *"is it equal to?"* (a question), while a single `=` means *"set this value"* (a command). Mixing them up is a rite of passage; now you know.
+
+## A quick word on *why* tidy matters
+
+Before we count anything, look at what goes wrong when a column **isn't** clean. Imagine a study where "sex" was typed into a free-text box. The same single variable arrives looking like this:
+
+```
+sex:   "M"   "Male"   "male"   "1"   " m "   "Female"   "F"   "female"
+```
+
+Now you ask R to count how many of each:
+
+```
+# what you hoped for          # what you actually get
+  Female   52                   "M"      18
+  Male     48                   "Male"   14
+                                "male"    9
+                                "1"      12
+                                " m "     4
+                                "F"      28
+                                "Female" 11
+                                "female" 13
+```
+
+**One variable. Eight groups.** R is doing exactly what you asked, no more and no less. This is why, back at the design stage, you use a **dropdown with fixed options**, never a free-text box, for anything you'll want to count or group by. Cleaning up this mess afterwards is a whole skill of its own (we cover it later), but the cheapest fix is to never create the mess.
+
+Our `patients` data was collected properly, so `sex` only ever contains `"Female"` or `"Male"`. Which means counting it is about to be wonderfully easy.
+
+## Counting groups with `count()`
+
+`count()` tells you how many rows fall into each group of a column. **Fill in the blank** to count how many patients are of each `sex`:
+
+```{r count-sex, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  count(____)
+```
+
+```{r count-sex-hint}
+# You want to count by the sex column.
+# Type the column name exactly as it appears: sex
+```
+
+```{r count-sex-solution}
+patients |>
+  count(sex)
+```
+
+```{r count-sex-check}
+grade_this({
+  pass_if_equal(message = "Perfect: 43 female and 57 male patients, counted in one line. Now try re-running it with `arm` in place of `sex` to count the treatment groups instead.")
+  fail("Not quite: pop the column name `sex` inside `count()`. The Hint has it if you need it.")
+})
+```
+
+One line, and you have your group sizes. This little verb is the engine behind a great deal of clinical reporting.
+
+## Sorting with `arrange()`
+
+`arrange()` reorders the rows. By default it sorts smallest-to-largest. This time the blank is a little bigger. **Type the column you want to sort by** so the youngest patients appear first:
+
+```{r arrange-age, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  arrange(____)
+```
+
+```{r arrange-age-hint}
+# Which column holds each patient's age?
+# It's called: age
+```
+
+```{r arrange-age-solution}
+patients |>
+  arrange(age)
+```
+
+```{r arrange-age-check}
+grade_this({
+  pass_if_equal(message = "There we go: sorted youngest first. (Tip for later: wrap the column in `desc()`, like `arrange(desc(age))`, to flip it to oldest first.)")
+  fail("Almost: give `arrange()` the `age` column to sort on.")
+})
+```
+
+## Choosing columns with `select()`
+
+Last one, and you'll write a touch more this time. `filter()` picks *rows*; **`select()` picks *columns***. That's the only new idea here.
+
+We want a smaller table showing just three columns: `id`, `age`, and `arm`. The verb is missing, so **fill in the function name**:
+
+```{r select-cols, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  ____(id, age, arm)
+```
+
+```{r select-cols-hint}
+# The verb for choosing columns is the opposite job to filter().
+# It is called: select
+```
+
+```{r select-cols-solution}
+patients |>
+  select(id, age, arm)
+```
+
+```{r select-cols-check}
+grade_this({
+  pass_if_equal(message = "That's it: a tidy three-column table. You just chose rows AND columns, the two halves of pulling out exactly the data you want.")
+  fail("Nearly! The column-picking verb is `select`. The Hint will confirm it.")
+})
+```
+
+## Practice
+
+Four verbs, no blanks. Build each answer yourself; the **Hint** and **Solution** have your back if you get stuck.
+
+**1.** Show only the patients on the `Active` arm.
+
+```{r pr-filter, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-filter-hint}
+# filter() keeps matching rows. Match text with a double ==:
+# patients |> filter(arm == "Active")
+```
+
+```{r pr-filter-solution}
+patients |>
+  filter(arm == "Active")
+```
+
+```{r pr-filter-check}
+grade_this({
+  pass_if_equal(message = "Spot on. {nrow(.result)} patients on the Active arm, picked out in one line.")
+  fail("Not quite. Use `filter(arm == \"Active\")`, with a double `==` and a capital A.")
+})
+```
+
+**2.** Count how many patients are in each `smoker` group, then sort from most to fewest.
+
+```{r pr-count, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-count-hint}
+# Two steps joined by the pipe. desc() sorts largest first:
+# patients |> count(smoker) |> arrange(desc(n))
+```
+
+```{r pr-count-solution}
+patients |>
+  count(smoker) |>
+  arrange(desc(n))
+```
+
+```{r pr-count-check}
+grade_this({
+  pass_if_equal(message = "That is the pattern: count to tally, then arrange to sort. `desc()` flips it to most-first.")
+  fail("Close. Count by `smoker`, then `arrange(desc(n))` to sort from most to fewest. The Hint lays out both steps.")
+})
+```
+
+**3.** In one pipeline, keep only patients older than 70, then show just their `id`, `age` and `arm`.
+
+```{r pr-pipeline, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-pipeline-hint}
+# filter() chooses rows, select() chooses columns. Chain them with the pipe:
+# patients |> filter(age > 70) |> select(id, age, arm)
+```
+
+```{r pr-pipeline-solution}
+patients |>
+  filter(age > 70) |>
+  select(id, age, arm)
+```
+
+```{r pr-pipeline-check}
+grade_this({
+  pass_if_equal(message = "A three-step pipeline, written from scratch. Filter to choose rows, then select to choose columns.")
+  fail("Almost. Chain two steps with the pipe: `filter(age > 70)` and then `select(id, age, arm)`.")
+})
+```
+
+## You did it 🎉
+
+Look at what you can now do to a real clinical dataset, entirely in code:
+
+- **`filter()`** keeps the rows that match a condition
+- **`count()`** tallies how many fall into each group
+- **`arrange()`** sorts the rows
+- **`select()`** keeps the columns you want
+- **`|>`** chains steps together, reading "and then"
+
+Every one of these worked first or second time, and that feeling of *"oh, I can actually do this"* is the whole point of today. The fancier analyses later are just more of these small, learnable steps stacked together.
+
+And the bigger lesson underneath it all: this was easy **because the data was tidy**, and the data was tidy **because someone designed the collection form with the analysis in mind.** That's the habit worth carrying into your own projects.

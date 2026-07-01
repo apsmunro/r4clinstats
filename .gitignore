@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+inst/doc
+docs/
+/renv/library/
+*.tar.gz
+.httr-oauth
+.DS_Store
+.quarto

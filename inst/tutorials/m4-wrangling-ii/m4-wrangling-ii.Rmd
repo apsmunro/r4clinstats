@@ -1,0 +1,225 @@
+---
+title: "R for Clinical Statistics: Wrangling II"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Build new columns with mutate, then summarise by group: the shape of most clinical reporting."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+```
+
+## Welcome
+
+Two new verbs this time, and they are the ones that turn a table of patients into the numbers you would put in a paper: `mutate`, which builds new columns, and `summarise`, which boils a column down to a single figure per group.
+
+The same promises hold. You can't break anything, red text just means adjust something small, and **Hint** then **Solution** are always there.
+
+## A quick warm-up
+
+Start where M3 left off. **Run** this to remind yourself how `count()` works:
+
+```{r recap, exercise=TRUE}
+patients |>
+  count(arm)
+```
+
+Two arms, split fairly evenly. Now let's make something new.
+
+## Building columns with `mutate()`
+
+`mutate()` adds a column worked out from the columns you already have. Every row stays; the table just gains a column. Run this, which flags everyone over 65:
+
+```{r mutate-demo, exercise=TRUE}
+patients |>
+  mutate(over65 = age > 65)
+```
+
+Scroll to the right of the output and you'll find the new `over65` column, `TRUE` or `FALSE` for each patient.
+
+Now your turn. A common clinical cut-off for obesity is a BMI of 30 and above. **Fill in the cut-off** so the new `bmi_cat` column reads `"Obese"` at or above it:
+
+```{r mutate-bmicat, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  mutate(bmi_cat = if_else(bmi >= ____, "Obese", "Not obese"))
+```
+
+```{r mutate-bmicat-hint}
+# A BMI of 30 or more counts as obese here.
+# Type it as a plain number, with no quotes: 30
+```
+
+```{r mutate-bmicat-solution}
+patients |>
+  mutate(bmi_cat = if_else(bmi >= 30, "Obese", "Not obese"))
+```
+
+```{r mutate-bmicat-check}
+grade_this({
+  pass_if_equal(message = "Nicely done. Read `if_else` as a question with two answers: at or above 30, write Obese, otherwise Not obese.")
+  fail("Not quite: the obesity cut-off is a BMI of 30, written as a plain number with no quotes.")
+})
+```
+
+Keep `if_else(test, yes, no)` in mind: a question, then what to write when the answer is yes, then when it is no.
+
+## Summarising by group
+
+`summarise()` collapses a whole column into one number. On its own it gives a single figure for the entire trial. Run this for the mean systolic blood pressure:
+
+```{r summarise-demo, exercise=TRUE}
+patients |>
+  summarise(mean_sbp = mean(sbp))
+```
+
+One row, one number. Useful, though you usually want it *per arm*, to compare the treatment groups. That is what `group_by()` adds.
+
+**Fill in the column to group by** so you get a separate mean for each treatment arm:
+
+```{r groupby-arm, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  group_by(____) |>
+  summarise(mean_sbp = mean(sbp))
+```
+
+```{r groupby-arm-hint}
+# You want one mean per treatment arm.
+# The column is called: arm
+```
+
+```{r groupby-arm-solution}
+patients |>
+  group_by(arm) |>
+  summarise(mean_sbp = mean(sbp))
+```
+
+```{r groupby-arm-check}
+grade_this({
+  pass_if_equal(message = "There it is: a mean blood pressure for each arm, side by side. Swap `arm` for `smoker` and you would compare smokers instead.")
+  fail("Almost: group by `arm` so summarise gives one row per treatment group.")
+})
+```
+
+The summary doesn't have to be a mean. **Fill in the function** to average the SBP in each arm (the average is the `mean`):
+
+```{r summarise-fn, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  group_by(arm) |>
+  summarise(mean_sbp = ____(sbp))
+```
+
+```{r summarise-fn-hint}
+# The function for an average is called: mean
+```
+
+```{r summarise-fn-solution}
+patients |>
+  group_by(arm) |>
+  summarise(mean_sbp = mean(sbp))
+```
+
+```{r summarise-fn-check}
+grade_this({
+  pass_if_equal(message = "Exactly. `mean()` is one of many: `median(sbp)`, `min(sbp)` and `max(sbp)` work the same way.")
+  fail("Not quite: the function for an average is `mean`.")
+})
+```
+
+## Practice
+
+Your turn, no blanks. Write each one out. The **Hint** and **Solution** are a click away.
+
+**1.** Add a logical column called `high_bp` that is `TRUE` when `sbp` is above 140.
+
+```{r pr-mutate, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-mutate-hint}
+# mutate() adds a column. A comparison gives TRUE/FALSE:
+# patients |> mutate(high_bp = sbp > 140)
+```
+
+```{r pr-mutate-solution}
+patients |>
+  mutate(high_bp = sbp > 140)
+```
+
+```{r pr-mutate-check}
+grade_this({
+  pass_if_equal(message = "Done. `high_bp` is TRUE wherever systolic pressure clears 140, one answer per patient.")
+  fail("Not quite. Add a column with `mutate(high_bp = sbp > 140)`.")
+})
+```
+
+**2.** For each `smoker` group, find the mean BMI. Call the summary column `mean_bmi`.
+
+```{r pr-groupsum, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-groupsum-hint}
+# Group first, then summarise:
+# patients |> group_by(smoker) |> summarise(mean_bmi = mean(bmi))
+```
+
+```{r pr-groupsum-solution}
+patients |>
+  group_by(smoker) |>
+  summarise(mean_bmi = mean(bmi))
+```
+
+```{r pr-groupsum-check}
+grade_this({
+  pass_if_equal(message = "One mean BMI per smoking group, side by side. Group first, then summarise.")
+  fail("Close. Group by `smoker`, then `summarise(mean_bmi = mean(bmi))`. Keep the name `mean_bmi` so it matches.")
+})
+```
+
+**3.** Among patients on the `Active` arm only, find the mean `sbp` for each `smoker` group. Call it `mean_sbp`.
+
+```{r pr-combo, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-combo-hint}
+# Three steps: filter the arm, group by smoker, then summarise.
+# patients |> filter(arm == "Active") |> group_by(smoker) |> summarise(mean_sbp = mean(sbp))
+```
+
+```{r pr-combo-solution}
+patients |>
+  filter(arm == "Active") |>
+  group_by(smoker) |>
+  summarise(mean_sbp = mean(sbp))
+```
+
+```{r pr-combo-check}
+grade_this({
+  pass_if_equal(message = "That brings three verbs together: filter the arm, group by smoker, summarise the mean. Most analyses look like this.")
+  fail("Almost. Filter to the Active arm, then group by `smoker`, then `summarise(mean_sbp = mean(sbp))`.")
+})
+```
+
+## Recap
+
+Two verbs that do most of the work of reporting:
+
+- **`mutate()`** builds a new column from existing ones
+- **`group_by()`** with **`summarise()`** reduces a column to one number per group
+
+Put these together with M3's `filter`, `count`, `arrange` and `select`, and you have the core of day-to-day analysis. Most of the "Table 1" you see in a clinical paper is a handful of lines like these.
