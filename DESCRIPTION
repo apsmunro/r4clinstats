@@ -32,6 +32,7 @@ Suggests:
     knitr,
     testthat (>= 3.0.0)
 Additional_repositories: https://posit-dev.r-universe.dev
+Remotes: rstudio/gradethis
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)

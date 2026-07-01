@@ -30,12 +30,6 @@ jobs:
           extra-packages: any::pkgdown, any::rsconnect, local::.
           needs: website
 
-      - name: Build datasets
-        run: |
-          source("data-raw/patients.R")
-          source("data-raw/labs.R")
-        shell: Rscript {0}
-
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
