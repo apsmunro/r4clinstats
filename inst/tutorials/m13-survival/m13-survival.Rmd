@@ -1,0 +1,271 @@
+---
+title: "R for Clinical Statistics: Survival Analysis"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Time-to-event data done properly: censoring, Kaplan-Meier curves, the log-rank test, and hazard ratios from a Cox model."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(ggplot2)
+library(broom)
+library(survival)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+data("outcomes", package = "r4clinstats")
+
+# Outcomes joined to patient details; Placebo as the reference level so
+# hazard ratios read as the effect of the active drug.
+trial <- outcomes |>
+  left_join(select(patients, id, age, sex, arm), by = "id") |>
+  mutate(arm = relevel(factor(arm), ref = "Placebo"))
+```
+
+## Welcome
+
+The most clinical question of all is *how long*: how long until relapse, readmission, recovery, death. Time-to-event data has a twist that breaks every tool you have met so far, and this lesson gives you the tools built for it: the **Kaplan-Meier curve**, the **log-rank test**, and the **Cox model** with its hazard ratios.
+
+The promises hold: nothing breaks, red text is normal, and **Hint** then **Solution** are a click away.
+
+## The twist: censoring
+
+Look at the trial data again. **Run this:**
+
+```{r meet-trial, exercise=TRUE}
+glimpse(trial)
+```
+
+Each patient has a `time` in days and a `status`: 1 if the event happened then, 0 if the year ended first. That 0 is called **censoring**, and 58 patients have it. A censored patient is not missing data; they carry real information — they lasted *at least* that long — and simply averaging the times would throw it away (the describing-data lesson hinted at this). Survival methods exist to use both numbers honestly.
+
+R packages both into one object with `Surv()`. **Run this** to see the first ten patients:
+
+```{r surv-demo, exercise=TRUE}
+head(Surv(trial$time, trial$status), 10)
+```
+
+Plain numbers are events; numbers wearing a `+` are censored, read as "365-plus: still event-free when we stopped watching."
+
+## The Kaplan-Meier curve
+
+`survfit()` estimates the survival curve: the proportion still event-free at each point in time. The formula reads like every other model in this course. **Fill in the grouping column** to estimate one curve per treatment arm:
+
+```{r km, exercise=TRUE, exercise.blanks="___+"}
+km <- survfit(Surv(time, status) ~ ____, data = trial)
+km
+```
+
+```{r km-hint}
+# One curve per treatment group, so the right-hand side is:
+# arm
+```
+
+```{r km-solution}
+km <- survfit(Surv(time, status) ~ arm, data = trial)
+km
+```
+
+```{r km-check}
+grade_this({
+  if (!inherits(.result, "survfit")) {
+    fail("That should build a survival estimate with `survfit(...)`. Keep the structure and fill in the grouping column.")
+  }
+  if (identical(sort(names(.result$strata)), c("arm=Active", "arm=Placebo"))) {
+    pass("Read the table: 27 events among 51 placebo patients with a median of 341 days, but only 15 events among 49 on the drug, with median `NA`. That NA is good news, and the next paragraph decodes it.")
+  }
+  fail("Almost: the formula's right-hand side is `arm`, one curve per treatment group.")
+})
+```
+
+The **median survival** is the day the curve crosses 50%. The active arm's median is `NA` because its curve never fell that far: more than half the treated patients were still event-free at one year. Papers write this as *"median not reached"*, and it is one of the most encouraging sentences a trial can print.
+
+## Drawing the curves
+
+A Kaplan-Meier curve is a staircase: flat while nothing happens, stepping down at each event. `tidy()` turns the fit into a plottable table, and the staircase needs the right geom. **Fill it in:**
+
+```{r km-plot, exercise=TRUE, exercise.blanks="___+"}
+tidy(km) |>
+  ggplot(aes(x = time, y = estimate, colour = strata)) +
+  ____()
+```
+
+```{r km-plot-setup}
+km <- survfit(Surv(time, status) ~ arm, data = trial)
+```
+
+```{r km-plot-hint}
+# Survival curves step down at each event; the geom that draws steps is:
+# geom_step
+```
+
+```{r km-plot-solution}
+tidy(km) |>
+  ggplot(aes(x = time, y = estimate, colour = strata)) +
+  geom_step()
+```
+
+```{r km-plot-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if ("GeomStep" %in% geoms) {
+    pass("The classic trial figure: two staircases separating over the year, with the active arm staying higher. Every oncology paper you have ever read opens with this picture.")
+  }
+  fail("Almost: a survival curve is a staircase, drawn with `geom_step()`.")
+})
+```
+
+## Testing the gap: the log-rank test
+
+The curves separate, and the **log-rank test** asks whether that separation outruns chance. It compares the events each group actually had with the number it would expect if the curves were truly the same. **Run it:**
+
+```{r logrank, exercise=TRUE}
+survdiff(Surv(time, status) ~ arm, data = trial)
+```
+
+The placebo arm had 27 events where 19 were expected; the active arm 15 where 23 were expected. p = 0.02: the separation is real.
+
+## The hazard ratio: a Cox model
+
+The log-rank test says *whether* the curves differ; the **Cox model** says *by how much*, and lets you adjust for other variables, exactly as `lm()` and `glm()` did. Its summary is the **hazard ratio** (HR): the event rate on the drug relative to placebo, where below 1 means protection. **Run the model**, then tidy it the way you tidied the odds ratios — **fill in the value:**
+
+```{r cox, exercise=TRUE, exercise.blanks="___+"}
+cox <- coxph(Surv(time, status) ~ arm, data = trial)
+tidy(cox, exponentiate = ____, conf.int = TRUE)
+```
+
+```{r cox-hint}
+# Same move as the odds ratios: exponentiate the coefficients.
+# The value is: TRUE
+```
+
+```{r cox-solution}
+cox <- coxph(Surv(time, status) ~ arm, data = trial)
+tidy(cox, exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r cox-check}
+grade_this({
+  pass_if_equal(message = "HR 0.47, CI 0.25 to 0.88, p = 0.018: the drug roughly halves the event rate, and the interval sits clear of 1. That one row is the trial's survival story.")
+  fail("Almost: `exponentiate = TRUE` turns the coefficients into hazard ratios.")
+})
+```
+
+## Practice
+
+Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** are there if you want them.
+
+**1.** Estimate Kaplan-Meier curves split by `sex` instead of arm.
+
+```{r pr-km, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-km-hint}
+# survfit(Surv(time, status) ~ sex, data = trial)
+```
+
+```{r pr-km-solution}
+survfit(Surv(time, status) ~ sex, data = trial)
+```
+
+```{r pr-km-check}
+grade_this({
+  if (!inherits(.result, "survfit")) {
+    fail("Build the estimate with `survfit(Surv(time, status) ~ ..., data = trial)`.")
+  }
+  if (identical(sort(names(.result$strata)), c("sex=Female", "sex=Male"))) {
+    pass("Neither sex reaches its median and the event counts sit close to expectation: no sign survival differs by sex. A null result, correctly obtained.")
+  }
+  fail("Close. The right-hand side of the formula should be `sex`.")
+})
+```
+
+**2.** Draw the treatment-arm staircases from scratch: tidy `km` (it is already built for you), then plot `estimate` against `time`, one coloured step line per `strata`.
+
+```{r pr-plot, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-plot-setup}
+km <- survfit(Surv(time, status) ~ arm, data = trial)
+```
+
+```{r pr-plot-hint}
+# tidy(km) |>
+#   ggplot(aes(x = time, y = estimate, colour = strata)) +
+#   geom_step()
+```
+
+```{r pr-plot-solution}
+tidy(km) |>
+  ggplot(aes(x = time, y = estimate, colour = strata)) +
+  geom_step()
+```
+
+```{r pr-plot-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Start from `tidy(km)`.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomStep" %in% geoms)) {
+    fail("The staircase geom is `geom_step()`.")
+  }
+  maps <- c(list(.result$mapping), lapply(.result$layers, function(l) l$mapping))
+  cols <- unlist(lapply(maps, function(m) {
+    if (is.null(m$colour)) NULL else rlang::as_label(m$colour)
+  }))
+  if (!("strata" %in% cols)) {
+    fail("Map `strata` to `colour` so each arm gets its own staircase.")
+  }
+  pass("A publication figure from first principles: tidy the fit, map the aesthetics, step the line.")
+})
+```
+
+**3.** Fit a Cox model of the treatment effect adjusted for `age`, and tidy it into hazard ratios with confidence intervals.
+
+```{r pr-cox, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-cox-hint}
+# coxph(Surv(time, status) ~ arm + age, data = trial) |>
+#   tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r pr-cox-solution}
+coxph(Surv(time, status) ~ arm + age, data = trial) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r pr-cox-check}
+grade_this({
+  pass_if_equal(message = "Age-adjusted HR 0.48, CI 0.26 to 0.91: the effect barely moves, so age was not doing the work. Adjustment in a Cox model is the same `+ age` it was everywhere else.")
+  fail("Close. `coxph(Surv(time, status) ~ arm + age, data = trial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+})
+```
+
+## Recap
+
+Time-to-event analysis in four moves:
+
+- **`Surv(time, status)`** packages follow-up and censoring into one outcome
+- **`survfit()`** estimates the Kaplan-Meier curve; *median not reached* means the curve never fell below half
+- **`survdiff()`** runs the log-rank test for whether curves differ
+- **`coxph()`** puts a size on it: the **hazard ratio**, tidied with `exponentiate = TRUE`
+
+That completes the analysis toolkit. You can now take a trial from a raw spreadsheet to a survival curve and a hazard ratio: design the data, wrangle it, describe it, picture it, and test what it shows — every step written down, repeatable, and yours.

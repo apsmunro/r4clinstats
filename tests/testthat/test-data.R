@@ -40,6 +40,32 @@ test_that("labs is long and consistent with patients", {
   }
 })
 
+test_that("outcomes has the locked shape and seed", {
+  outcomes <- get_data("outcomes")
+  patients <- get_data("patients")
+  skip_if(is.null(outcomes), "outcomes not built yet (run data-raw/outcomes.R)")
+
+  expect_equal(nrow(outcomes), 100L)
+  expect_named(outcomes, c("id", "response", "adverse_event", "time", "status"))
+  expect_setequal(unique(outcomes$response), c("Y", "N"))
+  expect_setequal(unique(outcomes$status), c(0L, 1L))
+  expect_true(all(outcomes$time >= 1 & outcomes$time <= 365))
+  expect_true(all(outcomes$time[outcomes$status == 0] == 365L))
+
+  # Seed-locked counts the M10-M13 tutorials quote in their text and feedback.
+  expect_equal(sum(outcomes$response == "Y"), 62L)
+  expect_equal(sum(outcomes$adverse_event == "Y"), 25L)
+  expect_equal(sum(outcomes$status), 42L)
+  expect_equal(median(outcomes$time), 365)
+  if (!is.null(patients)) {
+    joined <- merge(outcomes, patients[, c("id", "arm")], by = "id")
+    expect_equal(sum(joined$response == "Y" & joined$arm == "Active"), 36L)
+    expect_equal(sum(joined$response == "Y" & joined$arm == "Placebo"), 26L)
+    expect_equal(sum(joined$status == 1L & joined$arm == "Active"), 15L)
+    expect_equal(sum(joined$status == 1L & joined$arm == "Placebo"), 27L)
+  }
+})
+
 test_that("linelist has the locked messy shape and seed", {
   linelist <- get_data("linelist")
   skip_if(is.null(linelist), "linelist not built yet (run data-raw/linelist.R)")

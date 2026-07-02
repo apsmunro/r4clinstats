@@ -1,0 +1,277 @@
+---
+title: "R for Clinical Statistics: Regression"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Linear regression with lm, logistic regression with glm, and odds ratios you can put in a paper."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(broom)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+data("labs", package = "r4clinstats")
+data("outcomes", package = "r4clinstats")
+
+# Change scores, as in the comparing-groups lesson, with arm as a factor whose
+# reference level is Placebo so model coefficients read as treatment effects.
+bp_change <- labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value, names_prefix = "v") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  mutate(
+    change = v2 - v0,
+    arm = relevel(factor(arm), ref = "Placebo")
+  ) |>
+  select(id, arm, baseline = v0, week24 = v2, change)
+
+trial <- outcomes |>
+  left_join(select(patients, id, age, sex, arm), by = "id") |>
+  mutate(
+    arm = relevel(factor(arm), ref = "Placebo"),
+    response = factor(response)
+  )
+```
+
+## Welcome
+
+The t-test compares one thing between two groups, and that is all it does. Real questions come tangled: does the drug work *allowing for* where each patient started? Does response depend on treatment *and* on age? **Regression** is the tool for questions with more than one moving part, and it is the workhorse of published clinical analysis.
+
+The promises hold: nothing breaks, red text is normal, and **Hint** then **Solution** are a click away.
+
+One housekeeping note: in this lesson's tables, `arm` has been made a factor with `Placebo` as its **reference level**. R compares every other level against the reference, so coefficients will read as *the effect of being on the active drug*. R's default reference is simply the alphabetically first level, which is often not what you want; `relevel()` is the fix.
+
+## A line through the data
+
+Start with `bp_change` from the last lesson: each patient's `baseline` blood pressure and their `change` by week 24. Is the size of the fall related to where the patient started? **Run this:**
+
+```{r scatter-baseline, exercise=TRUE}
+ggplot(bp_change, aes(x = baseline, y = change)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+`geom_smooth(method = "lm")` overlays the best-fitting straight line, and it slopes firmly downward: patients who started higher fell further. Linear regression is that line, written as numbers.
+
+## Fitting the line: `lm()`
+
+`lm()` (linear model) uses the same formula syntax as `t.test()`: outcome, tilde, predictors. **Run it:**
+
+```{r lm-baseline, exercise=TRUE}
+lm(change ~ baseline, data = bp_change)
+```
+
+Two coefficients. The `baseline` one says: for every extra mmHg a patient started with, their blood pressure fell about 1.15 mmHg further. Some of that is a real phenomenon with a famous name, **regression to the mean**: extreme measurements tend to be closer to average when measured again, drug or no drug. It is the reason trials need control arms, and it is where regression got its name.
+
+The raw printout is thin. `tidy()` from the last lesson gives the full table: estimates, standard errors, p-values. **Fill in the function:**
+
+```{r lm-tidy, exercise=TRUE, exercise.blanks="___+"}
+lm(change ~ baseline, data = bp_change) |>
+  ____()
+```
+
+```{r lm-tidy-hint}
+# The same broom function that tidied the t-test:
+# tidy
+```
+
+```{r lm-tidy-solution}
+lm(change ~ baseline, data = bp_change) |>
+  tidy()
+```
+
+```{r lm-tidy-check}
+grade_this({
+  pass_if_equal(message = "One row per coefficient. The baseline slope is -1.15 with a p-value indistinguishable from zero: the relationship is real and strong.")
+  fail("Almost: pipe the model into `tidy()`.")
+})
+```
+
+## More than one predictor
+
+Here is where regression earns its keep. Add `+ arm` to the formula and the model estimates the treatment effect *while holding baseline constant*. **Fill in the second predictor:**
+
+```{r lm-ancova, exercise=TRUE, exercise.blanks="___+"}
+lm(change ~ baseline + ____, data = bp_change) |>
+  tidy()
+```
+
+```{r lm-ancova-hint}
+# You want the treatment effect, adjusted for baseline.
+# The second predictor is: arm
+```
+
+```{r lm-ancova-solution}
+lm(change ~ baseline + arm, data = bp_change) |>
+  tidy()
+```
+
+```{r lm-ancova-check}
+grade_this({
+  pass_if_equal(message = "Look at the `armActive` row: a 5.0 mmHg bigger fall on the drug, p = 0.002. The t-test gave p = 0.039 for the same question; adjusting for baseline soaked up noise and sharpened the answer. This baseline-adjusted model is in fact the recommended way to analyse a trial's change scores.")
+  fail("Almost: add `arm` as the second predictor, so the model adjusts the treatment effect for baseline.")
+})
+```
+
+## When the outcome is yes or no
+
+`lm()` fits a number. For a binary outcome like `response`, the tool is **logistic regression**: `glm()` with `family = binomial`. One requirement: the outcome must be a factor, so R knows which level is the event (it takes the *second* level, here `Y`). The `trial` table has `response` as a factor already. **Fill in the family:**
+
+```{r glm-fit, exercise=TRUE, exercise.blanks="___+"}
+glm(response ~ arm, data = trial, family = ____)
+```
+
+```{r glm-fit-hint}
+# The family for a yes/no outcome is:
+# binomial
+```
+
+```{r glm-fit-solution}
+glm(response ~ arm, data = trial, family = binomial)
+```
+
+```{r glm-fit-check}
+grade_this({
+  if (!inherits(.result, "glm")) {
+    fail("That should fit a model with `glm(...)`. Keep the structure and fill in the family.")
+  }
+  if (identical(.result$family$family, "binomial")) {
+    pass("A logistic regression. Its raw coefficients are in log-odds, which nobody thinks in; the next step converts them to something readable.")
+  }
+  fail("Almost: a yes/no outcome uses `family = binomial`, with no quotes needed.")
+})
+```
+
+## Odds ratios
+
+A logistic model's natural summary is the **odds ratio** (OR): above 1 means the outcome is more likely, below 1 less likely. `tidy()` will exponentiate the coefficients into ORs and attach confidence intervals in one call. **Fill in the value:**
+
+```{r glm-or, exercise=TRUE, exercise.blanks="___+"}
+glm(response ~ arm, data = trial, family = binomial) |>
+  tidy(exponentiate = ____, conf.int = TRUE)
+```
+
+```{r glm-or-hint}
+# You want the coefficients exponentiated into odds ratios. The value is:
+# TRUE
+```
+
+```{r glm-or-solution}
+glm(response ~ arm, data = trial, family = binomial) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r glm-or-check}
+grade_this({
+  pass_if_equal(message = "The `armActive` row reads: OR 2.66, CI 1.17 to 6.30, p = 0.022. Patients on the drug had well over twice the odds of responding, and the interval sits clear of 1. That line is publication-ready.")
+  fail("Almost: switch the exponentiation on with `exponentiate = TRUE`.")
+})
+```
+
+## Practice
+
+Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** are there if you want them.
+
+**1.** Fit the *unadjusted* treatment model, `change ~ arm`, in `bp_change`, and tidy it.
+
+```{r pr-crude, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-crude-hint}
+# lm(change ~ arm, data = bp_change) |> tidy()
+```
+
+```{r pr-crude-solution}
+lm(change ~ arm, data = bp_change) |>
+  tidy()
+```
+
+```{r pr-crude-check}
+grade_this({
+  pass_if_equal(message = "The crude effect: -4.8 mmHg, p = 0.039, the t-test's answer in regression clothing. Compare it with the baseline-adjusted -5.0 at p = 0.002 from earlier: same drug, sharper estimate.")
+  fail("Close. Fit `lm(change ~ arm, data = bp_change)` and pipe it into `tidy()`.")
+})
+```
+
+**2.** Fit a logistic regression of `response` on `arm` **and** `age` in `trial`, and tidy it into odds ratios with confidence intervals.
+
+```{r pr-adjor, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-adjor-hint}
+# glm(response ~ arm + age, data = trial, family = binomial) |>
+#   tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r pr-adjor-solution}
+glm(response ~ arm + age, data = trial, family = binomial) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r pr-adjor-check}
+grade_this({
+  pass_if_equal(message = "Age-adjusted OR for the drug: 2.79, CI 1.21 to 6.70. Age itself shows no clear effect here (its CI straddles 1). Adding a predictor is only ever `+ age` away.")
+  fail("Close. The formula is `response ~ arm + age`, family binomial, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+})
+```
+
+**3.** The scatter plot from the start of the lesson, from scratch: `change` against `baseline` in `bp_change`, points plus an `lm` smooth.
+
+```{r pr-scatter, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-scatter-hint}
+# ggplot(bp_change, aes(x = baseline, y = change)) +
+#   geom_point() +
+#   geom_smooth(method = "lm")
+```
+
+```{r pr-scatter-solution}
+ggplot(bp_change, aes(x = baseline, y = change)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+```{r pr-scatter-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Start with `ggplot(bp_change, aes(...))`.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomPoint" %in% geoms)) {
+    fail("Draw the patients first with `geom_point()`.")
+  }
+  if (!("GeomSmooth" %in% geoms)) {
+    fail("Add the fitted line with `geom_smooth(method = \"lm\")`.")
+  }
+  pass("The model and its picture together. Showing the line through the points is the honest way to present a regression.")
+})
+```
+
+## Recap
+
+One formula syntax, two models:
+
+- **`lm(outcome ~ predictors)`** for a numeric outcome; add predictors with `+` to adjust
+- **`glm(..., family = binomial)`** for a yes/no outcome, reported as **odds ratios** via `tidy(exponentiate = TRUE, conf.int = TRUE)`
+- set the **reference level** with `relevel()` so coefficients read the way you mean them
+
+You have also met regression to the mean, the reason control arms exist. One outcome type remains, the hardest and the most clinical: time until an event happens.

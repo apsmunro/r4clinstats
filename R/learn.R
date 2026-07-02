@@ -37,7 +37,7 @@ learn <- function(module = NULL) {
 # Internal: the module table. `available` marks which tutorials are built.
 .modules <- function() {
   data.frame(
-    id = paste0("m", 0:9),
+    id = paste0("m", 0:13),
     title = c(
       "Why R for clinical data",
       "Tidy data as design",
@@ -48,15 +48,21 @@ learn <- function(module = NULL) {
       "Reading & cleaning data",
       "Visualisation I",
       "Visualisation II",
-      "Summary tables"
+      "Summary tables",
+      "Describing data",
+      "Comparing groups",
+      "Regression",
+      "Survival analysis"
     ),
     dir = c(
       "m0-why-r", "m1-tidy-data-design", "m2-building-blocks",
       "m3-wrangling-i", "m4-wrangling-ii", "m5-tidy-data-practice",
       "m6-reading-cleaning", "m7-visualisation-i",
-      "m8-visualisation-ii", "m9-summary-tables"
+      "m8-visualisation-ii", "m9-summary-tables",
+      "m10-describing-data", "m11-comparing-groups",
+      "m12-regression", "m13-survival"
     ),
-    available = c(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+    available = rep(TRUE, 14),
     stringsAsFactors = FALSE
   )
 }

@@ -1,0 +1,258 @@
+---
+title: "R for Clinical Statistics: Comparing Groups"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Your first statistical tests: the t-test for numbers, the chi-squared test for categories, and tidy results with broom."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(broom)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+data("labs", package = "r4clinstats")
+data("outcomes", package = "r4clinstats")
+
+# One row per patient: baseline SBP, week-24 SBP, and the change between them.
+bp_change <- labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value, names_prefix = "v") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  mutate(change = v2 - v0) |>
+  select(id, arm, baseline = v0, week24 = v2, change)
+
+# Outcomes with each patient's details attached.
+trial <- outcomes |>
+  left_join(select(patients, id, age, sex, arm), by = "id")
+```
+
+## Welcome
+
+You can describe a difference; now you test one. Two groups differ a little in any sample, by chance alone. A statistical test asks: **is this gap bigger than chance could plausibly produce?** This lesson covers the two tests that answer most clinical questions: the **t-test** for a number, and the **chi-squared test** for categories.
+
+The promises hold: nothing breaks, red text is normal, and **Hint** then **Solution** are a click away.
+
+## Meet the change scores
+
+The setup for this lesson quietly did some familiar work: it took the `labs` blood pressures, pivoted them wide (one row per patient, a column per visit), and computed each patient's **change** from baseline to week 24. The result is `bp_change`. **Run this:**
+
+```{r meet-change, exercise=TRUE}
+glimpse(bp_change)
+```
+
+One row per patient: their arm, their `baseline` blood pressure, their `week24` reading, and the `change` between the two. A negative change means blood pressure fell. This table is where the trial's real question lives.
+
+## The question, drawn first
+
+Before any test, look. **Run this** box plot of the changes:
+
+```{r box-change, exercise=TRUE}
+ggplot(bp_change, aes(x = arm, y = change)) +
+  geom_boxplot()
+```
+
+The active arm's box sits lower: blood pressure fell more on the drug. The boxes overlap plenty, though. Chance, or effect? That is precisely a t-test's job.
+
+## The t-test
+
+`t.test()` compares the mean of a number between two groups. Its formula syntax reads naturally: `change ~ arm` means *"change, split by arm."* First, though, a deliberately boring example: comparing the arms' **baseline** blood pressure. **Run it:**
+
+```{r ttest-baseline, exercise=TRUE}
+t.test(sbp ~ arm, data = patients)
+```
+
+The two means sit within half a point of each other and p = 0.91: no evidence of any difference, exactly as it should be, because randomisation built the arms to start equal. (This is why a trial's baseline table carries no p-values, the point from the tables lesson.)
+
+The real question is whether the arms *changed* differently. **Fill in the grouping column:**
+
+```{r ttest-change, exercise=TRUE, exercise.blanks="___+"}
+t.test(change ~ ____, data = bp_change)
+```
+
+```{r ttest-change-hint}
+# Split the changes by treatment group. The column in bp_change is:
+# arm
+```
+
+```{r ttest-change-solution}
+t.test(change ~ arm, data = bp_change)
+```
+
+```{r ttest-change-check}
+grade_this({
+  if (!inherits(.result, "htest")) {
+    fail("That should run a test. Keep the `t.test(...)` structure and fill in the grouping column.")
+  }
+  if (isTRUE(all.equal(.result$p.value, .solution$p.value))) {
+    pass("There is the answer: a mean fall of 5.0 mmHg on the active arm against 0.1 on placebo, p = 0.039. A gap that size would arise by chance less than one time in twenty five.")
+  }
+  fail("Almost: the grouping column is `arm`. Read the formula as: change, split by arm.")
+})
+```
+
+Three lines of that output earn a place in a paper: the two group means, the confidence interval for the difference (here, the active arm fell 0.2 to 9.4 mmHg further), and the p-value.
+
+## The chi-squared test
+
+When both variables are categories, the tool is the **chi-squared test**. The trial's other outcome is `response`, a plain Y or N, and it lives in the `trial` table. Look at the raw counts first. **Run this:**
+
+```{r count-response, exercise=TRUE}
+trial |>
+  count(arm, response)
+```
+
+36 of 49 responded on the active arm (73%) against 26 of 51 on placebo (51%). The test takes those counts as a table. **Fill in the second column:**
+
+```{r chisq, exercise=TRUE, exercise.blanks="___+"}
+chisq.test(table(trial$arm, trial$____))
+```
+
+```{r chisq-hint}
+# You are testing whether response depends on arm.
+# The second column is: response
+```
+
+```{r chisq-solution}
+chisq.test(table(trial$arm, trial$response))
+```
+
+```{r chisq-check}
+grade_this({
+  if (!inherits(.result, "htest")) {
+    fail("That should run a test. Keep the `chisq.test(table(...))` structure.")
+  }
+  if (isTRUE(all.equal(.result$p.value, .solution$p.value))) {
+    pass("p = 0.035: response and arm are associated beyond what chance comfortably explains. 73% against 51% is a difference worth having.")
+  }
+  fail("Almost: the second column in the table should be `response`.")
+})
+```
+
+## Tidy results with broom
+
+Test output is written for reading, not for reuse. The `broom` package's `tidy()` turns any test or model into a one-row data frame, so results can be filtered, joined and reported with the tools you already know. **Fill in the function:**
+
+```{r tidy-test, exercise=TRUE, exercise.blanks="___+"}
+t.test(change ~ arm, data = bp_change) |>
+  ____()
+```
+
+```{r tidy-test-hint}
+# The broom function that turns a test into a tidy data frame is:
+# tidy
+```
+
+```{r tidy-test-solution}
+t.test(change ~ arm, data = bp_change) |>
+  tidy()
+```
+
+```{r tidy-test-check}
+grade_this({
+  pass_if_equal(message = "The whole test on one tidy row: estimates, confidence interval, p-value. Every test and model in the rest of the course can be tidied the same way.")
+  fail("Almost: pipe the test into `tidy()`, from the broom package.")
+})
+```
+
+## Practice
+
+Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** are there if you want them.
+
+**1.** Test whether `bmi` differs between the treatment arms in `patients`.
+
+```{r pr-ttest, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-ttest-hint}
+# t.test(bmi ~ arm, data = patients)
+```
+
+```{r pr-ttest-solution}
+t.test(bmi ~ arm, data = patients)
+```
+
+```{r pr-ttest-check}
+grade_this({
+  if (!inherits(.result, "htest")) {
+    fail("Run a t-test with the formula syntax: a number, a tilde, a group.")
+  }
+  if (isTRUE(all.equal(.result$p.value, .solution$p.value))) {
+    pass("p = 0.13: no good evidence the arms differ in BMI. Learning to say 'no evidence of a difference' with a straight face is half of statistics.")
+  }
+  fail("Close. The formula is `bmi ~ arm`, with `data = patients`.")
+})
+```
+
+**2.** Test whether smoking status (`smoker`) is associated with treatment `arm` in `patients`. The chi-squared test handles a 3-by-2 table without complaint.
+
+```{r pr-chisq, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-chisq-hint}
+# chisq.test(table(patients$smoker, patients$arm))
+```
+
+```{r pr-chisq-solution}
+chisq.test(table(patients$smoker, patients$arm))
+```
+
+```{r pr-chisq-check}
+grade_this({
+  if (!inherits(.result, "htest")) {
+    fail("Build the counts with `table()`, then hand them to `chisq.test()`.")
+  }
+  if (isTRUE(all.equal(.result$p.value, .solution$p.value))) {
+    pass("p = 0.53: smoking status falls evenly across the arms, as randomisation intended. Note the test took a 3-by-2 table in its stride.")
+  }
+  fail("Close. Table `smoker` against `arm` from patients, then run `chisq.test()` on it.")
+})
+```
+
+**3.** Run the change-score t-test again (`change ~ arm` in `bp_change`) and pipe it into `tidy()`.
+
+```{r pr-tidy, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-tidy-hint}
+# t.test(change ~ arm, data = bp_change) |> tidy()
+```
+
+```{r pr-tidy-solution}
+t.test(change ~ arm, data = bp_change) |>
+  tidy()
+```
+
+```{r pr-tidy-check}
+grade_this({
+  pass_if_equal(message = "The trial's headline result, ready to report: a 4.8 mmHg bigger fall on the active arm, CI 0.2 to 9.4, p = 0.039.")
+  fail("Close. Run `t.test(change ~ arm, data = bp_change)` and pipe the result into `tidy()`.")
+})
+```
+
+## Recap
+
+Two tests cover most clinical comparisons:
+
+- **`t.test(number ~ group, data)`** compares a mean between two groups
+- **`chisq.test(table(x, y))`** tests whether two categories are associated
+- **`tidy()`** turns any result into a one-row data frame for reporting
+
+And the discipline underneath: test the *outcome*, not the baseline, and report the confidence interval alongside the p-value. Next, regression: the tool for when one comparison at a time is not enough.

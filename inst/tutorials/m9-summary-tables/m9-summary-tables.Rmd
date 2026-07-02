@@ -204,4 +204,4 @@ The whole of Table 1 in one function:
 - **numbers** become mean and SD, **categories** become counts and percentages, chosen for you
 - **`p = TRUE`** adds a comparison test per row, for groups that were not assigned at random; a randomised baseline table carries none (CONSORT)
 
-`finalfit` is built for clinical reporting, and this is its everyday job. Next you move from describing the data to analysing it.
+`finalfit` is built for clinical reporting, and this is its everyday job. Next, Part 3: a closer look at describing data itself — which summary to use, and when the mean misleads.

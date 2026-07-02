@@ -1,0 +1,271 @@
+---
+title: "R for Clinical Statistics: Describing Data"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Choosing the right summary: histograms first, mean (SD) for symmetric data, median (IQR) when the shape is lopsided."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(ggplot2)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+data("outcomes", package = "r4clinstats")
+```
+
+## Welcome
+
+Part 3 begins here: the analysis lessons. Before testing anything, you need to describe it, and describing a variable well means choosing the right summary. This lesson gives you the rule for choosing, and the habit that makes the rule easy: **look at the shape first**.
+
+The promises hold: nothing breaks, red text is normal, and **Hint** then **Solution** are a click away.
+
+## Meet the trial outcomes
+
+A new table joins the course. `outcomes` records what happened to each of the 100 patients over a year of follow-up. Press **Run Code**:
+
+```{r meet-outcomes, exercise=TRUE}
+glimpse(outcomes)
+```
+
+Four facts per patient: whether they responded to treatment (`response`), whether they had an adverse event (`adverse_event`), how many days they were followed (`time`), and whether the event being watched for actually happened (`status`, where 1 means it did). The `time` and `status` pair belongs to survival analysis, which gets its own lesson; today they make a useful example of a badly behaved variable.
+
+## All the numbers at once
+
+`summary()` is the quickest look at a numeric variable. **Run this** on the patients' ages:
+
+```{r summary-age, exercise=TRUE}
+summary(patients$age)
+```
+
+Six numbers: the smallest and largest, the quartiles, the median and the mean. Notice the mean (62.2) and the median (63) nearly agree. Keep that in mind; it will matter in a moment.
+
+## Look at the shape first
+
+A histogram shows a variable's whole shape: it chops the number line into bins and counts how many patients land in each. **Fill in the geom** that does this:
+
+```{r hist-age, exercise=TRUE, exercise.blanks="___+"}
+ggplot(patients, aes(x = age)) +
+  ____(binwidth = 5)
+```
+
+```{r hist-age-hint}
+# The geom that bins a numeric variable and counts each bin is:
+# geom_histogram
+```
+
+```{r hist-age-solution}
+ggplot(patients, aes(x = age)) +
+  geom_histogram(binwidth = 5)
+```
+
+```{r hist-age-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Keep the `ggplot(...)` start and add a geom.")
+  }
+  stats <- vapply(.result$layers, function(l) class(l$stat)[1], character(1))
+  if ("StatBin" %in% stats) {
+    pass("A single hill, roughly symmetric, centred in the early 60s. When a variable looks like this, the mean and SD describe it faithfully.")
+  }
+  fail("Almost: `geom_histogram()` bins the ages and counts each bin. The Hint has it.")
+})
+```
+
+Age is a tidy hill. That shape is what makes the mean trustworthy here.
+
+## Mean and standard deviation
+
+For a symmetric variable, report the **mean** with the **standard deviation** (SD), which measures how spread out the values are. **Fill in the function** for the SD:
+
+```{r mean-sd, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  summarise(mean_age = mean(age), sd_age = ____(age))
+```
+
+```{r mean-sd-hint}
+# The standard deviation function is called:
+# sd
+```
+
+```{r mean-sd-solution}
+patients |>
+  summarise(mean_age = mean(age), sd_age = sd(age))
+```
+
+```{r mean-sd-check}
+grade_this({
+  pass_if_equal(message = "Age is 62.2 years (SD 10.9). Written that way, mean (SD), it is exactly what a paper's Table 1 reports for a symmetric variable.")
+  fail("Almost: the standard deviation function is `sd`.")
+})
+```
+
+## When the mean misleads
+
+Now the badly behaved variable. **Run this** histogram of follow-up time:
+
+```{r hist-time, exercise=TRUE}
+ggplot(outcomes, aes(x = time)) +
+  geom_histogram(binwidth = 20)
+```
+
+No tidy hill this time: events scattered through the year, then a tall spike at 365, the 58 patients who reached one year with no event at all. The shape is lopsided, and watch what that does to the summaries. **Fill in the function** for the median:
+
+```{r mean-median, exercise=TRUE, exercise.blanks="___+"}
+outcomes |>
+  summarise(mean_time = mean(time), median_time = ____(time))
+```
+
+```{r mean-median-hint}
+# The middle value of a variable is its:
+# median
+```
+
+```{r mean-median-solution}
+outcomes |>
+  summarise(mean_time = mean(time), median_time = median(time))
+```
+
+```{r mean-median-check}
+grade_this({
+  pass_if_equal(message = "The mean says 282 days; the median says 365. They disagree because the shape is lopsided, and when they disagree, the median with the interquartile range (IQR) is the honest pair. (Summaries of a censored follow-up time mislead in deeper ways too; the survival lesson has the proper tool.)")
+  fail("Almost: the middle value is the `median`.")
+})
+```
+
+The rule, then: **plot the shape first**. A symmetric hill earns mean (SD); anything lopsided gets median (IQR), which you compute with `median()` and `IQR()`.
+
+## Summaries by group
+
+Descriptions usually come per group. This is `group_by()` and `summarise()` from the wrangling lessons, now with two summaries at once. **Fill in the grouping column** to describe blood pressure per treatment arm:
+
+```{r group-describe, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  group_by(____) |>
+  summarise(mean_sbp = mean(sbp), sd_sbp = sd(sbp))
+```
+
+```{r group-describe-hint}
+# One row of summaries per treatment arm, so group by:
+# arm
+```
+
+```{r group-describe-solution}
+patients |>
+  group_by(arm) |>
+  summarise(mean_sbp = mean(sbp), sd_sbp = sd(sbp))
+```
+
+```{r group-describe-check}
+grade_this({
+  pass_if_equal(message = "139.3 (14.7) against 139.6 (15.7): the arms start from the same blood pressure, which is exactly what randomisation is for. This is also what finalfit computed for you in the tables lesson; now you can see the machinery.")
+  fail("Almost: group by `arm` so each treatment group gets its own row of summaries.")
+})
+```
+
+## Practice
+
+Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** are there if you want them.
+
+**1.** Draw a histogram of `bmi` from `patients`, with a `binwidth` of 2.
+
+```{r pr-hist, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-hist-hint}
+# ggplot(patients, aes(x = bmi)) + geom_histogram(binwidth = 2)
+```
+
+```{r pr-hist-solution}
+ggplot(patients, aes(x = bmi)) +
+  geom_histogram(binwidth = 2)
+```
+
+```{r pr-hist-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Start with `ggplot(patients, aes(...))`.")
+  }
+  stats <- vapply(.result$layers, function(l) class(l$stat)[1], character(1))
+  if (!("StatBin" %in% stats)) {
+    fail("Use `geom_histogram()` to bin and count the BMI values.")
+  }
+  maps <- c(list(.result$mapping), lapply(.result$layers, function(l) l$mapping))
+  xs <- unlist(lapply(maps, function(m) {
+    if (is.null(m$x)) NULL else rlang::as_label(m$x)
+  }))
+  if (!("bmi" %in% xs)) {
+    fail("Put `bmi` on the x-axis inside `aes()`.")
+  }
+  pass("The shape check, written from scratch. BMI is another rough hill, so mean (SD) will serve it well.")
+})
+```
+
+**2.** For each `smoker` group, report the mean and SD of `bmi`. Call the columns `mean_bmi` and `sd_bmi`.
+
+```{r pr-group, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-group-hint}
+# Group, then summarise twice in one call:
+# patients |> group_by(smoker) |> summarise(mean_bmi = mean(bmi), sd_bmi = sd(bmi))
+```
+
+```{r pr-group-solution}
+patients |>
+  group_by(smoker) |>
+  summarise(mean_bmi = mean(bmi), sd_bmi = sd(bmi))
+```
+
+```{r pr-group-check}
+grade_this({
+  pass_if_equal(message = "Mean (SD) of BMI for each smoking group, one line of code. That is a full row of a Table 1.")
+  fail("Close. Group by `smoker`, then `summarise(mean_bmi = mean(bmi), sd_bmi = sd(bmi))`, keeping those column names.")
+})
+```
+
+**3.** `time` is lopsided, so give it the right pair: the median and the IQR, from `outcomes`. Call them `median_time` and `iqr_time`.
+
+```{r pr-median, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-median-hint}
+# median() and IQR() inside one summarise:
+# outcomes |> summarise(median_time = median(time), iqr_time = IQR(time))
+```
+
+```{r pr-median-solution}
+outcomes |>
+  summarise(median_time = median(time), iqr_time = IQR(time))
+```
+
+```{r pr-median-check}
+grade_this({
+  pass_if_equal(message = "Median 365 days, IQR 192.5. For a lopsided variable this pair tells the truth that the mean cannot.")
+  fail("Close. Use `median(time)` and `IQR(time)` inside `summarise()`, with the names `median_time` and `iqr_time`.")
+})
+```
+
+## Recap
+
+Describing a variable is a two-step habit:
+
+- **look at the shape first**, with `geom_histogram()`
+- a symmetric hill gets **mean (SD)**; a lopsided shape gets **median (IQR)**
+- **`group_by()` + `summarise()`** turns either into a per-group description
+
+Next you stop describing differences and start testing them: is the gap between two groups more than chance could produce?

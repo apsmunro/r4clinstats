@@ -36,6 +36,7 @@ jobs:
         run: |
           source("data-raw/patients.R")
           source("data-raw/labs.R")
+          source("data-raw/outcomes.R")
           source("data-raw/linelist.R")
         shell: Rscript {0}
 
