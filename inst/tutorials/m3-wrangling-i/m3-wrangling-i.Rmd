@@ -1,5 +1,5 @@
 ---
-title: "R for Clinical Statistics: Wrangling Clinical Data"
+title: "R for Clinical Statistics: Wrangling I"
 output:
   learnr::tutorial:
     progressive: true

@@ -1,0 +1,279 @@
+---
+title: "R for Clinical Statistics: Visualisation II"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Clinical plots that carry a message: trends over time, small multiples with faceting, and tidying a figure for a paper."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(ggplot2)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+data("labs", package = "r4clinstats")
+
+# Blood-pressure measurements over time, with each patient's arm attached.
+bp <- labs |>
+  filter(measure == "sbp") |>
+  left_join(select(patients, id, arm), by = "id")
+
+# The same, averaged to one value per arm per visit.
+bp_mean <- bp |>
+  group_by(arm, weeks) |>
+  summarise(sbp = mean(value), .groups = "drop")
+```
+
+## Welcome
+
+Lesson 7 covered the three plots you reach for most. This one turns them into figures that carry a clinical message: how a measure changes **over time**, how to compare arms with **small multiples**, and how to **tidy** a plot for a paper.
+
+The promises hold: nothing breaks, red text is normal, and **Hint** then **Solution** are a click away. We work with `bp`, the systolic blood-pressure readings at weeks 0, 12 and 24, with each patient's treatment arm attached.
+
+## A first look over time
+
+Press **Run Code** to plot every reading against the week it was taken:
+
+```{r cloud, exercise=TRUE}
+ggplot(bp, aes(x = weeks, y = value)) +
+  geom_point()
+```
+
+A cloud of points. You can tell blood pressure drifts down, but you cannot follow any one patient, and the two arms are mixed together. Two moves fix that: connect each patient's own readings, and split by arm.
+
+## Connecting each patient over time
+
+To join up one patient's readings into a line, you tell ggplot which rows belong together with `group`, then draw with `geom_line()`. The grouping is set; **fill in the geom**:
+
+```{r lines, exercise=TRUE, exercise.blanks="___+"}
+ggplot(bp, aes(x = weeks, y = value, group = id)) +
+  ____()
+```
+
+```{r lines-hint}
+# The geom that draws a line through the points is:
+# geom_line
+```
+
+```{r lines-solution}
+ggplot(bp, aes(x = weeks, y = value, group = id)) +
+  geom_line()
+```
+
+```{r lines-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Keep the `ggplot(...)` start and add a geom.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if ("GeomLine" %in% geoms) {
+    pass("One line per patient, thanks to `group = id`. Without that grouping ggplot would not know which points join up.")
+  }
+  fail("Almost: `geom_line()` draws the lines. The Hint has it.")
+})
+```
+
+That tangle of lines has a name, a spaghetti plot, and it is honest: real patient data is noisy. To see the signal underneath, average it.
+
+## The trend, one line per arm
+
+`bp_mean` holds the mean blood pressure for each arm at each visit. **Fill in the column** to give each arm its own coloured line:
+
+```{r trend, exercise=TRUE, exercise.blanks="___+"}
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = ____)) +
+  geom_line()
+```
+
+```{r trend-hint}
+# You want one line per treatment arm, in its own colour.
+# The column is called: arm
+```
+
+```{r trend-solution}
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+  geom_line()
+```
+
+```{r trend-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  col <- tryCatch(rlang::as_label(.result$mapping$colour), error = function(e) NA_character_)
+  if (identical(col, "arm")) {
+    pass("There is the signal: both arms start together, and the active arm falls faster. That is the whole trial in one picture.")
+  }
+  fail("Almost: put `arm` in `colour = ` so each arm gets its own line.")
+})
+```
+
+## Small multiples with faceting
+
+Instead of colouring, you can give each group its own panel with `facet_wrap()`. Read `~ arm` as *"one panel per arm."* **Fill in the column** to split the patient lines by arm:
+
+```{r facet, exercise=TRUE, exercise.blanks="___+"}
+ggplot(bp, aes(x = weeks, y = value, group = id)) +
+  geom_line() +
+  facet_wrap(~ ____)
+```
+
+```{r facet-hint}
+# One panel per treatment arm, so facet by:
+# arm
+```
+
+```{r facet-solution}
+ggplot(bp, aes(x = weeks, y = value, group = id)) +
+  geom_line() +
+  facet_wrap(~ arm)
+```
+
+```{r facet-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  if (inherits(.result$facet, "FacetWrap")) {
+    pass("Two panels, side by side, each arm on its own. Faceting is often clearer than colour when the lines would overlap.")
+  }
+  fail("Almost: `facet_wrap(~ arm)` splits the plot into one panel per arm.")
+})
+```
+
+## Tidying for a paper
+
+The plot is right, but the labels are raw column names and the grey background is busy. `labs()` sets readable titles, and a theme changes the overall look. **Run this** to see the same trend, tidied:
+
+```{r polish, exercise=TRUE}
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+  geom_line(linewidth = 1) +
+  labs(
+    title  = "Systolic blood pressure over time, by arm",
+    x      = "Weeks since baseline",
+    y      = "Mean systolic BP (mmHg)",
+    colour = "Arm"
+  ) +
+  theme_minimal()
+```
+
+Same data, ready for a slide or a paper. The habit: get the plot right first, then add `labs()` and a theme last.
+
+## Practice
+
+Three to finish, no blanks. Write each full plot yourself; **Hint** and **Solution** are there if you want them.
+
+**1.** Draw the mean-blood-pressure trend from `bp_mean` (`weeks` on x, `sbp` on y), one line per `arm`.
+
+```{r pr-trend, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-trend-hint}
+# ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) + geom_line()
+```
+
+```{r pr-trend-solution}
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+  geom_line()
+```
+
+```{r pr-trend-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Start with `ggplot(bp_mean, aes(...))`.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  col <- tryCatch(rlang::as_label(.result$mapping$colour), error = function(e) NA_character_)
+  if (!("GeomLine" %in% geoms)) {
+    fail("Use `geom_line()` to draw the trend.")
+  }
+  if (!identical(col, "arm")) {
+    fail("Map `arm` to `colour` so each arm has its own line.")
+  }
+  pass("The two-arm trend, written from scratch.")
+})
+```
+
+**2.** Take the patient lines (`bp`, `weeks` vs `value`, grouped by `id`) and split them into one panel per `arm`.
+
+```{r pr-facet, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-facet-hint}
+# ggplot(bp, aes(x = weeks, y = value, group = id)) + geom_line() + facet_wrap(~ arm)
+```
+
+```{r pr-facet-solution}
+ggplot(bp, aes(x = weeks, y = value, group = id)) +
+  geom_line() +
+  facet_wrap(~ arm)
+```
+
+```{r pr-facet-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomLine" %in% geoms)) {
+    fail("Draw the patient lines with `geom_line()` first.")
+  }
+  if (!inherits(.result$facet, "FacetWrap")) {
+    fail("Add `facet_wrap(~ arm)` to split into one panel per arm.")
+  }
+  pass("Patient trajectories, one panel per arm.")
+})
+```
+
+**3.** Take the trend plot and add a y-axis label. Give `labs()` a `y` of your choosing.
+
+```{r pr-labs, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-labs-hint}
+# ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+#   geom_line() +
+#   labs(y = "Mean systolic BP (mmHg)")
+```
+
+```{r pr-labs-solution}
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+  geom_line() +
+  labs(y = "Mean systolic BP (mmHg)")
+```
+
+```{r pr-labs-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  ylab <- .result$labels$y
+  if (!is.null(ylab) && !(ylab %in% c("sbp", "value"))) {
+    pass("A readable y-axis label. `labs()` is where you make a plot ready for someone else to read.")
+  }
+  fail("Almost: add `labs(y = \"...\")` with a label in your own words, not the raw column name.")
+})
+```
+
+## Recap
+
+Three moves that turn a plot into a figure:
+
+- **`geom_line()` with `group`** follows something over time, one line per unit
+- **`facet_wrap(~ variable)`** gives each group its own panel, the small-multiples trick
+- **`labs()` and a theme** make it readable, added last once the plot is right
+
+You have now seen the plot that shows a whole trial at a glance: two arms, starting together, parting over time. Next you turn those same variables into the summary table every paper opens with.

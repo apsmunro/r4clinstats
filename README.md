@@ -6,7 +6,7 @@ real-feeling synthetic clinical data and get immediate, kind feedback. Lessons
 are [`learnr`](https://rstudio.github.io/learnr/) tutorials graded by
 [`gradethis`](https://pkgs.rstudio.com/gradethis/).
 
-The MVP (Modules 0–5) is built and runnable. The full design lives in `../build-spec.md`.
+Modules 0–9 are built and runnable (M0–M5 are the MVP).
 
 ## What's here so far
 
@@ -16,12 +16,18 @@ The MVP (Modules 0–5) is built and runnable. The full design lives in `../buil
 - **Module 3 — Wrangling I** (`filter`, `count`, `arrange`, `select`, the pipe `|>`), adapted from the prototype.
 - **Module 4 — Wrangling II** (`mutate`, `group_by` + `summarise`).
 - **Module 5 — Tidy data in practice** (`pivot_wider`/`pivot_longer`, `left_join`).
+- **Module 6 — Reading & cleaning data** (`read_csv`/`here`, recoding, fixing types, missing values).
+- **Module 7 — Visualisation I** (the ggplot2 grammar of graphics: scatter, box and bar plots).
+- **Module 8 — Visualisation II** (trends over time, faceting, tidying a figure for a paper).
+- **Module 9 — Summary tables** (the "Table 1" every clinical paper opens with, via `finalfit`).
 - Each interactive module closes with a **Practice** section: open exercises (no blanks) with hints, solutions and grading.
-- Datasets **`patients`** and **`labs`** (synthetic, reproducible).
+- Datasets **`patients`**, **`labs`** and **`linelist`** (synthetic, reproducible).
 - **`learn()`**, **`check_setup()`**, **`use_local_library()`**.
 - A test harness in `tests/` that runs every tutorial solution and locks the datasets.
 
-The `outcomes`/`linelist` datasets and the later modules (M6 onward) are specified in `../build-spec.md` and not yet built.
+Still to come: the analysis modules (M10 onward: describing data, comparing groups,
+regression, survival) and the `outcomes` dataset they need, then a closing module on
+reproducible reports.
 
 ## Build it from source (developer)
 
@@ -30,6 +36,7 @@ From the package root, in R:
 ```r
 source("data-raw/patients.R")   # writes data/patients.rda
 source("data-raw/labs.R")       # writes data/labs.rda  (run after patients.R)
+source("data-raw/linelist.R")   # writes data/linelist.rda
 devtools::document()            # regenerate NAMESPACE and man/ from the roxygen comments
 devtools::install()             # install the package locally
 devtools::test()                # run the harness
@@ -52,7 +59,7 @@ install.packages("pkgdown")
 pkgdown::build_site()
 ```
 
-On every push to `main`, `.github/workflows/pkgdown.yaml` rebuilds the site and publishes it to
+On every push to `master`, `.github/workflows/pkgdown.yaml` rebuilds the site and publishes it to
 GitHub Pages at <https://apsmunro.github.io/r4clinstats/>. Enable Pages once in the repository
 settings, serving from the `gh-pages` branch.
 

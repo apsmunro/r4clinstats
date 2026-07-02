@@ -12,6 +12,7 @@ A swirl-style, learn-by-doing course that teaches clinicians and clinical resear
 Useful links:
 \itemize{
   \item \url{https://github.com/apsmunro/r4clinstats}
+  \item \url{https://apsmunro.github.io/r4clinstats/}
   \item Report bugs at \url{https://github.com/apsmunro/r4clinstats/issues}
 }
 

@@ -39,3 +39,20 @@ test_that("labs is long and consistent with patients", {
     expect_setequal(unique(labs$id), unique(patients$id))
   }
 })
+
+test_that("linelist has the locked messy shape and seed", {
+  linelist <- get_data("linelist")
+  skip_if(is.null(linelist), "linelist not built yet (run data-raw/linelist.R)")
+
+  expect_equal(nrow(linelist), 50L)
+  expect_named(linelist, c("id", "sex", "age", "smoker", "arm", "weight"))
+  # Deliberately messy: age arrives as text, sex in more than two spellings.
+  expect_type(linelist$age, "character")
+  expect_gt(length(unique(linelist$sex)), 2L)
+
+  # Seed-locked counts the M6 tutorial quotes in its feedback.
+  expect_equal(sum(is.na(linelist$weight)), 5L)
+  expect_equal(sum(is.na(suppressWarnings(as.numeric(linelist$age)))), 3L)
+  cleaned_sex <- ifelse(tolower(linelist$sex) == "female", "Female", "Male")
+  expect_equal(sum(cleaned_sex == "Female"), 21L)
+})

@@ -1,0 +1,201 @@
+---
+title: "R for Clinical Statistics: Summary Tables"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Build the 'Table 1' every clinical paper opens with: baseline characteristics by group, in one line, with finalfit."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(finalfit)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+```
+
+## Welcome
+
+Open almost any clinical paper and the first table describes who was in the study, split by group: mean age per arm, the sex balance, and so on. It is so standard it has a name, **Table 1**. This lesson builds one in a single line.
+
+The promises hold: nothing breaks, red text is normal, and **Hint** then **Solution** are a click away. We use the `patients` cohort and the `finalfit` package, built for exactly this job.
+
+## A first Table 1
+
+`summary_factorlist()` takes three things: the data, the **dependent** (the column to compare across, here the treatment `arm`), and the **explanatory** variables to describe. Press **Run Code**:
+
+```{r first-table, exercise=TRUE}
+patients |>
+  summary_factorlist("arm", c("age", "sex"))
+```
+
+One row block per variable, one column per arm. Numbers like `age` come out as mean and standard deviation; categories like `sex` come out as counts and percentages. `finalfit` picks the right summary for each type automatically.
+
+## Choosing what to compare across
+
+The **dependent** is the column whose groups become the table's columns. **Fill it in** so the table compares the treatment arms, now across four variables:
+
+```{r dependent, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  summary_factorlist("____", c("age", "sex", "smoker", "bmi"))
+```
+
+```{r dependent-hint}
+# You want a column for each treatment arm, so compare across:
+# "arm"
+```
+
+```{r dependent-solution}
+patients |>
+  summary_factorlist("arm", c("age", "sex", "smoker", "bmi"))
+```
+
+```{r dependent-check}
+grade_this({
+  pass_if_equal(message = "That is a full Table 1: every variable summarised for each arm, side by side, ready to drop into a paper.")
+  fail("Not quite: the dependent is the column you compare across, written in quotes as `\"arm\"`.")
+})
+```
+
+## Choosing what to describe
+
+The **explanatory** variables are the list inside `c(...)`. Add to that list and the table grows a row block. **Fill in** the variable so smoking status joins the table:
+
+```{r explanatory, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  summary_factorlist("arm", c("age", "sex", "____"))
+```
+
+```{r explanatory-hint}
+# The column recording smoking status is called:
+# smoker
+```
+
+```{r explanatory-solution}
+patients |>
+  summary_factorlist("arm", c("age", "sex", "smoker"))
+```
+
+```{r explanatory-check}
+grade_this({
+  pass_if_equal(message = "Smoking status now sits in the table, counted for each arm. Add as many variables to the list as you need.")
+  fail("Not quite: add `\"smoker\"`, in quotes, to the list of variables to describe.")
+})
+```
+
+## Adding a comparison
+
+Often you want a p-value for each row, testing whether the arms differ. Set `p = TRUE` and `finalfit` runs a sensible default test for each variable, a t-test for a number, a chi-squared for a category. **Fill in** the value:
+
+```{r pvalues, exercise=TRUE, exercise.blanks="___+"}
+patients |>
+  summary_factorlist("arm", c("age", "sex", "smoker", "bmi"), p = ____)
+```
+
+```{r pvalues-hint}
+# You want the p-values switched on. The value is:
+# TRUE
+```
+
+```{r pvalues-solution}
+patients |>
+  summary_factorlist("arm", c("age", "sex", "smoker", "bmi"), p = TRUE)
+```
+
+```{r pvalues-check}
+grade_this({
+  pass_if_equal(message = "A p-value column appears, one test per variable. Treat these as a guide: with a real trial, decide your comparisons in advance rather than reading down the column for anything below 0.05.")
+  fail("Almost: switch the p-values on with `p = TRUE`, with no quotes.")
+})
+```
+
+## Practice
+
+Three to finish, no blanks. Write each table yourself; **Hint** and **Solution** are there if you want them.
+
+**1.** Build a Table 1 of `age`, `bmi` and `smoker`, compared across the treatment `arm`.
+
+```{r pr-table, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-table-hint}
+# patients |> summary_factorlist("arm", c("age", "bmi", "smoker"))
+```
+
+```{r pr-table-solution}
+patients |>
+  summary_factorlist("arm", c("age", "bmi", "smoker"))
+```
+
+```{r pr-table-check}
+grade_this({
+  pass_if_equal(message = "A tidy three-variable Table 1, written from scratch.")
+  fail("Almost: `summary_factorlist(\"arm\", c(\"age\", \"bmi\", \"smoker\"))`, with the variables in quotes.")
+})
+```
+
+**2.** Now compare those same three variables across `sex` instead of arm.
+
+```{r pr-bysex, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-bysex-hint}
+# Swap the dependent from "arm" to "sex":
+# patients |> summary_factorlist("sex", c("age", "bmi", "smoker"))
+```
+
+```{r pr-bysex-solution}
+patients |>
+  summary_factorlist("sex", c("age", "bmi", "smoker"))
+```
+
+```{r pr-bysex-check}
+grade_this({
+  pass_if_equal(message = "Same variables, split by sex now. Changing the dependent is all it takes to re-point the table.")
+  fail("Almost: change only the dependent to `\"sex\"`, keeping the same three variables.")
+})
+```
+
+**3.** Build a Table 1 of `age` and `bmi` by `arm`, with p-values switched on.
+
+```{r pr-pvalues, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-pvalues-hint}
+# patients |> summary_factorlist("arm", c("age", "bmi"), p = TRUE)
+```
+
+```{r pr-pvalues-solution}
+patients |>
+  summary_factorlist("arm", c("age", "bmi"), p = TRUE)
+```
+
+```{r pr-pvalues-check}
+grade_this({
+  pass_if_equal(message = "Two variables compared across the arms, each with a p-value. That is a publishable Table 1 in one line.")
+  fail("Almost: add `p = TRUE` to `summary_factorlist(\"arm\", c(\"age\", \"bmi\"))`.")
+})
+```
+
+## Recap
+
+The whole of Table 1 in one function:
+
+- **`summary_factorlist(dependent, explanatory)`** describes each explanatory variable for every group of the dependent
+- **numbers** become mean and SD, **categories** become counts and percentages, chosen for you
+- **`p = TRUE`** adds a comparison test per row
+
+`finalfit` is built for clinical reporting, and this is its everyday job. Next you move from describing the data to analysing it.

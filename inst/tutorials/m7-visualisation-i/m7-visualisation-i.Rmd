@@ -1,0 +1,276 @@
+---
+title: "R for Clinical Statistics: Visualisation I"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Turn a table into a picture with ggplot2: the grammar of graphics, and your first scatter, box and bar plots."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(ggplot2)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+```
+
+## Welcome
+
+A table of numbers hides its story. A plot tells it at a glance. This lesson is your first with **ggplot2**, the tool most clinical R users reach for, and by the end you will have drawn three of the workhorse plots yourself.
+
+The promises hold. Nothing here can break, red text is normal, and **Hint** then **Solution** are one click away. This lesson has an extra reward built in: every exercise ends with a picture appearing.
+
+## The grammar of graphics
+
+Every ggplot is built from three parts, always in the same order:
+
+1. **the data**: which table to draw from, for example `patients`
+2. **the aesthetics** (`aes`): which column maps to which part of the plot, for example `age` on the x-axis and `sbp` on the y-axis
+3. **the geometry** (`geom`): how to draw it, as points, boxes, bars, and so on
+
+You add the geometry with a `+`. Read the code below as *"take `patients`, put `age` across and `sbp` up, and draw it as points."* Press **Run Code**:
+
+```{r first-plot, exercise=TRUE}
+ggplot(patients, aes(x = age, y = sbp)) +
+  geom_point()
+```
+
+There it is: one point per patient, age against systolic blood pressure. Change `geom_point()` to `geom_line()` and re-run if you are curious. The same three parts build every plot from here on.
+
+## Scatter plots
+
+A scatter plot shows how two numbers relate. Here we look at BMI against blood pressure. The data and aesthetics are set; **fill in the geom** that draws points:
+
+```{r scatter, exercise=TRUE, exercise.blanks="___+"}
+ggplot(patients, aes(x = bmi, y = sbp)) +
+  ____()
+```
+
+```{r scatter-hint}
+# The geom that draws one point per row is called:
+# geom_point
+```
+
+```{r scatter-solution}
+ggplot(patients, aes(x = bmi, y = sbp)) +
+  geom_point()
+```
+
+```{r scatter-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Keep the `ggplot(...)` start and add a geom after the `+`.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if ("GeomPoint" %in% geoms) {
+    pass("A scatter plot: one point per patient, BMI against blood pressure. The geom is the part that decides *how* the data is drawn.")
+  }
+  fail("Almost: `geom_point()` draws the points. The Hint has it if you need it.")
+})
+```
+
+## Showing a third variable with colour
+
+Mapping a column to **colour** lets one plot carry a third variable. **Fill in the column** so the two treatment arms are coloured differently:
+
+```{r colour, exercise=TRUE, exercise.blanks="___+"}
+ggplot(patients, aes(x = bmi, y = sbp, colour = ____)) +
+  geom_point()
+```
+
+```{r colour-hint}
+# You want the two treatment arms in different colours.
+# The column is called: arm
+```
+
+```{r colour-solution}
+ggplot(patients, aes(x = bmi, y = sbp, colour = arm)) +
+  geom_point()
+```
+
+```{r colour-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  col <- tryCatch(rlang::as_label(.result$mapping$colour), error = function(e) NA_character_)
+  if (identical(col, "arm")) {
+    pass("Each arm now has its own colour, and ggplot adds a legend for free. Mapping a column to `colour` is how you fit a third variable onto the plot.")
+  }
+  fail("Almost: put `arm` inside `colour = ` so the arms are coloured apart.")
+})
+```
+
+Anything inside `aes()` is *mapped from the data*. If instead you wanted every point the same fixed colour, you would set it outside `aes()`, like `geom_point(colour = "steelblue")`.
+
+## Box plots
+
+A box plot compares a number across groups. The box holds the middle half of patients, the line inside is the median. Here we compare blood pressure between the two arms. **Fill in the geom**:
+
+```{r box, exercise=TRUE, exercise.blanks="___+"}
+ggplot(patients, aes(x = arm, y = sbp)) +
+  ____()
+```
+
+```{r box-hint}
+# The geom that draws a box-and-whisker for each group is:
+# geom_boxplot
+```
+
+```{r box-solution}
+ggplot(patients, aes(x = arm, y = sbp)) +
+  geom_boxplot()
+```
+
+```{r box-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if ("GeomBoxplot" %in% geoms) {
+    pass("One box per arm. The line is the median, the box the middle half of patients, so you can compare the groups at a glance.")
+  }
+  fail("Almost: `geom_boxplot()` draws a box for each group.")
+})
+```
+
+## Bar charts
+
+A bar chart counts how many fall into each category. Put a category on the x-axis and `geom_bar()` does the counting. **Fill in the geom** to count patients by smoking status:
+
+```{r bar, exercise=TRUE, exercise.blanks="___+"}
+ggplot(patients, aes(x = smoker)) +
+  ____()
+```
+
+```{r bar-hint}
+# The geom that draws a bar per category, counting the rows, is:
+# geom_bar
+```
+
+```{r bar-solution}
+ggplot(patients, aes(x = smoker)) +
+  geom_bar()
+```
+
+```{r bar-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if ("GeomBar" %in% geoms) {
+    pass("A bar per smoking group, its height the number of patients. `geom_bar()` counts the rows for you, so there is no y to set.")
+  }
+  fail("Almost: `geom_bar()` draws the bars and counts each group.")
+})
+```
+
+## Practice
+
+Three to finish, no blanks. Write each full plot yourself; **Hint** and **Solution** are there if you want them. Remember the three parts: data, `aes`, geom.
+
+**1.** Draw a scatter plot of `age` (x-axis) against `bmi` (y-axis).
+
+```{r pr-scatter, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-scatter-hint}
+# ggplot(patients, aes(x = age, y = bmi)) + geom_point()
+```
+
+```{r pr-scatter-solution}
+ggplot(patients, aes(x = age, y = bmi)) +
+  geom_point()
+```
+
+```{r pr-scatter-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Start with `ggplot(patients, aes(...))`.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomPoint" %in% geoms)) {
+    fail("For a scatter plot, add `geom_point()`.")
+  }
+  pass("A scatter of age against BMI, written from scratch.")
+})
+```
+
+**2.** Draw a box plot of `bmi` (y-axis) for each `smoker` group (x-axis).
+
+```{r pr-box, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-box-hint}
+# ggplot(patients, aes(x = smoker, y = bmi)) + geom_boxplot()
+```
+
+```{r pr-box-solution}
+ggplot(patients, aes(x = smoker, y = bmi)) +
+  geom_boxplot()
+```
+
+```{r pr-box-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomBoxplot" %in% geoms)) {
+    fail("For a box plot, add `geom_boxplot()`.")
+  }
+  pass("BMI across the smoking groups, one box each.")
+})
+```
+
+**3.** Draw a bar chart of the number of patients in each treatment `arm`.
+
+```{r pr-bar, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-bar-hint}
+# ggplot(patients, aes(x = arm)) + geom_bar()
+```
+
+```{r pr-bar-solution}
+ggplot(patients, aes(x = arm)) +
+  geom_bar()
+```
+
+```{r pr-bar-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomBar" %in% geoms)) {
+    fail("For a bar chart, add `geom_bar()`.")
+  }
+  pass("A bar per arm, each as tall as the group is large.")
+})
+```
+
+## Recap
+
+Every plot you drew today used the same three parts:
+
+- **data**: the table, like `patients`
+- **`aes()`**: which column goes where (x, y, colour)
+- **`geom_`**: how to draw it, as points, boxes or bars
+
+Swap the geom and you change the picture; swap the aesthetics and you change what it shows. That small grammar covers a great deal of ground. Next you shape these into publication-ready clinical figures.

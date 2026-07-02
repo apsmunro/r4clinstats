@@ -26,7 +26,7 @@ Three promises hold for every lesson from here on:
 >
 > **You are never stuck.** Most boxes you simply run. Where there is something to work out, a **Hint** and then a **Solution** sit one click away.
 
-You do not need to install anything to take these lessons. R is already running, here in the page.
+There is nothing more to set up. R is already running, here in the page, and every lesson works the same way.
 
 ## One small change to the analysis
 

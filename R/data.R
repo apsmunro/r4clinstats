@@ -36,3 +36,22 @@
 #' }
 #' @source Synthetic.
 "labs"
+
+#' Synthetic messy line list
+#'
+#' A small, deliberately untidy dataset for the cleaning lesson (M6): the same
+#' problems you meet in real intake data. Synthetic and built reproducibly
+#' (`set.seed(2027)`); the generator is in `data-raw/linelist.R`. Everything
+#' except `weight` is stored as text, and the mess is intentional.
+#'
+#' @format A data frame with 50 rows and 6 variables:
+#' \describe{
+#'   \item{id}{Patient identifier, e.g. "L01".}
+#'   \item{sex}{The same variable typed inconsistently ("Female", "female", "MALE", ...).}
+#'   \item{age}{Age as text, including a few non-numeric entries that become NA.}
+#'   \item{smoker}{Smoking status in lower case: "never", "former" or "current".}
+#'   \item{arm}{Treatment arm: "Active" or "Placebo".}
+#'   \item{weight}{Weight in kg, with some values missing (NA).}
+#' }
+#' @source Synthetic.
+"linelist"

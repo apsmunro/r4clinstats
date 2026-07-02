@@ -49,7 +49,7 @@ check_setup <- function(install = interactive()) {
   }
 
   ## 4. Packages ------------------------------------------------------------
-  needed  <- c("learnr", "gradethis", "dplyr", "tidyr", "ggplot2", "readr", "here")
+  needed  <- c("learnr", "gradethis", "dplyr", "tidyr", "ggplot2", "readr", "here", "finalfit")
   is_here <- function(p) requireNamespace(p, quietly = TRUE)
   missing <- needed[!vapply(needed, is_here, logical(1))]
 

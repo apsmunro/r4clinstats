@@ -1,0 +1,240 @@
+---
+title: "R for Clinical Statistics: Reading & Cleaning Data"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "Load data from a file, then fix the three messes you meet most: inconsistent categories, numbers stored as text, and missing values."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("linelist", package = "r4clinstats")
+```
+
+## Welcome
+
+Real data arrives messy. Back in the early lessons you saw a free-text `sex` box turn one variable into eight groups, shown read-only as a warning. This is the lesson where you tidy that kind of mess yourself, one small step at a time.
+
+The promises still hold. Nothing here can break, red text is normal (you will even make some on purpose today), and **Hint** then **Solution** are a click away.
+
+## Loading your own data
+
+In your own project the data lives in a file. You read a CSV with `read_csv()`, and `here()` builds the path from the top of your project, so it works on any computer:
+
+```r
+library(readr)
+library(here)
+
+linelist <- read_csv(here("data", "linelist.csv"))
+```
+
+For this lesson the data is already loaded, so we can go straight to the cleaning. The habit worth keeping: store raw data in a file, read it in with code, and never edit the raw file by hand. That way every change you make is written down and undoable.
+
+## Meet the mess
+
+Press **Run Code** and look closely at the types:
+
+```{r glimpse-mess, exercise=TRUE}
+glimpse(linelist)
+```
+
+Three problems are hiding here, and they are the common ones:
+
+- **`sex`** is the same variable typed inconsistently: `Female`, `female`, `MALE`, and so on.
+- **`age`** shows as `<chr>`, text, because it arrived from a text box. You cannot average text.
+- **`weight`** has gaps, stored as `NA`, meaning missing.
+
+We will fix them in that order.
+
+## One category, many spellings
+
+The fix for inconsistent text is to flatten it to a single form, then map it to the labels you want. `tolower()` puts everything in lower case, so `Female`, `female` and `FEMALE` all become `female`. Then `if_else()` sorts each row into a clean label.
+
+**Fill in the lower-case word** the test should match:
+
+```{r clean-sex, exercise=TRUE, exercise.blanks="___+"}
+linelist |>
+  mutate(sex = if_else(tolower(sex) == "____", "Female", "Male"))
+```
+
+```{r clean-sex-hint}
+# tolower() has already made everything lower-case,
+# so match against the lower-case spelling: "female"
+```
+
+```{r clean-sex-solution}
+linelist |>
+  mutate(sex = if_else(tolower(sex) == "female", "Female", "Male"))
+```
+
+```{r clean-sex-check}
+grade_this({
+  pass_if_equal(message = "Tidied. `tolower()` flattens the case, then `if_else()` sorts everyone into two clean groups: 21 Female and 29 Male.")
+  fail("Not quite: `tolower(sex)` is already lower-case, so compare it with `\"female\"` spelled in lower-case.")
+})
+```
+
+## Numbers that arrived as text
+
+`age` is stored as text, so arithmetic on it fails, exactly the problem from the building-blocks lesson. `as.numeric()` converts text to numbers. **Fill in the function:**
+
+```{r clean-age, exercise=TRUE, exercise.blanks="___+"}
+linelist |>
+  mutate(age = ____(age))
+```
+
+```{r clean-age-hint}
+# The function that turns text like "63" into the number 63 is:
+# as.numeric
+```
+
+```{r clean-age-solution}
+linelist |>
+  mutate(age = as.numeric(age))
+```
+
+```{r clean-age-check}
+grade_this({
+  pass_if_equal(message = "Now `age` is a number you can average. Three entries that were never numbers (like \"unknown\") turned into NA, and R warned you as it did so. That warning is information, not a failure.")
+  fail("Almost: `as.numeric()` is the function that turns text like \"63\" into the number 63.")
+})
+```
+
+Notice the warning `NAs introduced by coercion`. R is telling you it found values it could not read as numbers and marked them missing. That is the behaviour you want here.
+
+## Missing values
+
+Missing entries are stored as `NA`. First, see how many weights are missing. **Run this:**
+
+```{r count-missing, exercise=TRUE}
+linelist |>
+  summarise(missing_weight = sum(is.na(weight)))
+```
+
+Five patients have no weight recorded. `is.na()` returns `TRUE` for each gap, and `sum()` counts the `TRUE`s. Now drop those rows so a later calculation is not thrown off. **Fill in the function** that spots the missing ones:
+
+```{r drop-missing, exercise=TRUE, exercise.blanks="___+"}
+linelist |>
+  filter(!____(weight))
+```
+
+```{r drop-missing-hint}
+# is.na(x) is TRUE where a value is missing.
+# The ! in front flips it, so you keep the rows that are NOT missing.
+```
+
+```{r drop-missing-solution}
+linelist |>
+  filter(!is.na(weight))
+```
+
+```{r drop-missing-check}
+grade_this({
+  pass_if_equal(message = "That drops the 5 patients with no weight, leaving 45. `is.na()` finds the gaps, and `!` keeps everything that is not a gap.")
+  fail("Almost: `is.na(weight)` marks the missing ones, so `!is.na(weight)` keeps the rest.")
+})
+```
+
+## Practice
+
+Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** are there if you want them.
+
+**1.** Standardise `sex` to `Female`/`Male` as before, then keep only the female patients.
+
+```{r pr-female, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-female-hint}
+# Clean sex first, then filter for the clean label:
+# linelist |> mutate(sex = if_else(tolower(sex) == "female", "Female", "Male")) |> filter(sex == "Female")
+```
+
+```{r pr-female-solution}
+linelist |>
+  mutate(sex = if_else(tolower(sex) == "female", "Female", "Male")) |>
+  filter(sex == "Female")
+```
+
+```{r pr-female-check}
+grade_this({
+  pass_if_equal(message = "Clean, then filter: 21 female patients, each with a tidy label.")
+  fail("Almost: standardise `sex` with the same `mutate()` as before, then `filter(sex == \"Female\")`.")
+})
+```
+
+**2.** Turn `smoker` into an **ordered factor** running `never` < `former` < `current`.
+
+```{r pr-factor, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-factor-hint}
+# Same move as the building-blocks lesson, with the levels in the order you want:
+# factor(linelist$smoker, levels = c("never", "former", "current"), ordered = TRUE)
+```
+
+```{r pr-factor-solution}
+factor(linelist$smoker, levels = c("never", "former", "current"), ordered = TRUE)
+```
+
+```{r pr-factor-check}
+grade_this({
+  if (!is.factor(.result)) {
+    fail("The result should be a factor. Wrap `linelist$smoker` in `factor(...)`.")
+  }
+  if (!is.ordered(.result)) {
+    fail("Almost: add `ordered = TRUE` so the levels have a direction.")
+  }
+  if (!identical(levels(.result), c("never", "former", "current"))) {
+    fail("Check the level order: never, then former, then current.")
+  }
+  pass("An ordered factor: never < former < current. R now knows they run in sequence.")
+})
+```
+
+**3.** Keep only the `Active`-arm patients who have a weight recorded.
+
+```{r pr-active, exercise=TRUE}
+# Your code here
+
+```
+
+```{r pr-active-hint}
+# filter() can take two conditions at once, separated by a comma:
+# linelist |> filter(arm == "Active", !is.na(weight))
+```
+
+```{r pr-active-solution}
+linelist |>
+  filter(arm == "Active", !is.na(weight))
+```
+
+```{r pr-active-check}
+grade_this({
+  pass_if_equal(message = "Two conditions in one filter: the Active arm, and a weight that is present.")
+  fail("Almost: `filter(arm == \"Active\", !is.na(weight))` keeps rows that meet both conditions.")
+})
+```
+
+## Recap
+
+The three messes you will meet most, and the tool for each:
+
+- **inconsistent categories**: flatten with `tolower()`, then relabel with `if_else()`
+- **numbers stored as text**: convert with `as.numeric()`, and expect `NA` where a value was never a number
+- **missing values**: find them with `is.na()`, and keep or drop with `filter()`
+
+Cleaning is where analysis really begins, and it goes fastest when the data was collected tidily in the first place, the design habit from Lesson 1. Next you start turning clean data into pictures.
+
