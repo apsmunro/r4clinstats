@@ -36,16 +36,11 @@ In this lesson you'll learn to do three things to a real clinical dataset: **pic
 
 ## Meet your patients
 
-We'll work with a dataset called `patients`, a (made-up) clinical trial with 100 people in it. Before touching it, one idea that will save you months of pain later.
+We'll work with a dataset called `patients`, a (made-up) clinical trial with 100 people in it.
 
-This dataset is **tidy**, which means:
+This dataset is **tidy**, exactly as the last lesson defined it: each row is one patient, each column is one variable (`age`, `sex`, the treatment `arm`, and so on). That shape is the whole reason the commands below will "just work."
 
-- **each row is one observation** (here, one patient), and
-- **each column is one variable** (`age`, `sex`, the treatment `arm`, and so on).
-
-That tidy shape is the whole reason the commands below will "just work." And here's the part most courses skip: **you decide this shape when you design your data-collection form, not when you sit down to analyse.** Sketch the table you'll need *before* you collect a single data point, working backwards from the analysis you're planning. We'll come back to this.
-
-Enough talk. Press **Run Code** to look at the data:
+Press **Run Code** to look at the data:
 
 ```{r meet, exercise=TRUE}
 glimpse(patients)
@@ -105,31 +100,11 @@ grade_this({
 
 Notice the **double equals** `==`. In R, `==` means *"is it equal to?"* (a question), while a single `=` means *"set this value"* (a command). Mixing them up is a rite of passage; now you know.
 
-## A quick word on *why* tidy matters
+## Why this is about to be easy
 
-Before we count anything, look at what goes wrong when a column **isn't** clean. Imagine a study where "sex" was typed into a free-text box. The same single variable arrives looking like this:
+Remember the free-text disaster from the last lesson: a `sex` box that let people type anything, and one variable arrived as eight groups. Cleaning that up afterwards is a whole skill of its own (Lesson 6 covers it), but the cheapest fix is to never create the mess.
 
-```
-sex:   "M"   "Male"   "male"   "1"   " m "   "Female"   "F"   "female"
-```
-
-Now you ask R to count how many of each:
-
-```
-# what you hoped for          # what you actually get
-  Female   52                   "M"      18
-  Male     48                   "Male"   14
-                                "male"    9
-                                "1"      12
-                                " m "     4
-                                "F"      28
-                                "Female" 11
-                                "female" 13
-```
-
-**One variable. Eight groups.** R is doing exactly what you asked, no more and no less. This is why, back at the design stage, you use a **dropdown with fixed options**, never a free-text box, for anything you'll want to count or group by. Cleaning up this mess afterwards is a whole skill of its own (we cover it later), but the cheapest fix is to never create the mess.
-
-Our `patients` data was collected properly, so `sex` only ever contains `"Female"` or `"Male"`. Which means counting it is about to be wonderfully easy.
+Our `patients` data was collected properly, with fixed options, so `sex` only ever contains `"Female"` or `"Male"`. Which means counting it is about to be wonderfully easy.
 
 ## Counting groups with `count()`
 

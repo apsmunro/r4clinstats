@@ -1,8 +1,11 @@
 # Harness for the graded tutorials (see build-spec.md, section H).
-# For each built tutorial it pulls out every `*-solution` chunk and runs it
-# against the lesson's data, asserting it executes without error.
-# This is the cheap guard against a solution silently breaking when the
-# tidyverse changes under it.
+# For each built tutorial it pulls out every `*-solution` chunk, runs it
+# against the lesson's data asserting it executes without error, and then
+# (where gradethis is installed) feeds that same solution through the
+# exercise's `*-check` grader via mock_this_exercise(), asserting the grader
+# marks its own canonical answer correct. This is the guard against both a
+# solution silently breaking when the tidyverse changes under it and a grader
+# that rejects the right answer.
 
 # Extract the code of every chunk whose label ends in "-solution".
 extract_solution_code <- function(rmd) {
@@ -60,6 +63,11 @@ test_that("every built tutorial's solution chunks run without error", {
     if (requireNamespace("finalfit", quietly = TRUE)) require(finalfit, quietly = TRUE)
   })
 
+  # Grade each canonical solution with its own grader, where gradethis is new
+  # enough to mock a submission.
+  has_gradethis <- requireNamespace("gradethis", quietly = TRUE) &&
+    "mock_this_exercise" %in% getNamespaceExports("gradethis")
+
   total <- 0L
   for (rmd in rmds) {
     rmd_lines <- readLines(rmd, warn = FALSE)
@@ -100,6 +108,36 @@ test_that("every built tutorial's solution chunks run without error", {
         NA,
         info = paste(basename(rmd), "/", label)
       )
+
+      # The grader must mark its own canonical solution correct. The mock is
+      # given the tutorial's own setup chunk (and the exercise's, if any), the
+      # same environment a live submission gets.
+      check_code <- extract_chunk_by_label(rmd_lines, paste0(base, "-check"))
+      if (has_gradethis && nzchar(check_code)) {
+        graded <- tryCatch({
+          grader <- eval(parse(text = check_code), envir = new.env(parent = tut_env))
+          args <- list(
+            .user_code = sols[[label]],
+            .solution_code = sols[[label]],
+            setup_global = global_setup
+          )
+          if (nzchar(ex_setup)) args$setup_exercise <- ex_setup
+          suppressWarnings(suppressMessages(
+            grader(do.call(gradethis::mock_this_exercise, args))
+          ))
+        }, error = function(err) err)
+
+        expect_true(
+          inherits(graded, "gradethis_graded") && isTRUE(graded$correct),
+          info = paste0(
+            basename(rmd), " / ", base, ": grader rejects its own solution",
+            if (inherits(graded, "error"))
+              paste0(" (", conditionMessage(graded), ")")
+            else if (inherits(graded, "gradethis_graded"))
+              paste0(" (message: ", as.character(graded$message), ")")
+          )
+        )
+      }
     }
   }
   expect_gt(total, 0L)

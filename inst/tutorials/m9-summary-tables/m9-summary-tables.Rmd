@@ -92,11 +92,11 @@ grade_this({
 
 ## Adding a comparison
 
-Often you want a p-value for each row, testing whether the arms differ. Set `p = TRUE` and `finalfit` runs a sensible default test for each variable, a t-test for a number, a chi-squared for a category. **Fill in** the value:
+Sometimes you want a p-value for each row, testing whether the groups differ. Set `p = TRUE` and `finalfit` runs a sensible default test for each variable, a t-test for a number, a chi-squared for a category. Here we compare the men and women in the cohort. **Fill in** the value:
 
 ```{r pvalues, exercise=TRUE, exercise.blanks="___+"}
 patients |>
-  summary_factorlist("arm", c("age", "sex", "smoker", "bmi"), p = ____)
+  summary_factorlist("sex", c("age", "smoker", "bmi"), p = ____)
 ```
 
 ```{r pvalues-hint}
@@ -106,15 +106,21 @@ patients |>
 
 ```{r pvalues-solution}
 patients |>
-  summary_factorlist("arm", c("age", "sex", "smoker", "bmi"), p = TRUE)
+  summary_factorlist("sex", c("age", "smoker", "bmi"), p = TRUE)
 ```
 
 ```{r pvalues-check}
 grade_this({
-  pass_if_equal(message = "A p-value column appears, one test per variable. Treat these as a guide: with a real trial, decide your comparisons in advance rather than reading down the column for anything below 0.05.")
+  pass_if_equal(message = "A p-value column appears, one test per variable. Treat these as a guide: decide your comparisons in advance rather than reading down the column for anything below 0.05.")
   fail("Almost: switch the p-values on with `p = TRUE`, with no quotes.")
 })
 ```
+
+### Why not p-values by arm?
+
+You may have noticed we switched from `arm` to `sex` for that exercise. That was deliberate. In a randomised trial, any baseline difference between the arms is there by chance; the randomisation guarantees it. A significance test on the baseline table answers a question you already know the answer to, which is why the CONSORT guidance says to leave those p-values out. Describe the arms; test the outcomes.
+
+For groups that were *not* assigned at random, like the men and women above, a baseline comparison can earn its place.
 
 ## Practice
 
@@ -167,7 +173,7 @@ grade_this({
 })
 ```
 
-**3.** Build a Table 1 of `age` and `bmi` by `arm`, with p-values switched on.
+**3.** Build a table of `age` and `bmi` compared across `sex`, with p-values switched on.
 
 ```{r pr-pvalues, exercise=TRUE}
 # Your code here
@@ -175,18 +181,18 @@ grade_this({
 ```
 
 ```{r pr-pvalues-hint}
-# patients |> summary_factorlist("arm", c("age", "bmi"), p = TRUE)
+# patients |> summary_factorlist("sex", c("age", "bmi"), p = TRUE)
 ```
 
 ```{r pr-pvalues-solution}
 patients |>
-  summary_factorlist("arm", c("age", "bmi"), p = TRUE)
+  summary_factorlist("sex", c("age", "bmi"), p = TRUE)
 ```
 
 ```{r pr-pvalues-check}
 grade_this({
-  pass_if_equal(message = "Two variables compared across the arms, each with a p-value. That is a publishable Table 1 in one line.")
-  fail("Almost: add `p = TRUE` to `summary_factorlist(\"arm\", c(\"age\", \"bmi\"))`.")
+  pass_if_equal(message = "Two variables compared between the sexes, each with a p-value. And you know when to leave that column out: a randomised baseline table describes, it does not test.")
+  fail("Almost: add `p = TRUE` to `summary_factorlist(\"sex\", c(\"age\", \"bmi\"))`.")
 })
 ```
 
@@ -196,6 +202,6 @@ The whole of Table 1 in one function:
 
 - **`summary_factorlist(dependent, explanatory)`** describes each explanatory variable for every group of the dependent
 - **numbers** become mean and SD, **categories** become counts and percentages, chosen for you
-- **`p = TRUE`** adds a comparison test per row
+- **`p = TRUE`** adds a comparison test per row, for groups that were not assigned at random; a randomised baseline table carries none (CONSORT)
 
 `finalfit` is built for clinical reporting, and this is its everyday job. Next you move from describing the data to analysing it.

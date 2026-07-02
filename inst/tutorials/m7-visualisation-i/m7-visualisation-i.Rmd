@@ -100,8 +100,11 @@ grade_this({
   if (!inherits(.result, "ggplot")) {
     fail("That should draw a plot.")
   }
-  col <- tryCatch(rlang::as_label(.result$mapping$colour), error = function(e) NA_character_)
-  if (identical(col, "arm")) {
+  maps <- c(list(.result$mapping), lapply(.result$layers, function(l) l$mapping))
+  cols <- unlist(lapply(maps, function(m) {
+    if (is.null(m$colour)) NULL else rlang::as_label(m$colour)
+  }))
+  if ("arm" %in% cols) {
     pass("Each arm now has its own colour, and ggplot adds a legend for free. Mapping a column to `colour` is how you fit a third variable onto the plot.")
   }
   fail("Almost: put `arm` inside `colour = ` so the arms are coloured apart.")

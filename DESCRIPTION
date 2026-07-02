@@ -1,6 +1,6 @@
 Package: r4clinstats
 Title: Learn R for Clinical Statistics, Interactively
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R:
     person("A. P. S.", "Munro", email = "apsmunro@gmail.com",
            role = c("aut", "cre"))

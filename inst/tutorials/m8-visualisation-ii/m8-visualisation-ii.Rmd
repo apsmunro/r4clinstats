@@ -107,8 +107,11 @@ grade_this({
   if (!inherits(.result, "ggplot")) {
     fail("That should draw a plot.")
   }
-  col <- tryCatch(rlang::as_label(.result$mapping$colour), error = function(e) NA_character_)
-  if (identical(col, "arm")) {
+  maps <- c(list(.result$mapping), lapply(.result$layers, function(l) l$mapping))
+  cols <- unlist(lapply(maps, function(m) {
+    if (is.null(m$colour)) NULL else rlang::as_label(m$colour)
+  }))
+  if ("arm" %in% cols) {
     pass("There is the signal: both arms start together, and the active arm falls faster. That is the whole trial in one picture.")
   }
   fail("Almost: put `arm` in `colour = ` so each arm gets its own line.")
@@ -141,7 +144,10 @@ grade_this({
   if (!inherits(.result, "ggplot")) {
     fail("That should draw a plot.")
   }
-  if (inherits(.result$facet, "FacetWrap")) {
+  fvars <- names(c(.result$facet$params$facets,
+                   .result$facet$params$rows,
+                   .result$facet$params$cols))
+  if ("arm" %in% fvars) {
     pass("Two panels, side by side, each arm on its own. Faceting is often clearer than colour when the lines would overlap.")
   }
   fail("Almost: `facet_wrap(~ arm)` splits the plot into one panel per arm.")
@@ -192,11 +198,14 @@ grade_this({
     fail("That should draw a plot. Start with `ggplot(bp_mean, aes(...))`.")
   }
   geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
-  col <- tryCatch(rlang::as_label(.result$mapping$colour), error = function(e) NA_character_)
+  maps <- c(list(.result$mapping), lapply(.result$layers, function(l) l$mapping))
+  cols <- unlist(lapply(maps, function(m) {
+    if (is.null(m$colour)) NULL else rlang::as_label(m$colour)
+  }))
   if (!("GeomLine" %in% geoms)) {
     fail("Use `geom_line()` to draw the trend.")
   }
-  if (!identical(col, "arm")) {
+  if (!("arm" %in% cols)) {
     fail("Map `arm` to `colour` so each arm has its own line.")
   }
   pass("The two-arm trend, written from scratch.")
@@ -229,7 +238,10 @@ grade_this({
   if (!("GeomLine" %in% geoms)) {
     fail("Draw the patient lines with `geom_line()` first.")
   }
-  if (!inherits(.result$facet, "FacetWrap")) {
+  fvars <- names(c(.result$facet$params$facets,
+                   .result$facet$params$rows,
+                   .result$facet$params$cols))
+  if (!("arm" %in% fvars)) {
     fail("Add `facet_wrap(~ arm)` to split into one panel per arm.")
   }
   pass("Patient trajectories, one panel per arm.")
