@@ -1,5 +1,20 @@
 # Changelog
 
+## r4clinstats 0.2.0
+
+- Part 3, the analysis modules: M10 Describing data, M11 Comparing
+  groups, M12 Regression, and M13 Survival analysis.
+- The `outcomes` dataset: one year of follow-up for the patients cohort,
+  with response, adverse events, and a censored time-to-event pair.
+  Effect sizes were tuned so the planted signals survive the seed
+  (response OR 2.66, hazard ratio 0.47, both clear of 1).
+- The analysis arc is deliberate: baseline balance (no test needed),
+  then the change-score t-test (p = 0.039), then the baseline-adjusted
+  model that sharpens it (p = 0.002) — regression to the mean and ANCOVA
+  taught with the course’s own trial.
+- [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md)
+  now also checks `survival` and `broom`.
+
 ## r4clinstats 0.1.0
 
 - Four new modules: M6 Reading & cleaning data, M7 Visualisation I, M8

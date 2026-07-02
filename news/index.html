@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">r4clinstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,14 @@
       <small>Source: <a href="https://github.com/apsmunro/r4clinstats/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="r4clinstats-020">r4clinstats 0.2.0<a class="anchor" aria-label="anchor" href="#r4clinstats-020"></a></h2>
+<ul><li>Part 3, the analysis modules: M10 Describing data, M11 Comparing groups, M12 Regression, and M13 Survival analysis.</li>
+<li>The <code>outcomes</code> dataset: one year of follow-up for the patients cohort, with response, adverse events, and a censored time-to-event pair. Effect sizes were tuned so the planted signals survive the seed (response OR 2.66, hazard ratio 0.47, both clear of 1).</li>
+<li>The analysis arc is deliberate: baseline balance (no test needed), then the change-score t-test (p = 0.039), then the baseline-adjusted model that sharpens it (p = 0.002) — regression to the mean and ANCOVA taught with the course’s own trial.</li>
+<li>
+<code><a href="../reference/check_setup.html">check_setup()</a></code> now also checks <code>survival</code> and <code>broom</code>.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="r4clinstats-010">r4clinstats 0.1.0<a class="anchor" aria-label="anchor" href="#r4clinstats-010"></a></h2>
 <ul><li>Four new modules: M6 Reading &amp; cleaning data, M7 Visualisation I, M8 Visualisation II, and M9 Summary tables, with the synthetic <code>linelist</code> dataset for the cleaning lesson.</li>
