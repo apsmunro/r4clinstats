@@ -1,3 +1,13 @@
+# r4clinstats 0.2.1
+
+- `learn()` groups the menu by course part, matching the website.
+- Every graded exercise with a targeted catch now declares its common wrong
+  answer in the tutorial source, and the test harness verifies the catch
+  fires with the intended feedback. This found and fixed a real hole: M4's
+  quoted-threshold mistake (`bmi >= "30"`) used to pass by coincidence; the
+  grader now catches it and explains why text comparison is a trap.
+- CI also runs on Windows, where the course's learners actually are.
+
 # r4clinstats 0.2.0
 
 - Part 3, the analysis modules: M10 Describing data, M11 Comparing groups,

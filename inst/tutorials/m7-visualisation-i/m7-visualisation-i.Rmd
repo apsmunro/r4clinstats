@@ -76,6 +76,12 @@ grade_this({
 })
 ```
 
+```{r scatter-wrong, eval=FALSE, include=FALSE}
+# expect: geom_point
+ggplot(patients, aes(x = bmi, y = sbp)) +
+  geom_line()
+```
+
 ## Showing a third variable with colour
 
 Mapping a column to **colour** lets one plot carry a third variable. **Fill in the column** so the two treatment arms are coloured differently:

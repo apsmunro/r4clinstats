@@ -118,6 +118,12 @@ grade_this({
 })
 ```
 
+```{r trend-wrong, eval=FALSE, include=FALSE}
+# expect: arm
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = weeks)) +
+  geom_line()
+```
+
 ## Small multiples with faceting
 
 Instead of colouring, you can give each group its own panel with `facet_wrap()`. Read `~ arm` as *"one panel per arm."* **Fill in the column** to split the patient lines by arm:

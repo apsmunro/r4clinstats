@@ -83,6 +83,12 @@ grade_this({
 })
 ```
 
+```{r clean-sex-wrong, eval=FALSE, include=FALSE}
+# expect: lower-case
+linelist |>
+  mutate(sex = if_else(tolower(sex) == "Female", "Female", "Male"))
+```
+
 ## Numbers that arrived as text
 
 `age` is stored as text, so arithmetic on it fails, exactly the problem from the building-blocks lesson. `as.numeric()` converts text to numbers. **Fill in the function:**

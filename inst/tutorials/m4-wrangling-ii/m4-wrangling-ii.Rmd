@@ -67,9 +67,18 @@ patients |>
 
 ```{r mutate-bmicat-check}
 grade_this({
+  if (grepl('"30"', .user_code, fixed = TRUE) || grepl("'30'", .user_code, fixed = TRUE)) {
+    fail("So close, and this one is sneaky: `\"30\"` in quotes is text, not a number. It happens to give the right answer for these BMI values, but text comparisons go character by character, so \"9\" counts as greater than \"30\". Drop the quotes and it is a real number.")
+  }
   pass_if_equal(message = "Nicely done. Read `if_else` as a question with two answers: at or above 30, write Obese, otherwise Not obese.")
   fail("Not quite: the obesity cut-off is a BMI of 30, written as a plain number with no quotes.")
 })
+```
+
+```{r mutate-bmicat-wrong, eval=FALSE, include=FALSE}
+# expect: quotes
+patients |>
+  mutate(bmi_cat = if_else(bmi >= "30", "Obese", "Not obese"))
 ```
 
 Keep `if_else(test, yes, no)` in mind: a question, then what to write when the answer is yes, then when it is no.

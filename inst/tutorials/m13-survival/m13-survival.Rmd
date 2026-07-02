@@ -85,6 +85,12 @@ grade_this({
 })
 ```
 
+```{r km-wrong, eval=FALSE, include=FALSE}
+# expect: arm
+km <- survfit(Surv(time, status) ~ sex, data = trial)
+km
+```
+
 The **median survival** is the day the curve crosses 50%. The active arm's median is `NA` because its curve never fell that far: more than half the treated patients were still event-free at one year. Papers write this as *"median not reached"*, and it is one of the most encouraging sentences a trial can print.
 
 ## Drawing the curves

@@ -78,6 +78,14 @@ grade_this({
 })
 ```
 
+```{r pivot-value-wrong, eval=FALSE, include=FALSE}
+# expect: value
+labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = weeks)
+```
+
 Two blanks live in that call. **Now fill in which column supplies the new column names**, one per visit:
 
 ```{r pivot-names, exercise=TRUE, exercise.blanks="___+"}

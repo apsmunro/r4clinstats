@@ -15,7 +15,15 @@ name: R-CMD-check
 
 jobs:
   R-CMD-check:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
+    name: R-CMD-check (${{ matrix.config.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest}
+          # Learners are on managed Windows; test where they live.
+          - {os: windows-latest}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:

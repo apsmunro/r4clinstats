@@ -17,10 +17,14 @@ learn <- function(module = NULL) {
   mods <- .modules()
 
   if (is.null(module)) {
-    cat("r4clinstats - course modules\n\n")
-    for (i in seq_len(nrow(mods))) {
-      tag <- if (mods$available[i]) "" else "(coming soon)"
-      cat(sprintf("  %-3s  %-26s %s\n", mods$id[i], mods$title[i], tag))
+    cat("r4clinstats - course modules\n")
+    for (p in unique(mods$part)) {
+      cat("\n", p, "\n", sep = "")
+      part_mods <- mods[mods$part == p, , drop = FALSE]
+      for (i in seq_len(nrow(part_mods))) {
+        tag <- if (part_mods$available[i]) "" else "(coming soon)"
+        cat(sprintf("  %-4s %-26s %s\n", part_mods$id[i], part_mods$title[i], tag))
+      }
     }
     cat('\nOpen one with, for example, learn("m3").\n')
     if (interactive()) {
@@ -61,6 +65,10 @@ learn <- function(module = NULL) {
       "m8-visualisation-ii", "m9-summary-tables",
       "m10-describing-data", "m11-comparing-groups",
       "m12-regression", "m13-survival"
+    ),
+    part = rep(
+      c("Part 1 - Foundations", "Part 2 - Real data", "Part 3 - Analysis"),
+      c(6L, 4L, 4L)
     ),
     available = rep(TRUE, 14),
     stringsAsFactors = FALSE

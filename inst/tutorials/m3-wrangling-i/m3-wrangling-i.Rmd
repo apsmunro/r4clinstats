@@ -98,6 +98,12 @@ grade_this({
 })
 ```
 
+```{r filter-arm-wrong, eval=FALSE, include=FALSE}
+# expect: case-sensitive
+patients |>
+  filter(arm == "active")
+```
+
 Notice the **double equals** `==`. In R, `==` means *"is it equal to?"* (a question), while a single `=` means *"set this value"* (a command). Mixing them up is a rite of passage; now you know.
 
 ## Why this is about to be easy

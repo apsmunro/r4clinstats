@@ -141,6 +141,12 @@ grade_this({
 })
 ```
 
+```{r mean-median-wrong, eval=FALSE, include=FALSE}
+# expect: median
+outcomes |>
+  summarise(mean_time = mean(time), median_time = mean(time))
+```
+
 The rule, then: **plot the shape first**. A symmetric hill earns mean (SD); anything lopsided gets median (IQR), which you compute with `median()` and `IQR()`.
 
 ## Summaries by group

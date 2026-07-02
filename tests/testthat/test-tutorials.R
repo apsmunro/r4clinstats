@@ -109,34 +109,68 @@ test_that("every built tutorial's solution chunks run without error", {
         info = paste(basename(rmd), "/", label)
       )
 
-      # The grader must mark its own canonical solution correct. The mock is
-      # given the tutorial's own setup chunk (and the exercise's, if any), the
-      # same environment a live submission gets.
+      # The grader must mark its own canonical solution correct, and fail any
+      # declared wrong answer. The mock is given the tutorial's own setup
+      # chunk (and the exercise's, if any), the same environment a live
+      # submission gets.
       check_code <- extract_chunk_by_label(rmd_lines, paste0(base, "-check"))
       if (has_gradethis && nzchar(check_code)) {
-        graded <- tryCatch({
-          grader <- eval(parse(text = check_code), envir = new.env(parent = tut_env))
+        grader <- eval(parse(text = check_code), envir = new.env(parent = tut_env))
+        run_grader <- function(user_code) {
           args <- list(
-            .user_code = sols[[label]],
+            .user_code = user_code,
             .solution_code = sols[[label]],
             setup_global = global_setup
           )
           if (nzchar(ex_setup)) args$setup_exercise <- ex_setup
-          suppressWarnings(suppressMessages(
-            grader(do.call(gradethis::mock_this_exercise, args))
-          ))
-        }, error = function(err) err)
+          tryCatch(
+            suppressWarnings(suppressMessages(
+              grader(do.call(gradethis::mock_this_exercise, args))
+            )),
+            error = function(err) err
+          )
+        }
+        describe_grade <- function(g) {
+          if (inherits(g, "error")) paste0(" (error: ", conditionMessage(g), ")")
+          else if (inherits(g, "gradethis_graded"))
+            paste0(" (message: ", as.character(g$message), ")")
+          else ""
+        }
 
+        graded <- run_grader(sols[[label]])
         expect_true(
           inherits(graded, "gradethis_graded") && isTRUE(graded$correct),
-          info = paste0(
-            basename(rmd), " / ", base, ": grader rejects its own solution",
-            if (inherits(graded, "error"))
-              paste0(" (", conditionMessage(graded), ")")
-            else if (inherits(graded, "gradethis_graded"))
-              paste0(" (message: ", as.character(graded$message), ")")
-          )
+          info = paste0(basename(rmd), " / ", base,
+                        ": grader rejects its own solution", describe_grade(graded))
         )
+
+        # A `<label>-wrong` chunk (eval=FALSE, include=FALSE in the Rmd)
+        # declares the common wrong answer the grader's targeted catch was
+        # written for. Its optional first line `# expect: <regex>` names the
+        # message fragment the catch must produce.
+        wrong_code <- extract_chunk_by_label(rmd_lines, paste0(base, "-wrong"))
+        if (nzchar(wrong_code)) {
+          first_line <- strsplit(wrong_code, "\n", fixed = TRUE)[[1]][1]
+          expected <- if (grepl("^#\\s*expect:", first_line)) {
+            trimws(sub("^#\\s*expect:", "", first_line))
+          }
+
+          graded_wrong <- run_grader(wrong_code)
+          expect_true(
+            inherits(graded_wrong, "gradethis_graded") && !isTRUE(graded_wrong$correct),
+            info = paste0(basename(rmd), " / ", base,
+                          ": declared wrong answer was not failed",
+                          describe_grade(graded_wrong))
+          )
+          if (!is.null(expected) && inherits(graded_wrong, "gradethis_graded")) {
+            expect_true(
+              grepl(expected, as.character(graded_wrong$message), ignore.case = TRUE),
+              info = paste0(basename(rmd), " / ", base,
+                            ": wrong-answer feedback should mention '", expected,
+                            "'", describe_grade(graded_wrong))
+            )
+          }
+        }
       }
     }
   }

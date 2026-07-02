@@ -79,6 +79,12 @@ grade_this({
 })
 ```
 
+```{r assign-weight-wrong, eval=FALSE, include=FALSE}
+# expect: single number
+weight <- "70"
+weight
+```
+
 ## What *type* is it?
 
 Every column has a **type**, and R treats each type differently. The commonest are:
@@ -118,6 +124,11 @@ grade_this({
 })
 ```
 
+```{r class-col-wrong, eval=FALSE, include=FALSE}
+# expect: column name
+class(patients$sexx)
+```
+
 ## Factors: categories with an order
 
 Some categories have a natural sequence. `smoker` is one: **Never**, then **Former**, then **Current**. Stored as plain text, R would sort them alphabetically, which is meaningless here. A **factor** fixes that by recording the categories *and their order*.
@@ -148,6 +159,13 @@ grade_this({
   }
   pass_if_equal(message = "Perfect. `smoker` is now an *ordered* factor: Never < Former < Current. R now knows these run in a sequence.")
 })
+```
+
+```{r factor-smoker-wrong, eval=FALSE, include=FALSE}
+# expect: capitals
+factor(patients$smoker,
+       levels = c("Never", "Former", "current"),
+       ordered = TRUE)
 ```
 
 Look at the bottom of the output: `Levels: Never < Former < Current`. That `<` is R confirming it knows the order.

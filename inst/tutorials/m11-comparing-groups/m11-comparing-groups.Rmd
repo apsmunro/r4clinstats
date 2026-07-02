@@ -140,6 +140,11 @@ grade_this({
 })
 ```
 
+```{r chisq-wrong, eval=FALSE, include=FALSE}
+# expect: response
+chisq.test(table(trial$arm, trial$adverse_event))
+```
+
 ## Tidy results with broom
 
 Test output is written for reading, not for reuse. The `broom` package's `tidy()` turns any test or model into a one-row data frame, so results can be filtered, joined and reported with the tools you already know. **Fill in the function:**

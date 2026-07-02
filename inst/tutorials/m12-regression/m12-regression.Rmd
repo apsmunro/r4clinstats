@@ -154,6 +154,11 @@ grade_this({
 })
 ```
 
+```{r glm-fit-wrong, eval=FALSE, include=FALSE}
+# expect: binomial|fit a model
+glm(response ~ arm, data = trial, family = gaussian)
+```
+
 ## Odds ratios
 
 A logistic model's natural summary is the **odds ratio** (OR): above 1 means the outcome is more likely, below 1 less likely. `tidy()` will exponentiate the coefficients into ORs and attach confidence intervals in one call. **Fill in the value:**
