@@ -72,18 +72,23 @@
 <div class="section level2">
 <h2 id="what-you-will-be-able-to-do">What you will be able to do<a class="anchor" aria-label="anchor" href="#what-you-will-be-able-to-do"></a>
 </h2>
-<p>By the end of the core lessons you can take a clinical dataset and:</p>
+<p>By the end of the course you can take a clinical dataset from a raw file to a result you would put in a paper:</p>
 <ul>
 <li>pick the rows and columns you want, count groups, and sort (<code>filter</code>, <code>select</code>, <code>count</code>, <code>arrange</code>)</li>
 <li>build new columns and summarise by treatment group (<code>mutate</code>, <code>group_by</code>, <code>summarise</code>)</li>
 <li>reshape between long and wide, and join tables together (<code>pivot_wider</code>, <code>left_join</code>)</li>
+<li>load and clean real data: inconsistent categories, numbers stored as text, missing values</li>
+<li>draw the clinical figures a paper needs, and build a “Table 1” in one line</li>
+<li>describe a variable properly, run a t-test or chi-squared test, and tidy the result</li>
+<li>fit a linear or logistic regression, with odds ratios you can report</li>
+<li>run a Kaplan-Meier and Cox survival analysis, censoring included</li>
 </ul>
-<p>These are the moves behind most of the tables you see in a clinical paper.</p>
 </div>
 <div class="section level2">
 <h2 id="the-lessons">The lessons<a class="anchor" aria-label="anchor" href="#the-lessons"></a>
 </h2>
-<p>The course is a set of interactive tutorials you run on your own computer:</p>
+<p>The course is a set of interactive tutorials you run on your own computer.</p>
+<p><strong>Part 1 · Foundations</strong></p>
 <ul>
 <li>
 <strong>0 · Why R for clinical data</strong> — what a script buys you, and your first line of R.</li>
@@ -97,6 +102,28 @@
 <strong>4 · Wrangling II</strong> — <code>mutate</code>, and grouped summaries.</li>
 <li>
 <strong>5 · Tidy data in practice</strong> — reshaping and joining repeated measurements.</li>
+</ul>
+<p><strong>Part 2 · Real data</strong></p>
+<ul>
+<li>
+<strong>6 · Reading &amp; cleaning data</strong> — loading a file, and fixing the three messes you meet most.</li>
+<li>
+<strong>7 · Visualisation I</strong> — the ggplot2 grammar: scatter, box and bar plots.</li>
+<li>
+<strong>8 · Visualisation II</strong> — trends over time, faceting, and figures ready for a paper.</li>
+<li>
+<strong>9 · Summary tables</strong> — the “Table 1” every clinical paper opens with, via <code>finalfit</code>.</li>
+</ul>
+<p><strong>Part 3 · Analysis</strong></p>
+<ul>
+<li>
+<strong>10 · Describing data</strong> — histograms first, then choosing mean/SD or median/IQR.</li>
+<li>
+<strong>11 · Comparing groups</strong> — the t-test, the chi-squared test, and tidy results with <code>broom</code>.</li>
+<li>
+<strong>12 · Regression</strong> — linear and logistic models, baseline adjustment, odds ratios.</li>
+<li>
+<strong>13 · Survival analysis</strong> — censoring, Kaplan-Meier curves, log-rank, Cox hazard ratios.</li>
 </ul>
 <p>Each interactive lesson ends with open practice exercises, graded as you go.</p>
 </div>

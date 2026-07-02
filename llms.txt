@@ -25,7 +25,8 @@ from there. Three promises hold in every lesson:
 
 ## What you will be able to do
 
-By the end of the core lessons you can take a clinical dataset and:
+By the end of the course you can take a clinical dataset from a raw file
+to a result you would put in a paper:
 
 - pick the rows and columns you want, count groups, and sort (`filter`,
   `select`, `count`, `arrange`)
@@ -33,14 +34,21 @@ By the end of the core lessons you can take a clinical dataset and:
   `group_by`, `summarise`)
 - reshape between long and wide, and join tables together
   (`pivot_wider`, `left_join`)
-
-These are the moves behind most of the tables you see in a clinical
-paper.
+- load and clean real data: inconsistent categories, numbers stored as
+  text, missing values
+- draw the clinical figures a paper needs, and build a “Table 1” in one
+  line
+- describe a variable properly, run a t-test or chi-squared test, and
+  tidy the result
+- fit a linear or logistic regression, with odds ratios you can report
+- run a Kaplan-Meier and Cox survival analysis, censoring included
 
 ## The lessons
 
 The course is a set of interactive tutorials you run on your own
-computer:
+computer.
+
+**Part 1 · Foundations**
 
 - **0 · Why R for clinical data** — what a script buys you, and your
   first line of R.
@@ -53,6 +61,28 @@ computer:
 - **4 · Wrangling II** — `mutate`, and grouped summaries.
 - **5 · Tidy data in practice** — reshaping and joining repeated
   measurements.
+
+**Part 2 · Real data**
+
+- **6 · Reading & cleaning data** — loading a file, and fixing the three
+  messes you meet most.
+- **7 · Visualisation I** — the ggplot2 grammar: scatter, box and bar
+  plots.
+- **8 · Visualisation II** — trends over time, faceting, and figures
+  ready for a paper.
+- **9 · Summary tables** — the “Table 1” every clinical paper opens
+  with, via `finalfit`.
+
+**Part 3 · Analysis**
+
+- **10 · Describing data** — histograms first, then choosing mean/SD or
+  median/IQR.
+- **11 · Comparing groups** — the t-test, the chi-squared test, and tidy
+  results with `broom`.
+- **12 · Regression** — linear and logistic models, baseline adjustment,
+  odds ratios.
+- **13 · Survival analysis** — censoring, Kaplan-Meier curves, log-rank,
+  Cox hazard ratios.
 
 Each interactive lesson ends with open practice exercises, graded as you
 go.
