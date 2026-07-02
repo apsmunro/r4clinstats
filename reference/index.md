@@ -19,3 +19,5 @@ Synthetic, reproducible clinical data used throughout the lessons.
   : Synthetic clinical-trial patients
 - [`labs`](https://apsmunro.github.io/r4clinstats/reference/labs.md) :
   Synthetic longitudinal labs
+- [`linelist`](https://apsmunro.github.io/r4clinstats/reference/linelist.md)
+  : Synthetic messy line list

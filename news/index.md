@@ -1,0 +1,31 @@
+# Changelog
+
+## r4clinstats 0.1.0
+
+- Four new modules: M6 Reading & cleaning data, M7 Visualisation I, M8
+  Visualisation II, and M9 Summary tables, with the synthetic `linelist`
+  dataset for the cleaning lesson.
+- M9 now teaches when a baseline table should carry p-values and when it
+  should not: a randomised trial’s Table 1 describes the arms without
+  testing them (CONSORT), so the `p = TRUE` exercises compare
+  non-randomised groups.
+- Plot exercises accept aesthetics mapped inside the geom as well as in
+  `ggplot()`, and the faceting exercises check the faceting variable
+  rather than only that faceting happened (`facet_grid()` is accepted
+  too).
+- M3 trimmed so it no longer repeats M1’s tidy-data material, and
+  retitled Wrangling I to match the menu.
+- The test harness now feeds every canonical solution through its own
+  gradethis grader and asserts a pass, and checks that every graded
+  exercise has a hint and a solution.
+- Monthly scheduled CI run, so a breaking tidyverse release surfaces on
+  a schedule rather than in a learner’s session.
+
+## r4clinstats 0.0.0.9000
+
+- The MVP: modules M0-M5, the `patients` and `labs` datasets,
+  [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md),
+  [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md),
+  [`use_local_library()`](https://apsmunro.github.io/r4clinstats/reference/use_local_library.md),
+  the pkgdown portal with the webR taster, and the solution-running test
+  harness.

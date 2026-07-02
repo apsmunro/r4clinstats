@@ -12,6 +12,8 @@ Useful links:
 
 - <https://github.com/apsmunro/r4clinstats>
 
+- <https://apsmunro.github.io/r4clinstats/>
+
 - Report bugs at <https://github.com/apsmunro/r4clinstats/issues>
 
 ## Author
