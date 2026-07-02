@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">r4clinstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,13 @@
       <small>Source: <a href="https://github.com/apsmunro/r4clinstats/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="r4clinstats-021">r4clinstats 0.2.1<a class="anchor" aria-label="anchor" href="#r4clinstats-021"></a></h2>
+<ul><li>
+<code><a href="../reference/learn.html">learn()</a></code> groups the menu by course part, matching the website.</li>
+<li>Every graded exercise with a targeted catch now declares its common wrong answer in the tutorial source, and the test harness verifies the catch fires with the intended feedback. This found and fixed a real hole: M4’s quoted-threshold mistake (<code>bmi &gt;= "30"</code>) used to pass by coincidence; the grader now catches it and explains why text comparison is a trap.</li>
+<li>CI also runs on Windows, where the course’s learners actually are.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="r4clinstats-020">r4clinstats 0.2.0<a class="anchor" aria-label="anchor" href="#r4clinstats-020"></a></h2>
 <ul><li>Part 3, the analysis modules: M10 Describing data, M11 Comparing groups, M12 Regression, and M13 Survival analysis.</li>
