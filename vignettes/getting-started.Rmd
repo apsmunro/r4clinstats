@@ -68,4 +68,4 @@ It sets up a private folder for your R packages in a location that always works,
 
 **A package will not install from CRAN.** Behind some hospital and university firewalls, `check_setup()` reports what it cannot reach and names the fix, usually pointing R at Posit's package mirror.
 
-Still stuck? Open an issue at the [project page](https://github.com/apsmunro/r4clinstats/issues) and describe what you saw.
+More problems, and their fixes, are on the [Troubleshooting page](troubleshooting.html), written for hospital and university computers. Still stuck? Open an issue at the [project page](https://github.com/apsmunro/r4clinstats/issues) and describe what you saw.
