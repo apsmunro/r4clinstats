@@ -275,3 +275,5 @@ Time-to-event analysis in four moves:
 - **`coxph()`** puts a size on it: the **hazard ratio**, tidied with `exponentiate = TRUE`
 
 That completes the analysis toolkit. You can now take a trial from a raw spreadsheet to a survival curve and a hazard ratio: design the data, wrangle it, describe it, picture it, and test what it shows — every step written down, repeatable, and yours.
+
+One lesson remains, and it is the payoff for all of this: turning the whole analysis into a document you can hand to a colleague.

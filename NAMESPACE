@@ -2,4 +2,5 @@
 
 export(check_setup)
 export(learn)
+export(start_report)
 export(use_local_library)

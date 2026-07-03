@@ -27,11 +27,12 @@ navbar:
 
 reference:
 - title: Take the course
-  desc: The three functions a learner uses.
+  desc: The functions a learner uses.
   contents:
   - learn
   - check_setup
   - use_local_library
+  - start_report
 - title: Datasets
   desc: Synthetic, reproducible clinical data used throughout the lessons.
   contents:

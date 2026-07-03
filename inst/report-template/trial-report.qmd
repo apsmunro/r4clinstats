@@ -1,0 +1,123 @@
+---
+title: "Systolic blood pressure trial: analysis report"
+author: "Your name here"
+date: today
+format: html
+---
+
+<!-- This is your report to finish. Each TODO chunk below matches an exercise
+     you completed in Lesson 14: paste your code in, press Render, and watch
+     the section appear. The document renders at every stage, so render early
+     and render often. Stuck? r4clinstats::start_report(completed = TRUE)
+     gives you the finished version to compare against. -->
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(broom)
+library(survival)
+library(finalfit)
+library(knitr)
+
+data("patients", package = "r4clinstats")
+data("labs", package = "r4clinstats")
+data("outcomes", package = "r4clinstats")
+
+# Change from baseline to week 24, one row per patient, with Placebo as the
+# reference level so model coefficients read as treatment effects.
+bp_change <- labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value, names_prefix = "v") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  mutate(
+    change = v2 - v0,
+    arm = relevel(factor(arm), ref = "Placebo")
+  ) |>
+  select(id, arm, baseline = v0, week24 = v2, change)
+
+# Mean blood pressure per arm per visit, for the trend figure.
+bp_mean <- labs |>
+  filter(measure == "sbp") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  group_by(arm, weeks) |>
+  summarise(sbp = mean(value), .groups = "drop")
+
+# Outcomes joined to patient details.
+trial <- outcomes |>
+  left_join(select(patients, id, age, sex, arm), by = "id") |>
+  mutate(
+    arm = relevel(factor(arm), ref = "Placebo"),
+    response = factor(response)
+  )
+```
+
+## Background
+
+This report analyses a randomised, two-arm trial of an antihypertensive drug against placebo: systolic blood pressure over 24 weeks, treatment response, and event-free survival over one year. The data are synthetic teaching data from the `r4clinstats` course and contain no real patients.
+
+Everything in this document, every number, table and figure, is computed from the data at the moment the report is rendered. Change the data or the analysis and re-render, and the whole report rebuilds itself.
+
+## Patients
+
+The trial randomised `r nrow(patients)` patients, `r sum(patients$arm == "Active")` to the active arm and `r sum(patients$arm == "Placebo")` to placebo. Baseline characteristics were balanced across the arms, as randomisation intends.
+
+```{r}
+#| label: table-one
+# TODO (Lesson 14, "The baseline table"): build the Table 1 comparing
+# age, sex, smoker and bmi across the arms, then pipe it into kable().
+```
+
+## Blood pressure over 24 weeks
+
+Mean systolic blood pressure fell in both arms, and fell faster on the drug.
+
+```{r}
+#| label: bp-trend
+# TODO (Lesson 14, "The trend figure"): the mean blood pressure trend from
+# bp_mean, one coloured line per arm, with readable labs() and a theme.
+```
+
+The primary analysis models each patient's change from baseline, adjusted for their baseline value.
+
+```{r}
+#| label: bp-model
+# TODO (Lesson 14, "The primary analysis"): fit the baseline-adjusted model
+# of change, tidy it with a confidence interval, and pipe it into kable().
+```
+
+TODO: once the model chunk above works, replace this sentence with the result
+in words, using inline code for the numbers.
+
+## Treatment response
+
+`r sum(trial$response == "Y" & trial$arm == "Active")` of `r sum(trial$arm == "Active")` patients responded on the active arm, against `r sum(trial$response == "Y" & trial$arm == "Placebo")` of `r sum(trial$arm == "Placebo")` on placebo.
+
+```{r}
+#| label: response-model
+# TODO (Lesson 14, "The odds ratio"): the logistic regression of response on
+# arm, tidied into an odds ratio with confidence interval, piped into kable().
+```
+
+## Survival
+
+```{r}
+#| label: km-curve
+# TODO (Lesson 14, "The survival curve"): fit the Kaplan-Meier estimate by
+# arm, then draw the staircases with tidy() + ggplot + geom_step().
+```
+
+```{r}
+#| label: cox-model
+# TODO (Lesson 14, "The hazard ratio"): the Cox model of the treatment
+# effect, tidied into a hazard ratio with confidence interval, via kable().
+```
+
+## Conclusion
+
+TODO: two or three sentences in your own words. What did the drug do to blood
+pressure, to response, and to survival? Use inline code for any number you
+quote, so the conclusion can never drift out of step with the analysis.

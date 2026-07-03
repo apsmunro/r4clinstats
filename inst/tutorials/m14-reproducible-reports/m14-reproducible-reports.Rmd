@@ -1,0 +1,353 @@
+---
+title: "R for Clinical Statistics: Reproducible Reports"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    theme: flatly
+runtime: shiny_prerendered
+description: "The capstone: rebuild the whole trial analysis as a Quarto report that renders to a document, with every number computed from the data."
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(broom)
+library(survival)
+library(finalfit)
+
+gradethis_setup()
+knitr::opts_chunk$set(echo = FALSE)
+
+data("patients", package = "r4clinstats")
+data("labs", package = "r4clinstats")
+data("outcomes", package = "r4clinstats")
+
+bp_change <- labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value, names_prefix = "v") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  mutate(
+    change = v2 - v0,
+    arm = relevel(factor(arm), ref = "Placebo")
+  ) |>
+  select(id, arm, baseline = v0, week24 = v2, change)
+
+bp_mean <- labs |>
+  filter(measure == "sbp") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  group_by(arm, weeks) |>
+  summarise(sbp = mean(value), .groups = "drop")
+
+trial <- outcomes |>
+  left_join(select(patients, id, age, sex, arm), by = "id") |>
+  mutate(
+    arm = relevel(factor(arm), ref = "Placebo"),
+    response = factor(response)
+  )
+
+km <- survfit(Surv(time, status) ~ arm, data = trial)
+```
+
+## Welcome to the last lesson
+
+In the very first lesson, I made a claim: *the script is your method section*. A written analysis that anyone can read, re-run and check. Today you cash that claim in.
+
+This lesson ends with something no other lesson has produced: a real document on your own computer. You will rebuild this course's entire trial analysis — the Table 1, the blood-pressure model, the odds ratio, the survival curve — inside one **Quarto** file, press one button, and hold the report it builds.
+
+Two things are different about this final lesson. First, there are **no blanks anywhere**: every exercise asks you to write the whole thing, because after thirteen lessons you can. Second, the lesson does not end in this tutorial. It ends in RStudio, with a rendered report. The promises still hold the whole way: nothing breaks, red text is normal, and **Hint** then **Solution** are a click away.
+
+## What a Quarto document is
+
+A Quarto file (`.qmd`) is plain text with three kinds of content. At the top, a **YAML header** describing the document:
+
+````
+---
+title: "Systolic blood pressure trial: analysis report"
+author: "Your name here"
+date: today
+format: html
+---
+````
+
+Then ordinary **prose**, written in the same lightweight formatting you have seen everywhere (`## Heading`, `**bold**`). And between the paragraphs, **code chunks**: the same R you have written all course, fenced off so Quarto knows to run it.
+
+````
+```{r}
+#| label: table-one
+patients |>
+  summary_factorlist("arm", c("age", "sex", "smoker", "bmi"))
+```
+````
+
+When you press **Render**, Quarto runs every chunk from top to bottom in a fresh session and weaves the output — tables, figures, numbers — into a finished document: HTML, Word, or PDF. The document *is* the analysis. There is no copy-paste step where a stale number can sneak in, because there is no copying.
+
+One habit before anything else: **render early, render often.** A document that rendered five minutes ago and breaks now leaves only one suspect.
+
+## Numbers that write themselves
+
+The quiet superpower is **inline code**: a fragment of R inside a sentence. In the prose of a `.qmd` you can write:
+
+```
+The trial randomised `r nrow(patients)` patients.
+```
+
+and the rendered document says "The trial randomised 100 patients." If the data change, the sentence updates itself on the next render. A results paragraph written this way can never disagree with its own tables.
+
+**Run this** to see the kind of expression that lives inside those backticks:
+
+```{r inline-demo, exercise=TRUE}
+paste("The trial randomised", nrow(patients), "patients.")
+```
+
+Small expressions like `nrow(patients)` or `round(estimate, 1)` are all inline code ever needs to be. Anything bigger belongs in a chunk.
+
+## The chunks of your report
+
+Time to build. The six exercises below are the six analysis chunks of your report, and together they are the whole course in miniature. Everything you need is loaded: `patients`, `bp_change`, `bp_mean`, `trial`, and a fitted Kaplan-Meier estimate `km`, all built exactly as in Lessons 11 to 13 (with `Placebo` as the reference level).
+
+### The baseline table
+
+Every report opens by describing who was in it. Build the Table 1: `age`, `sex`, `smoker` and `bmi`, compared across `arm`, from `patients`.
+
+```{r rep-table, exercise=TRUE}
+# Your code here
+
+```
+
+```{r rep-table-hint}
+# Lesson 9's one-liner:
+# patients |> summary_factorlist("arm", c("age", "sex", "smoker", "bmi"))
+```
+
+```{r rep-table-solution}
+patients |>
+  summary_factorlist("arm", c("age", "sex", "smoker", "bmi"))
+```
+
+```{r rep-table-check}
+grade_this({
+  pass_if_equal(message = "Chunk one of your report, done. In the report itself you will pipe this into `kable()`, which turns a raw data frame into a clean document table.")
+  fail("Close. This is Lesson 9's `summary_factorlist(\"arm\", c(\"age\", \"sex\", \"smoker\", \"bmi\"))`, on `patients`.")
+})
+```
+
+### The trend figure
+
+The figure that shows the whole trial at a glance: from `bp_mean`, the mean blood pressure over `weeks`, one coloured line per `arm`, with a readable y-axis label from `labs()`. Polish it however you like; it is going in a report.
+
+```{r rep-trend, exercise=TRUE}
+# Your code here
+
+```
+
+```{r rep-trend-hint}
+# Lesson 8's polished trend:
+# ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+#   geom_line(linewidth = 1) +
+#   labs(y = "Mean systolic BP (mmHg)") +
+#   theme_minimal()
+```
+
+```{r rep-trend-solution}
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+  geom_line(linewidth = 1) +
+  labs(y = "Mean systolic BP (mmHg)") +
+  theme_minimal()
+```
+
+```{r rep-trend-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Start with `ggplot(bp_mean, aes(...))`.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomLine" %in% geoms)) {
+    fail("Draw the trend with `geom_line()`.")
+  }
+  maps <- c(list(.result$mapping), lapply(.result$layers, function(l) l$mapping))
+  cols <- unlist(lapply(maps, function(m) {
+    if (is.null(m$colour)) NULL else rlang::as_label(m$colour)
+  }))
+  if (!("arm" %in% cols)) {
+    fail("Map `arm` to `colour` so each arm gets its own line.")
+  }
+  ylab <- .result$labels$y
+  if (is.null(ylab) || ylab %in% c("sbp", "value")) {
+    fail("Give the y-axis a readable label with `labs(y = \"...\")` — a figure in a report never shows a raw column name.")
+  }
+  pass("A figure fit for a paper. When this chunk runs in your report, the figure lands on the page right where the chunk sits.")
+})
+```
+
+### The primary analysis
+
+The trial's headline model, from Lesson 12: `change` modelled on `baseline` and `arm` in `bp_change`, tidied with a confidence interval.
+
+```{r rep-model, exercise=TRUE}
+# Your code here
+
+```
+
+```{r rep-model-hint}
+# lm(change ~ baseline + arm, data = bp_change) |>
+#   tidy(conf.int = TRUE)
+```
+
+```{r rep-model-solution}
+lm(change ~ baseline + arm, data = bp_change) |>
+  tidy(conf.int = TRUE)
+```
+
+```{r rep-model-check}
+grade_this({
+  pass_if_equal(message = "The baseline-adjusted treatment effect: 5.0 mmHg further fall, p = 0.002. In the report, the sentence underneath will quote these numbers with inline code, so it can never drift from this table.")
+  fail("Close. The model is `lm(change ~ baseline + arm, data = bp_change)`, then `tidy(conf.int = TRUE)`.")
+})
+```
+
+### The odds ratio
+
+The response analysis: logistic regression of `response` on `arm` in `trial`, tidied into an odds ratio with its confidence interval.
+
+```{r rep-or, exercise=TRUE}
+# Your code here
+
+```
+
+```{r rep-or-hint}
+# glm(response ~ arm, data = trial, family = binomial) |>
+#   tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r rep-or-solution}
+glm(response ~ arm, data = trial, family = binomial) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r rep-or-check}
+grade_this({
+  pass_if_equal(message = "OR 2.66, CI 1.17 to 6.30. Chunk four of six.")
+  fail("Close. `glm(response ~ arm, data = trial, family = binomial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+})
+```
+
+### The survival curve
+
+The Kaplan-Meier staircases from Lesson 13: `km` is already fitted; tidy it and draw `estimate` against `time`, one coloured step per `strata`.
+
+```{r rep-km, exercise=TRUE}
+# Your code here
+
+```
+
+```{r rep-km-hint}
+# tidy(km) |>
+#   ggplot(aes(x = time, y = estimate, colour = strata)) +
+#   geom_step()
+```
+
+```{r rep-km-solution}
+tidy(km) |>
+  ggplot(aes(x = time, y = estimate, colour = strata)) +
+  geom_step()
+```
+
+```{r rep-km-check}
+grade_this({
+  if (!inherits(.result, "ggplot")) {
+    fail("That should draw a plot. Start from `tidy(km)`.")
+  }
+  geoms <- vapply(.result$layers, function(l) class(l$geom)[1], character(1))
+  if (!("GeomStep" %in% geoms)) {
+    fail("Survival curves are staircases: `geom_step()`.")
+  }
+  maps <- c(list(.result$mapping), lapply(.result$layers, function(l) l$mapping))
+  cols <- unlist(lapply(maps, function(m) {
+    if (is.null(m$colour)) NULL else rlang::as_label(m$colour)
+  }))
+  if (!("strata" %in% cols)) {
+    fail("Map `strata` to `colour` so each arm gets its own staircase.")
+  }
+  pass("The figure every trial report saves for last: two staircases parting over the year. Add `labs()` in the report if you want it fully dressed.")
+})
+```
+
+### The hazard ratio
+
+And the number that goes with it: the Cox model of the treatment effect in `trial`, tidied into a hazard ratio with its confidence interval.
+
+```{r rep-cox, exercise=TRUE}
+# Your code here
+
+```
+
+```{r rep-cox-hint}
+# coxph(Surv(time, status) ~ arm, data = trial) |>
+#   tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r rep-cox-solution}
+coxph(Surv(time, status) ~ arm, data = trial) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+```{r rep-cox-check}
+grade_this({
+  pass_if_equal(message = "HR 0.47, CI 0.25 to 0.88. That is all six chunks: the whole analysis, rebuilt from memory. Now you get to put them somewhere permanent.")
+  fail("Close. `coxph(Surv(time, status) ~ arm, data = trial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+})
+```
+
+## Now build the real thing
+
+Here is where you leave the sandbox. Over in **RStudio's console** (not in this tutorial), run:
+
+```
+r4clinstats::start_report()
+```
+
+It puts a file called `trial-report.qmd` in your working directory and opens it. Look around: the YAML header, the prose, the setup chunk that builds `bp_change` and `trial` exactly as this lesson did, and six TODO chunks with the same names as the six exercises you just passed.
+
+Then work like this:
+
+1. **Press Render first**, before touching anything. The document builds as it stands: your first reproducible report, thirty seconds in. (RStudio ships with Quarto built in — if you can see the Render button, you have everything.)
+2. **Fill one TODO chunk**, using your code from the matching exercise above, and render again. The section appears. One difference from the sandbox: pipe each table into `kable()`, which typesets a data frame properly for a document.
+3. **Repeat** until all six are in. Then write the conclusion in your own words, quoting numbers with inline code the way the Patients paragraph already does.
+
+Two finishing touches worth trying. Put your actual name in the YAML `author` field and render: your name, on your analysis. And change `format: html` to `format: docx`, render once more, and Quarto hands you a Word document — the same analysis, in the format half of clinical research still runs on.
+
+If you get stuck, `start_report(completed = TRUE, path = "trial-report-completed.qmd")` gives you the finished report to compare against, and every exercise above has your answers.
+
+## Taking this to your own data
+
+Your next report will not use course data, so here is the shape of a real project, in five lines:
+
+1. In RStudio: **File ▸ New Project ▸ New Directory**. A project keeps one analysis in one folder.
+2. Make a `data/` folder inside it and put your raw file there. **Never edit the raw file again** (Lesson 6's rule).
+3. Start a `.qmd`, and in its setup chunk read the data with `read_csv(here("data", "yourfile.csv"))`.
+4. Clean, describe, analyse — chunk by chunk, rendering as you go. Every tool you need is in the thirteen lessons behind you.
+5. When a collaborator asks "what exactly did you do?", send the `.qmd`. That is the whole answer.
+
+And when you outgrow the course, four books are worth your time. They were introduced back in Lesson 0, and they are the natural next step now:
+
+- **[HealthyR: R for Health Data Science](https://argoshare.is.ed.ac.uk/healthyr_book/)** — the closest companion to this course, and home ground for `finalfit`.
+- **[R for Data Science](https://r4ds.hadley.nz/)** — the tidyverse, thoroughly.
+- **[The Epidemiologist R Handbook](https://epirhandbook.com/)** — cleaning and analysing real health data in the wild.
+- **[R Graphics Cookbook](https://r-graphics.org/)** — the book to open when you want a particular plot.
+
+## The end
+
+A recap of the lesson, and of everything:
+
+- a **Quarto document** holds prose, code and results in one plain-text file; **Render** rebuilds the whole thing from the data
+- **inline code** writes the numbers into your sentences, so the text can never disagree with the tables
+- your report's six chunks were Lessons 9 to 13, written from memory, with no blanks
+
+Fourteen lessons ago you were promised you could not break anything, and you never did. You went from one line of R to a randomised trial analysed end to end — designed tidy, wrangled, cleaned, described, pictured, tested, modelled, survived, and now written up in a document that rebuilds itself on demand.
+
+That last part was always the point. The script is your method section. Go write one about something real.

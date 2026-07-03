@@ -1,0 +1,143 @@
+---
+title: "Systolic blood pressure trial: analysis report"
+author: "Your name here"
+date: today
+format: html
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(broom)
+library(survival)
+library(finalfit)
+library(knitr)
+
+data("patients", package = "r4clinstats")
+data("labs", package = "r4clinstats")
+data("outcomes", package = "r4clinstats")
+
+# Change from baseline to week 24, one row per patient, with Placebo as the
+# reference level so model coefficients read as treatment effects.
+bp_change <- labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = visit, values_from = value, names_prefix = "v") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  mutate(
+    change = v2 - v0,
+    arm = relevel(factor(arm), ref = "Placebo")
+  ) |>
+  select(id, arm, baseline = v0, week24 = v2, change)
+
+# Mean blood pressure per arm per visit, for the trend figure.
+bp_mean <- labs |>
+  filter(measure == "sbp") |>
+  left_join(select(patients, id, arm), by = "id") |>
+  group_by(arm, weeks) |>
+  summarise(sbp = mean(value), .groups = "drop")
+
+# Outcomes joined to patient details.
+trial <- outcomes |>
+  left_join(select(patients, id, age, sex, arm), by = "id") |>
+  mutate(
+    arm = relevel(factor(arm), ref = "Placebo"),
+    response = factor(response)
+  )
+```
+
+## Background
+
+This report analyses a randomised, two-arm trial of an antihypertensive drug against placebo: systolic blood pressure over 24 weeks, treatment response, and event-free survival over one year. The data are synthetic teaching data from the `r4clinstats` course and contain no real patients.
+
+Everything in this document, every number, table and figure, is computed from the data at the moment the report is rendered. Change the data or the analysis and re-render, and the whole report rebuilds itself.
+
+## Patients
+
+The trial randomised `r nrow(patients)` patients, `r sum(patients$arm == "Active")` to the active arm and `r sum(patients$arm == "Placebo")` to placebo. Baseline characteristics were balanced across the arms, as randomisation intends.
+
+```{r}
+#| label: table-one
+patients |>
+  summary_factorlist("arm", c("age", "sex", "smoker", "bmi")) |>
+  kable()
+```
+
+## Blood pressure over 24 weeks
+
+Mean systolic blood pressure fell in both arms, and fell faster on the drug.
+
+```{r}
+#| label: bp-trend
+ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
+  geom_line(linewidth = 1) +
+  labs(
+    title  = "Systolic blood pressure over time, by arm",
+    x      = "Weeks since baseline",
+    y      = "Mean systolic BP (mmHg)",
+    colour = "Arm"
+  ) +
+  theme_minimal()
+```
+
+The primary analysis models each patient's change from baseline, adjusted for their baseline value.
+
+```{r}
+#| label: bp-model
+ancova <- lm(change ~ baseline + arm, data = bp_change)
+ancova_tidy <- tidy(ancova, conf.int = TRUE)
+arm_effect <- filter(ancova_tidy, term == "armActive")
+kable(ancova_tidy, digits = 3)
+```
+
+Adjusting for baseline, blood pressure fell `r round(abs(arm_effect$estimate), 1)` mmHg further on the active arm than on placebo (95% CI `r round(abs(arm_effect$conf.high), 1)` to `r round(abs(arm_effect$conf.low), 1)`; p = `r round(arm_effect$p.value, 3)`).
+
+## Treatment response
+
+`r sum(trial$response == "Y" & trial$arm == "Active")` of `r sum(trial$arm == "Active")` patients responded on the active arm, against `r sum(trial$response == "Y" & trial$arm == "Placebo")` of `r sum(trial$arm == "Placebo")` on placebo.
+
+```{r}
+#| label: response-model
+or_tidy <- glm(response ~ arm, data = trial, family = binomial) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+or_arm <- filter(or_tidy, term == "armActive")
+kable(or_tidy, digits = 3)
+```
+
+The odds of response were `r round(or_arm$estimate, 2)` times higher on the active arm (95% CI `r round(or_arm$conf.low, 2)` to `r round(or_arm$conf.high, 2)`; p = `r round(or_arm$p.value, 3)`).
+
+## Survival
+
+```{r}
+#| label: km-curve
+km <- survfit(Surv(time, status) ~ arm, data = trial)
+tidy(km) |>
+  ggplot(aes(x = time, y = estimate, colour = strata)) +
+  geom_step() +
+  labs(
+    title  = "Event-free survival over one year, by arm",
+    x      = "Days since randomisation",
+    y      = "Proportion event-free",
+    colour = "Arm"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+#| label: cox-model
+hr_tidy <- coxph(Surv(time, status) ~ arm, data = trial) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+hr_arm <- filter(hr_tidy, term == "armActive")
+kable(hr_tidy, digits = 3)
+```
+
+Median event-free survival was 341 days on placebo and was not reached on the active arm. The hazard ratio for the active arm was `r round(hr_arm$estimate, 2)` (95% CI `r round(hr_arm$conf.low, 2)` to `r round(hr_arm$conf.high, 2)`; p = `r round(hr_arm$p.value, 3)`).
+
+## Conclusion
+
+The active drug lowered systolic blood pressure further than placebo, roughly doubled the odds of treatment response, and halved the hazard of an event over one year.
+
+This document is the analysis. Anyone with the data and this file can rebuild every result exactly, and any change to either is recorded here, in one place, in plain text.

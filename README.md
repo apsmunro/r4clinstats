@@ -6,7 +6,7 @@ real-feeling synthetic clinical data and get immediate, kind feedback. Lessons
 are [`learnr`](https://rstudio.github.io/learnr/) tutorials graded by
 [`gradethis`](https://pkgs.rstudio.com/gradethis/).
 
-Modules 0–13 are built and runnable (M0–M5 are the MVP).
+All fifteen modules (0–14) are built and runnable (M0–M5 are the MVP).
 
 ## What's here so far
 
@@ -24,12 +24,14 @@ Modules 0–13 are built and runnable (M0–M5 are the MVP).
 - **Module 11 — Comparing groups** (t-test, chi-squared, tidy results with `broom`).
 - **Module 12 — Regression** (`lm`, baseline adjustment, logistic `glm`, odds ratios).
 - **Module 13 — Survival analysis** (censoring, Kaplan-Meier, log-rank, Cox hazard ratios).
+- **Module 14 — Reproducible reports** (the capstone: the whole trial analysis as a Quarto
+  report, built from a shipped template via `start_report()` and rendered for real).
 - Each interactive module closes with a **Practice** section: open exercises (no blanks) with hints, solutions and grading.
 - Datasets **`patients`**, **`labs`**, **`outcomes`** and **`linelist`** (synthetic, reproducible).
-- **`learn()`**, **`check_setup()`**, **`use_local_library()`**.
+- **`learn()`**, **`check_setup()`**, **`use_local_library()`**, **`start_report()`**.
 - A test harness in `tests/` that runs every tutorial solution and locks the datasets.
 
-Still to come: a closing module on reproducible reports with Quarto.
+The curriculum is complete: foundations, real data, analysis, and reporting.
 
 ## Build it from source (developer)
 

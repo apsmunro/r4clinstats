@@ -24,6 +24,7 @@ By the end of the course you can take a clinical dataset from a raw file to a re
 - describe a variable properly, run a t-test or chi-squared test, and tidy the result
 - fit a linear or logistic regression, with odds ratios you can report
 - run a Kaplan-Meier and Cox survival analysis, censoring included
+- write the whole analysis up as a Quarto report that rebuilds itself from the data on demand
 
 ## The lessons
 
@@ -51,6 +52,10 @@ The course is a set of interactive tutorials you run on your own computer.
 - **11 · Comparing groups** — the t-test, the chi-squared test, and tidy results with `broom`.
 - **12 · Regression** — linear and logistic models, baseline adjustment, odds ratios.
 - **13 · Survival analysis** — censoring, Kaplan-Meier curves, log-rank, Cox hazard ratios.
+
+**Part 4 · Reporting**
+
+- **14 · Reproducible reports** — the capstone: the whole trial analysis as a Quarto report, rendered to a real document on your machine.
 
 Each interactive lesson ends with open practice exercises, graded as you go.
 
