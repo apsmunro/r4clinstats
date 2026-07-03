@@ -88,8 +88,41 @@ learn <- function(module = NULL) {
     stop("Unknown module '", module, "'. Run learn() to see the list.", call. = FALSE)
   if (!row$available)
     stop("Module '", module, "' is not built yet.", call. = FALSE)
-  if (!requireNamespace("learnr", quietly = TRUE))
-    stop("Package 'learnr' is needed. Run check_setup(install = TRUE).", call. = FALSE)
+  .ensure_course_pkgs()
 
   learnr::run_tutorial(row$dir, package = "r4clinstats")
+}
+
+# Internal: make sure the packages the tutorials need are installed before
+# learnr gets a chance to fail with its unhelpful "missing required packages"
+# error. Offers to install them (from the right repositories -- gradethis is
+# not on CRAN) when the session is interactive.
+.ensure_course_pkgs <- function() {
+  missing <- .missing_pkgs()
+  if (length(missing) == 0L) return(invisible(TRUE))
+
+  cat("This lesson needs some packages that are not installed yet:\n")
+  cat("  ", paste(missing, collapse = ", "), "\n", sep = "")
+  if ("gradethis" %in% missing) {
+    cat("(gradethis is not on CRAN, so install.packages(\"gradethis\") alone\n")
+    cat("won't find it -- it comes from Posit's R-universe repository.)\n")
+  }
+
+  if (interactive() &&
+      utils::menu(c("Yes", "No"), title = "Install them now?") == 1L) {
+    .install_missing(missing)
+    missing <- .missing_pkgs(missing)
+    if (length(missing) == 0L) {
+      cat("All installed. Launching the lesson...\n")
+      return(invisible(TRUE))
+    }
+    stop("These packages could not be installed: ",
+         paste(missing, collapse = ", "),
+         "\nRun check_setup() to diagnose (it checks your internet route ",
+         "and library location).", call. = FALSE)
+  }
+
+  stop("Install the missing packages first with:\n",
+       "  r4clinstats::check_setup(install = TRUE)",
+       call. = FALSE)
 }

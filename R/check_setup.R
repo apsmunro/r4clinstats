@@ -49,10 +49,7 @@ check_setup <- function(install = interactive()) {
   }
 
   ## 4. Packages ------------------------------------------------------------
-  needed  <- c("learnr", "gradethis", "dplyr", "tidyr", "ggplot2", "readr",
-               "here", "finalfit", "survival", "broom")
-  is_here <- function(p) requireNamespace(p, quietly = TRUE)
-  missing <- needed[!vapply(needed, is_here, logical(1))]
+  missing <- .missing_pkgs()
 
   if (length(missing) == 0L) {
     cat("[OK ]  All required packages installed.\n")
@@ -62,7 +59,7 @@ check_setup <- function(install = interactive()) {
     if (isTRUE(install)) {
       cat("       Installing now...\n")
       .install_missing(missing)
-      missing <- missing[!vapply(missing, is_here, logical(1))]
+      missing <- .missing_pkgs(missing)
       if (length(missing)) cat(sprintf("       Still missing: %s\n", paste(missing, collapse = ", ")))
     } else {
       cat("       Install them with: r4clinstats::check_setup(install = TRUE)\n")
