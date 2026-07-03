@@ -2,7 +2,7 @@
 
 ## Take the course
 
-The three functions a learner uses.
+The functions a learner uses.
 
 - [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
   : Browse and launch the r4clinstats lessons
@@ -10,6 +10,8 @@ The three functions a learner uses.
   : Check your R setup for r4clinstats
 - [`use_local_library()`](https://apsmunro.github.io/r4clinstats/reference/use_local_library.md)
   : Move your R package library out of a synced folder
+- [`start_report()`](https://apsmunro.github.io/r4clinstats/reference/start_report.md)
+  : Start your capstone trial report
 
 ## Datasets
 

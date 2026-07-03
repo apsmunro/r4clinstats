@@ -42,6 +42,8 @@ to a result you would put in a paper:
   tidy the result
 - fit a linear or logistic regression, with odds ratios you can report
 - run a Kaplan-Meier and Cox survival analysis, censoring included
+- write the whole analysis up as a Quarto report that rebuilds itself
+  from the data on demand
 
 ## The lessons
 
@@ -84,6 +86,11 @@ computer.
 - **13 · Survival analysis** — censoring, Kaplan-Meier curves, log-rank,
   Cox hazard ratios.
 
+**Part 4 · Reporting**
+
+- **14 · Reproducible reports** — the capstone: the whole trial analysis
+  as a Quarto report, rendered to a real document on your machine.
+
 Each interactive lesson ends with open practice exercises, graded as you
 go.
 
@@ -116,7 +123,7 @@ When you want to read more, these four are worth your time:
 
 ## Take the course
 
-The three functions a learner uses.
+The functions a learner uses.
 
 - [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
   : Browse and launch the r4clinstats lessons
@@ -124,6 +131,8 @@ The three functions a learner uses.
   : Check your R setup for r4clinstats
 - [`use_local_library()`](https://apsmunro.github.io/r4clinstats/reference/use_local_library.md)
   : Move your R package library out of a synced folder
+- [`start_report()`](https://apsmunro.github.io/r4clinstats/reference/start_report.md)
+  : Start your capstone trial report
 
 ## Datasets
 

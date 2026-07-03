@@ -1,5 +1,22 @@
 # Changelog
 
+## r4clinstats 0.3.0
+
+- M14, Reproducible reports: the capstone, and the course is complete.
+  The learner rebuilds the whole trial analysis as six graded exercises
+  (no blanks, for the first time in the course), then leaves the
+  sandbox:
+  [`start_report()`](https://apsmunro.github.io/r4clinstats/reference/start_report.md)
+  copies a Quarto report template with matching TODO chunks into their
+  working directory, and the lesson ends with a real rendered document.
+  The scaffold renders as shipped, so the render-early habit works from
+  minute zero; `start_report(completed = TRUE)` is the escape hatch.
+- The closing bookend: M14 returns to the four core books introduced in
+  M0, and adds a five-step guide to starting a real project with your
+  own data.
+- Both report templates are tested chunk by chunk (and inline expression
+  by inline expression) in CI.
+
 ## r4clinstats 0.2.1
 
 - [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
