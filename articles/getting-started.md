@@ -95,6 +95,9 @@ university firewalls,
 reports what it cannot reach and names the fix, usually pointing R at
 Posit’s package mirror.
 
-Still stuck? Open an issue at the [project
+More problems, and their fixes, are on the [Troubleshooting
+page](https://apsmunro.github.io/r4clinstats/articles/troubleshooting.md),
+written for hospital and university computers. Still stuck? Open an
+issue at the [project
 page](https://github.com/apsmunro/r4clinstats/issues) and describe what
 you saw.
