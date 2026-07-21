@@ -51,66 +51,43 @@ Three rows per patient, stacked. To compare visits, you want them spread across 
 
 ## Reshaping with `pivot_wider()`
 
-`pivot_wider()` turns rows into columns. We first narrow to the three columns we care about (`id`, `visit`, `value`), then spread the visits out. **Fill in which column holds the numbers** to spread:
+`pivot_wider()` turns rows into columns, and it needs two things from you: which column supplies the new **headings**, and which supplies the **numbers** that fill them. We first narrow to the three columns we care about (`id`, `visit`, `value`), then spread the visits out. **Fill in both blanks**:
 
-```{r pivot-value, exercise=TRUE, exercise.blanks="___+"}
+```{r pivot-wide, exercise=TRUE, exercise.blanks="___+"}
 labs |>
   filter(measure == "sbp") |>
   select(id, visit, value) |>
-  pivot_wider(names_from = visit, values_from = ____)
+  pivot_wider(names_from = ____, values_from = ____)
 ```
 
-```{r pivot-value-hint}
-# The blood-pressure numbers to spread across the new columns live in: value
+```{r pivot-wide-hint}
+# You want one new column per visit, so the headings come from: visit
+# The blood-pressure numbers that fill them live in: value
 ```
 
-```{r pivot-value-solution}
-labs |>
-  filter(measure == "sbp") |>
-  select(id, visit, value) |>
-  pivot_wider(names_from = visit, values_from = value)
-```
-
-```{r pivot-value-check}
-grade_this({
-  pass_if_equal(message = "That's the payoff: one row per patient, a column for each visit. Visits 0 and 2 now sit side by side, ready to subtract.")
-  fail("Almost: the numbers to spread out are in the `value` column.")
-})
-```
-
-```{r pivot-value-wrong, eval=FALSE, include=FALSE}
-# expect: value
-labs |>
-  filter(measure == "sbp") |>
-  select(id, visit, value) |>
-  pivot_wider(names_from = visit, values_from = weeks)
-```
-
-Two blanks live in that call. **Now fill in which column supplies the new column names**, one per visit:
-
-```{r pivot-names, exercise=TRUE, exercise.blanks="___+"}
-labs |>
-  filter(measure == "sbp") |>
-  select(id, visit, value) |>
-  pivot_wider(names_from = ____, values_from = value)
-```
-
-```{r pivot-names-hint}
-# You want one new column per visit, so the names come from: visit
-```
-
-```{r pivot-names-solution}
+```{r pivot-wide-solution}
 labs |>
   filter(measure == "sbp") |>
   select(id, visit, value) |>
   pivot_wider(names_from = visit, values_from = value)
 ```
 
-```{r pivot-names-check}
+```{r pivot-wide-check}
 grade_this({
-  pass_if_equal(message = "Exactly. `names_from` picks the column whose values become new headings; `values_from` picks what fills the cells.")
-  fail("Not quite: you want one column per visit, so `names_from` is `visit`.")
+  pass_if_equal(message = "That's the payoff: one row per patient, a column for each visit. `names_from` picks the column whose values become headings, `values_from` picks what fills the cells. Visits 0 and 2 now sit side by side, ready to subtract.")
+  if (is.data.frame(.result) && ncol(.result) > 10) {
+    fail("Those two are the wrong way round. The headings come from `visit` (three of them), and the numbers that fill the cells come from `value`.")
+  }
+  fail("Not quite: one new column per visit, so `names_from = visit`, and the numbers to spread are in `value`.")
 })
+```
+
+```{r pivot-wide-wrong, eval=FALSE, include=FALSE}
+# expect: wrong way round
+labs |>
+  filter(measure == "sbp") |>
+  select(id, visit, value) |>
+  pivot_wider(names_from = value, values_from = visit)
 ```
 
 ## Linking two tables with `left_join()`
@@ -124,32 +101,61 @@ labs |>
 
 Every lab row now carries that patient's `age`, `sex`, `arm` and the rest, looked up from `patients`. `left_join()` keeps every row on the left (`labs`) and adds the matching columns from the right.
 
-Your turn. **Fill in the column the two tables share** so each lab row picks up its patient details:
+Your turn, and this is where the join earns its keep. Once the tables are linked you can filter on a column that was never in `labs` to begin with. **Fill in the column** that keeps only the measurements from the Active arm:
 
-```{r join-key, exercise=TRUE, exercise.blanks="___+"}
+```{r join-filter, exercise=TRUE, exercise.blanks="___+"}
 labs |>
-  left_join(patients, by = "____")
+  left_join(patients, by = "id") |>
+  filter(____ == "Active")
 ```
 
-```{r join-key-hint}
-# Both tables carry a patient identifier column called: id
+```{r join-filter-hint}
+# The treatment arm arrived from `patients` in the join. The column is called: arm
 ```
 
-```{r join-key-solution}
+```{r join-filter-solution}
 labs |>
-  left_join(patients, by = "id")
+  left_join(patients, by = "id") |>
+  filter(arm == "Active")
 ```
 
-```{r join-key-check}
+```{r join-filter-check}
 grade_this({
-  pass_if_equal(message = "Joined. `id` is the link the tables have in common, so R lines them up on it.")
-  fail("Almost: the column both tables share is `id`.")
+  pass_if_equal(message = "{nrow(.result)} measurements, all from the Active arm. Note what happened there: you filtered on `arm`, a column `labs` never had. That is the point of joining, and every verb from the last two lessons works on the result.")
+  if (is.data.frame(.result) && nrow(.result) == 0) {
+    fail("That came back empty, which usually means the text didn't match. R is case-sensitive, so the arm is `\"Active\"`.")
+  }
+  fail("Not quite: the treatment arm came across from `patients` in the join, in a column called `arm`.")
 })
+```
+
+```{r join-filter-wrong, eval=FALSE, include=FALSE}
+# expect: case-sensitive
+labs |>
+  left_join(patients, by = "id") |>
+  filter(arm == "active")
 ```
 
 ## When a join finds nothing
 
-A join only works if the key matches on both sides. If one table calls the column `id` (`P001`, `P002`, and so on) while the other calls it `patient_id`, or stores it as a plain number, R finds no matches and every added column comes back empty (`NA`). The fix is the design habit from earlier: give a column the same name and the same type in every table you will join on, and settle it once when you set the tables up.
+A join only works if the key matches on both sides, and it can go wrong in two very different ways.
+
+If the two tables *name* the key differently, one `id` and the other `patient_id`, R stops and tells you: `Join columns in 'x' must be present in the data`. Loud, and easy to fix.
+
+The other way is quiet, and far more dangerous. If the names match but the *values* don't, the join succeeds and returns nothing useful. Here the ids have picked up a stray trailing space, the kind of thing a spreadsheet does without telling you. Press **Run Code**:
+
+```{r join-broken, exercise=TRUE}
+labs_messy <- labs |>
+  mutate(id = paste0(id, " "))     # "P001" is now "P001 "
+
+labs_messy |>
+  left_join(patients, by = "id") |>
+  select(id, visit, measure, age, sex, arm)
+```
+
+Every row is still there, no error, no warning. But `age`, `sex` and `arm` are `NA` all the way down, because `"P001 "` never matched `"P001"`. A join that silently returns `NA` is easy to miss and easy to analyse by accident, so check the result after any join: if a column you expected is entirely `NA`, the key is the first suspect.
+
+The fix is the design habit from earlier: give a column the same name and the same type in every table you will join on, and settle it once when you set the tables up.
 
 ## Practice
 
@@ -178,8 +184,23 @@ labs |>
 ```{r pr-pivot-check}
 grade_this({
   pass_if_equal(message = "Same move as the blood-pressure table, now for weight: one row per patient, a column per visit.")
-  fail("Close. Keep the weight rows, narrow to `id`, `visit`, `value`, then `pivot_wider(names_from = visit, values_from = value)`.")
+  if (is.data.frame(.result)) {
+    if ("measure" %in% names(.result)) {
+      fail("Nearly. Narrow to just `id`, `visit` and `value` with `select()` before pivoting, or the extra columns split the rows up.")
+    }
+    if (!all(c("0", "1", "2") %in% names(.result))) {
+      fail("The visits should become the column headings, so `names_from = visit`.")
+    }
+  }
+  fail("Not quite: keep the weight rows, narrow to `id`, `visit`, `value`, then `pivot_wider(names_from = visit, values_from = value)`.")
 })
+```
+
+```{r pr-pivot-wrong, eval=FALSE, include=FALSE}
+# expect: select
+labs |>
+  filter(measure == "weight") |>
+  pivot_wider(names_from = visit, values_from = value)
 ```
 
 **2.** Add each patient's treatment `arm` onto the `labs` table. Keep every lab row, and bring across only the `arm` column.
@@ -202,8 +223,22 @@ labs |>
 ```{r pr-join-check}
 grade_this({
   pass_if_equal(message = "Each lab row now carries its patient's arm. Selecting `id` and `arm` first keeps the join tidy.")
-  fail("Almost. Join `select(patients, id, arm)` onto `labs` by `\"id\"`, so only the arm comes across.")
+  if (is.data.frame(.result)) {
+    if (!"arm" %in% names(.result)) {
+      fail("The `arm` column hasn't come across yet. `left_join()` pulls it from `patients`, matching on `\"id\"`.")
+    }
+    if (length(setdiff(names(.result), c(names(labs), "arm")))) {
+      fail("The join worked, but it brought every patient column with it. Narrow the right-hand table first: `left_join(select(patients, id, arm), by = \"id\")`.")
+    }
+  }
+  fail("Not quite: join `select(patients, id, arm)` onto `labs` by `\"id\"`, so only the arm comes across.")
 })
+```
+
+```{r pr-join-wrong, eval=FALSE, include=FALSE}
+# expect: every patient column
+labs |>
+  left_join(patients, by = "id")
 ```
 
 **3.** Using a join, count how many lab measurements fall under each treatment `arm`.
@@ -227,8 +262,18 @@ labs |>
 ```{r pr-count-arm-check}
 grade_this({
   pass_if_equal(message = "Join then count: the measurements split by treatment arm. Two tables, one tally.")
-  fail("Close. Join `patients` onto `labs` by `\"id\"`, then `count(arm)`.")
+  if (is.data.frame(.result) && setequal(names(.result), c("arm", "n")) &&
+      sum(.result$n) != nrow(labs)) {
+    fail("That has counted patients rather than measurements. Start from `labs` so every lab row is kept, join `patients` on, then `count(arm)`.")
+  }
+  fail("Not quite: join `patients` onto `labs` by `\"id\"`, then `count(arm)`.")
 })
+```
+
+```{r pr-count-arm-wrong, eval=FALSE, include=FALSE}
+# expect: counted patients
+patients |>
+  count(arm)
 ```
 
 ## Recap

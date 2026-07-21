@@ -131,7 +131,21 @@ class(patients$sexx)
 
 ## Factors: categories with an order
 
-Some categories have a natural sequence. `smoker` is one: **Never**, then **Former**, then **Current**. Stored as plain text, R would sort them alphabetically, which is meaningless here. A **factor** fixes that by recording the categories *and their order*.
+Some categories have a natural sequence. `smoker` is one: **Never**, then **Former**, then **Current**. Stored as plain text, R has no way of knowing that. Press **Run Code** to see what it does instead:
+
+```{r smoker-alpha, exercise=TRUE}
+table(patients$smoker)
+```
+
+Alphabetical: Current, Former, Never. Every table you build, every plot axis and every model you fit will inherit that order, and it reads backwards to any clinician. A **factor** fixes it by recording the categories *and* the order you want them in. Run this:
+
+```{r smoker-levels, exercise=TRUE}
+smoker_f <- factor(patients$smoker, levels = c("Never", "Former", "Current"))
+
+table(smoker_f)
+```
+
+Same counts, sensible order. That is `levels =` doing the work.
 
 **Fill in the last level** so the order runs Never, Former, Current:
 
@@ -168,7 +182,23 @@ factor(patients$smoker,
        ordered = TRUE)
 ```
 
-Look at the bottom of the output: `Levels: Never < Former < Current`. That `<` is R confirming it knows the order.
+Look at the bottom of the output: `Levels: Never < Former < Current`. Those `<` signs are what `ordered = TRUE` added, and it is worth being exact about what they buy you.
+
+### What `ordered = TRUE` actually changes
+
+`levels =` sets the order, and that alone is what fixes your tables, your plot axes and the reference level your models compare against. `ordered = TRUE` adds one further thing: permission to *compare* levels with `<` and `>`. Run this and read the two answers:
+
+```{r ordered-compare, exercise=TRUE}
+smoker_plain <- factor(patients$smoker, levels = c("Never", "Former", "Current"))
+smoker_ord   <- factor(patients$smoker, levels = c("Never", "Former", "Current"), ordered = TRUE)
+
+head(smoker_plain > "Never")   # R refuses, and warns you
+head(smoker_ord   > "Never")   # a straight answer: has this patient ever smoked?
+```
+
+The plain factor returns `NA` for every patient with a warning that `>` is "not meaningful". The ordered one answers the question.
+
+So for most day-to-day clinical work, `levels =` is the part you need. Reach for `ordered = TRUE` when the categories are a real scale that you will compare or model as one: tumour stage, NYHA class, a Likert response.
 
 ## Yes / no answers: logical values
 
