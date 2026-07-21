@@ -1,11 +1,11 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   getting-started: getting-started.html
   troubleshooting: troubleshooting.html
   articles/try-in-your-browser: try-in-your-browser.html
-last_built: 2026-07-03T15:30Z
+last_built: 2026-07-21T10:41Z
 urls:
   reference: https://apsmunro.github.io/r4clinstats/reference
   article: https://apsmunro.github.io/r4clinstats/articles
