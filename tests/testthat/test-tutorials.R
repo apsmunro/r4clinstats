@@ -177,6 +177,84 @@ test_that("every built tutorial's solution chunks run without error", {
   expect_gt(total, 0L)
 })
 
+# The runner above only ever executes `-solution` chunks, so a tutorial's
+# ungraded "Press Run Code" demos, the chunks that introduce each new idea
+# before the learner is asked to do anything, are never run at all. A typo in
+# one of those first surfaces on a learner's first click. Run every one of
+# them, and build any ggplot they return: a plot with a mistyped column name
+# only fails when it is drawn, so drawing it here is the difference between
+# catching that in CI and catching it in front of a tester.
+test_that("every ungraded demo chunk runs without error", {
+  skip_if_not_installed("dplyr")
+
+  tut_root <- system.file("tutorials", package = "r4clinstats")
+  skip_if(tut_root == "", "tutorials not installed")
+  rmds <- list.files(tut_root, pattern = "\\.Rmd$", recursive = TRUE, full.names = TRUE)
+  skip_if(length(rmds) == 0L, "no tutorials found")
+
+  base_env <- new.env()
+  ok <- tryCatch({
+    utils::data("patients", package = "r4clinstats", envir = base_env)
+    TRUE
+  }, error = function(err) FALSE)
+  skip_if(!ok, "datasets not built yet (run data-raw/patients.R)")
+  for (ds in c("labs", "linelist")) {
+    tryCatch(utils::data(list = ds, package = "r4clinstats", envir = base_env),
+             error = function(err) NULL)
+  }
+
+  total <- 0L
+  for (rmd in rmds) {
+    rmd_lines <- readLines(rmd, warn = FALSE)
+    starts <- grep("^```\\{r[^}]*\\}", rmd_lines)
+    headers <- rmd_lines[starts]
+    labels <- trimws(sub("^```\\{r\\s*([^,}]+).*$", "\\1", headers))
+
+    # Same per-tutorial environment the solutions get. A setup chunk that
+    # errors is already reported by the test above, so just move on here.
+    tut_env <- new.env(parent = base_env)
+    global_setup <- extract_chunk_by_label(rmd_lines, "setup")
+    if (nzchar(global_setup)) {
+      setup_ok <- tryCatch({
+        suppressWarnings(suppressMessages(
+          eval(parse(text = global_setup), envir = tut_env)
+        ))
+        TRUE
+      }, error = function(err) FALSE)
+      if (!setup_ok) next
+    }
+
+    # The ungraded demos are the exercise chunks with no `-solution` alongside.
+    demos <- labels[grepl("exercise\\s*=\\s*TRUE", headers) &
+                      !paste0(labels, "-solution") %in% labels]
+
+    for (label in demos) {
+      total <- total + 1L
+      code <- extract_chunk_by_label(rmd_lines, label)
+      ex_setup <- extract_chunk_by_label(rmd_lines, paste0(label, "-setup"))
+      if (nzchar(ex_setup)) code <- paste(ex_setup, code, sep = "\n")
+
+      e <- new.env(parent = tut_env)
+      err <- tryCatch({
+        # Demos print (glimpse, table, a bare data frame); swallow that so a
+        # test run stays readable, while errors still propagate.
+        utils::capture.output(
+          res <- suppressWarnings(suppressMessages(
+            eval(parse(text = code), envir = e)
+          ))
+        )
+        if (inherits(res, "ggplot")) {
+          suppressWarnings(suppressMessages(ggplot2::ggplot_build(res)))
+        }
+        NULL
+      }, error = function(err) conditionMessage(err))
+
+      expect_null(err, info = paste(basename(rmd), "/", label))
+    }
+  }
+  expect_gt(total, 0L)
+})
+
 # The solution runner above never executes the `-check` graders, so a typo
 # inside a grade_this() block would only surface when a learner submits an
 # answer. Guard the structure instead: every grader must at least parse, and

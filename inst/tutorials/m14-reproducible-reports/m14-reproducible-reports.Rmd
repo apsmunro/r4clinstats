@@ -132,8 +132,23 @@ patients |>
 ```{r rep-table-check}
 grade_this({
   pass_if_equal(message = "Chunk one of your report, done. In the report itself you will pipe this into `kable()`, which turns a raw data frame into a clean document table.")
-  fail("Close. This is Lesson 9's `summary_factorlist(\"arm\", c(\"age\", \"sex\", \"smoker\", \"bmi\"))`, on `patients`.")
+  if (is.data.frame(.result) && "label" %in% names(.result)) {
+    vars <- setdiff(unique(.result$label), "")
+    if (!"Active" %in% names(.result)) {
+      fail("The columns should be the two treatment arms, so the dependent is `\"arm\"`.")
+    }
+    if (!setequal(vars, c("age", "sex", "smoker", "bmi"))) {
+      fail("Check the variable list: this table describes `age`, `sex`, `smoker` and `bmi`.")
+    }
+  }
+  fail("Not quite: this is Lesson 9's `summary_factorlist(\"arm\", c(\"age\", \"sex\", \"smoker\", \"bmi\"))`, on `patients`.")
 })
+```
+
+```{r rep-table-wrong, eval=FALSE, include=FALSE}
+# expect: variable list
+patients |>
+  summary_factorlist("arm", c("age", "sex"))
 ```
 
 ### The trend figure
@@ -206,8 +221,25 @@ lm(change ~ baseline + arm, data = bp_change) |>
 ```{r rep-model-check}
 grade_this({
   pass_if_equal(message = "The baseline-adjusted treatment effect: 5.0 mmHg further fall, p = 0.002. In the report, the sentence underneath will quote these numbers with inline code, so it can never drift from this table.")
-  fail("Close. The model is `lm(change ~ baseline + arm, data = bp_change)`, then `tidy(conf.int = TRUE)`.")
+  if (inherits(.result, "lm")) {
+    fail("The model is fitted, but that's the raw model object. Pipe it into `tidy(conf.int = TRUE)`.")
+  }
+  if (is.data.frame(.result) && "term" %in% names(.result)) {
+    if (!"baseline" %in% .result$term) {
+      fail("This one is the baseline-adjusted model, so the formula is `change ~ baseline + arm`.")
+    }
+    if (!"conf.low" %in% names(.result)) {
+      fail("The estimates are there but the confidence interval isn't. Add `conf.int = TRUE` inside `tidy()`.")
+    }
+  }
+  fail("Not quite: `lm(change ~ baseline + arm, data = bp_change)`, then `tidy(conf.int = TRUE)`.")
 })
+```
+
+```{r rep-model-wrong, eval=FALSE, include=FALSE}
+# expect: confidence interval
+lm(change ~ baseline + arm, data = bp_change) |>
+  tidy()
 ```
 
 ### The odds ratio
@@ -232,8 +264,26 @@ glm(response ~ arm, data = trial, family = binomial) |>
 ```{r rep-or-check}
 grade_this({
   pass_if_equal(message = "OR 2.66, CI 1.17 to 6.30. Chunk four of six.")
-  fail("Close. `glm(response ~ arm, data = trial, family = binomial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  if (inherits(.result, "glm")) {
+    fail("The model is fitted, but that's the raw model object. Pipe it into `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  }
+  if (is.data.frame(.result) && "term" %in% names(.result)) {
+    if (!"conf.low" %in% names(.result)) {
+      fail("The odds ratio is there but the confidence interval isn't. Add `conf.int = TRUE` inside `tidy()`.")
+    }
+    if (length(.result$estimate) == length(.solution$estimate) &&
+        isTRUE(all.equal(.result$estimate, log(.solution$estimate)))) {
+      fail("The model is right, but those are log-odds rather than odds ratios. Add `exponentiate = TRUE` inside `tidy()`.")
+    }
+  }
+  fail("Not quite: `glm(response ~ arm, data = trial, family = binomial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
 })
+```
+
+```{r rep-or-wrong, eval=FALSE, include=FALSE}
+# expect: log-odds
+glm(response ~ arm, data = trial, family = binomial) |>
+  tidy(conf.int = TRUE)
 ```
 
 ### The survival curve
@@ -299,8 +349,25 @@ coxph(Surv(time, status) ~ arm, data = trial) |>
 ```{r rep-cox-check}
 grade_this({
   pass_if_equal(message = "HR 0.47, CI 0.25 to 0.88. That is all six chunks: the whole analysis, rebuilt from memory. Now you get to put them somewhere permanent.")
-  fail("Close. `coxph(Surv(time, status) ~ arm, data = trial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  if (inherits(.result, "coxph")) {
+    fail("The model is fitted, but that's the raw model object. Pipe it into `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  }
+  if (is.data.frame(.result) && "term" %in% names(.result)) {
+    if (!"conf.low" %in% names(.result)) {
+      fail("The hazard ratio is there but the confidence interval isn't. Add `conf.int = TRUE` inside `tidy()`.")
+    }
+    if (length(.result$estimate) == length(.solution$estimate) &&
+        isTRUE(all.equal(.result$estimate, log(.solution$estimate)))) {
+      fail("The model is right, but those are log hazard ratios. Add `exponentiate = TRUE` inside `tidy()`.")
+    }
+  }
+  fail("Not quite: `coxph(Surv(time, status) ~ arm, data = trial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
 })
+```
+
+```{r rep-cox-wrong, eval=FALSE, include=FALSE}
+# expect: raw model object
+coxph(Surv(time, status) ~ arm, data = trial)
 ```
 
 ## Now build the real thing

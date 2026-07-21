@@ -175,8 +175,22 @@ linelist |>
 ```{r pr-female-check}
 grade_this({
   pass_if_equal(message = "Clean, then filter: 21 female patients, each with a tidy label.")
-  fail("Almost: standardise `sex` with the same `mutate()` as before, then `filter(sex == \"Female\")`.")
+  if (is.data.frame(.result) && "sex" %in% names(.result)) {
+    if (all(.result$sex == "Female") && nrow(.result) < 21) {
+      fail("Only {nrow(.result)} of the 21 female patients came through. The spellings have to be standardised *before* the filter, otherwise `filter(sex == \"Female\")` catches just the ones already written that way.")
+    }
+    if (!all(.result$sex == "Female")) {
+      fail("There are still non-female rows in the result. After the `mutate()`, add `filter(sex == \"Female\")`.")
+    }
+  }
+  fail("Not quite: standardise `sex` with the same `mutate()` as before, then `filter(sex == \"Female\")`.")
 })
+```
+
+```{r pr-female-wrong, eval=FALSE, include=FALSE}
+# expect: already written that way
+linelist |>
+  filter(sex == "Female")
 ```
 
 **2.** Turn `smoker` into an **ordered factor** running `never` < `former` < `current`.
@@ -230,8 +244,22 @@ linelist |>
 ```{r pr-active-check}
 grade_this({
   pass_if_equal(message = "Two conditions in one filter: the Active arm, and a weight that is present.")
-  fail("Almost: `filter(arm == \"Active\", !is.na(weight))` keeps rows that meet both conditions.")
+  if (is.data.frame(.result) && all(c("arm", "weight") %in% names(.result))) {
+    if (any(is.na(.result$weight))) {
+      fail("The arm is right, but rows with a missing weight are still there. Add the second condition, `!is.na(weight)`.")
+    }
+    if (!all(.result$arm == "Active")) {
+      fail("Rows from the other arm are still in the result. The first condition is `arm == \"Active\"`.")
+    }
+  }
+  fail("Not quite: `filter(arm == \"Active\", !is.na(weight))` keeps the rows that meet both conditions.")
 })
+```
+
+```{r pr-active-wrong, eval=FALSE, include=FALSE}
+# expect: missing weight
+linelist |>
+  filter(arm == "Active")
 ```
 
 ## Recap

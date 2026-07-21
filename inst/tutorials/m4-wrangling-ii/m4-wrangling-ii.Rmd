@@ -169,8 +169,22 @@ patients |>
 ```{r pr-mutate-check}
 grade_this({
   pass_if_equal(message = "Done. `high_bp` is TRUE wherever systolic pressure clears 140, one answer per patient.")
-  fail("Not quite. Add a column with `mutate(high_bp = sbp > 140)`.")
+  if (is.data.frame(.result)) {
+    if (!"high_bp" %in% names(.result)) {
+      fail("There's no column called `high_bp` yet. The name comes from the left of the `=`, as in `mutate(high_bp = ...)`.")
+    }
+    if (!is.logical(.result$high_bp)) {
+      fail("`high_bp` should hold TRUE/FALSE. A comparison like `sbp > 140` gives you exactly that.")
+    }
+  }
+  fail("Not quite: `mutate(high_bp = sbp > 140)` adds a TRUE/FALSE column for pressures above 140.")
 })
+```
+
+```{r pr-mutate-wrong, eval=FALSE, include=FALSE}
+# expect: called `high_bp`
+patients |>
+  mutate(highbp = sbp > 140)
 ```
 
 **2.** For each `smoker` group, find the mean BMI. Call the summary column `mean_bmi`.
@@ -194,8 +208,22 @@ patients |>
 ```{r pr-groupsum-check}
 grade_this({
   pass_if_equal(message = "One mean BMI per smoking group, side by side. Group first, then summarise.")
-  fail("Close. Group by `smoker`, then `summarise(mean_bmi = mean(bmi))`. Keep the name `mean_bmi` so it matches.")
+  if (is.data.frame(.result)) {
+    if (!"mean_bmi" %in% names(.result)) {
+      fail("The summary column needs the name `mean_bmi`, which comes from the left of the `=` in `summarise(mean_bmi = mean(bmi))`.")
+    }
+    if (nrow(.result) == 1) {
+      fail("That's one mean for the whole cohort. Add `group_by(smoker)` before the `summarise()` to get one row per smoking group.")
+    }
+  }
+  fail("Not quite: `group_by(smoker)` first, then `summarise(mean_bmi = mean(bmi))`.")
 })
+```
+
+```{r pr-groupsum-wrong, eval=FALSE, include=FALSE}
+# expect: one row per smoking group
+patients |>
+  summarise(mean_bmi = mean(bmi))
 ```
 
 **3.** Among patients on the `Active` arm only, find the mean `sbp` for each `smoker` group. Call it `mean_sbp`.
@@ -220,8 +248,26 @@ patients |>
 ```{r pr-combo-check}
 grade_this({
   pass_if_equal(message = "That brings three verbs together: filter the arm, group by smoker, summarise the mean. Most analyses look like this.")
-  fail("Almost. Filter to the Active arm, then group by `smoker`, then `summarise(mean_sbp = mean(sbp))`.")
+  if (is.data.frame(.result)) {
+    if (!"mean_sbp" %in% names(.result)) {
+      fail("The summary column needs the name `mean_sbp`, from the left of the `=` in `summarise(mean_sbp = mean(sbp))`.")
+    }
+    both_arms <- patients |>
+      dplyr::group_by(smoker) |>
+      dplyr::summarise(mean_sbp = mean(sbp))
+    if (isTRUE(all.equal(as.data.frame(.result), as.data.frame(both_arms)))) {
+      fail("Those are the means across both arms together. Add `filter(arm == \"Active\")` at the start so only the Active arm is summarised.")
+    }
+  }
+  fail("Not quite: filter to the Active arm, then `group_by(smoker)`, then `summarise(mean_sbp = mean(sbp))`.")
 })
+```
+
+```{r pr-combo-wrong, eval=FALSE, include=FALSE}
+# expect: both arms
+patients |>
+  group_by(smoker) |>
+  summarise(mean_sbp = mean(sbp))
 ```
 
 ## Recap

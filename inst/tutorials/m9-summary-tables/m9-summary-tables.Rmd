@@ -122,6 +122,14 @@ grade_this({
 })
 ```
 
+### One p-value per variable, not per level
+
+Look at the `smoker` block in that table. Three levels, but only one p-value, sitting on the first row. That p belongs to the **whole variable**, not to the level it happens to line up with. It is a single chi-squared test asking one question: does the split across Never, Former and Current differ between the groups at all?
+
+There is no option to get a p-value per level, and that is deliberate. Running three tests where one will do inflates your false-positive rate, and the answers would overlap anyway. When you do need to know how each level compares against a reference, the tool is regression: it gives you an estimate, a confidence interval and a p-value for every level measured against a baseline you choose. That is Lesson 12.
+
+One argument worth knowing now: `p_cat = "fisher"` swaps the chi-squared for Fisher's exact test, which is the safer choice when any cell in the table has a small count.
+
 ### Why not p-values by arm?
 
 You may have noticed we switched from `arm` to `sex` for that exercise. That was deliberate. In a randomised trial, any baseline difference between the arms is there by chance; the randomisation guarantees it. A significance test on the baseline table answers a question you already know the answer to, which is why the CONSORT guidance says to leave those p-values out. Describe the arms; test the outcomes.
@@ -150,9 +158,28 @@ patients |>
 
 ```{r pr-table-check}
 grade_this({
+  if (!is.data.frame(.result) || !"label" %in% names(.result)) {
+    fail("That hasn't produced a summary table. Start from `patients |> summary_factorlist(...)`.")
+  }
   pass_if_equal(message = "A tidy three-variable Table 1, written from scratch.")
-  fail("Almost: `summary_factorlist(\"arm\", c(\"age\", \"bmi\", \"smoker\"))`, with the variables in quotes.")
+  vars <- setdiff(unique(.result$label), "")
+  if (!"Active" %in% names(.result)) {
+    fail("The columns should be the two treatment arms, so the dependent is `\"arm\"`.")
+  }
+  if (!setequal(vars, c("age", "bmi", "smoker"))) {
+    fail("Check the variable list: this one wants `age`, `bmi` and `smoker` inside `c(...)`, each in quotes.")
+  }
+  if ("p" %in% names(.result)) {
+    fail("The table is right. This exercise doesn't ask for p-values, though, so drop `p = TRUE`.")
+  }
+  fail("Not quite. Aim for `age`, `bmi` and `smoker` described across the treatment `arm`.")
 })
+```
+
+```{r pr-table-wrong, eval=FALSE, include=FALSE}
+# expect: dependent is
+patients |>
+  summary_factorlist("sex", c("age", "bmi", "smoker"))
 ```
 
 **2.** Now compare those same three variables across `sex` instead of arm.
@@ -174,9 +201,28 @@ patients |>
 
 ```{r pr-bysex-check}
 grade_this({
+  if (!is.data.frame(.result) || !"label" %in% names(.result)) {
+    fail("That hasn't produced a summary table. Start from `patients |> summary_factorlist(...)`.")
+  }
   pass_if_equal(message = "Same variables, split by sex now. Changing the dependent is all it takes to re-point the table.")
-  fail("Almost: change only the dependent to `\"sex\"`, keeping the same three variables.")
+  vars <- setdiff(unique(.result$label), "")
+  if (!"Female" %in% names(.result)) {
+    fail("The columns should be Female and Male, so the dependent is `\"sex\"`.")
+  }
+  if (!setequal(vars, c("age", "bmi", "smoker"))) {
+    fail("Keep the same three variables as the last exercise: `age`, `bmi` and `smoker`.")
+  }
+  if ("p" %in% names(.result)) {
+    fail("So close: the table is exactly right, but this one doesn't ask for a p-value column. Drop `p = TRUE` and you have it. You switch them back on in the next exercise.")
+  }
+  fail("Not quite. Aim for `age`, `bmi` and `smoker` described across `sex`.")
 })
+```
+
+```{r pr-bysex-wrong, eval=FALSE, include=FALSE}
+# expect: drop `p = TRUE`
+patients |>
+  summary_factorlist("sex", c("age", "bmi", "smoker"), p = TRUE)
 ```
 
 **3.** Build a table of `age` and `bmi` compared across `sex`, with p-values switched on.
@@ -197,9 +243,28 @@ patients |>
 
 ```{r pr-pvalues-check}
 grade_this({
+  if (!is.data.frame(.result) || !"label" %in% names(.result)) {
+    fail("That hasn't produced a summary table. Start from `patients |> summary_factorlist(...)`.")
+  }
   pass_if_equal(message = "Two variables compared between the sexes, each with a p-value. And you know when to leave that column out: a randomised baseline table describes, it does not test.")
-  fail("Almost: add `p = TRUE` to `summary_factorlist(\"sex\", c(\"age\", \"bmi\"))`.")
+  vars <- setdiff(unique(.result$label), "")
+  if (!"Female" %in% names(.result)) {
+    fail("The columns should be Female and Male, so the dependent is `\"sex\"`.")
+  }
+  if (!setequal(vars, c("age", "bmi"))) {
+    fail("This one wants just two variables: `age` and `bmi`.")
+  }
+  if (!"p" %in% names(.result)) {
+    fail("The table is right, but there's no p-value column yet. Add `p = TRUE`.")
+  }
+  fail("Not quite. Aim for `age` and `bmi` compared across `sex`, with `p = TRUE`.")
 })
+```
+
+```{r pr-pvalues-wrong, eval=FALSE, include=FALSE}
+# expect: no p-value column
+patients |>
+  summary_factorlist("sex", c("age", "bmi"))
 ```
 
 ## Recap

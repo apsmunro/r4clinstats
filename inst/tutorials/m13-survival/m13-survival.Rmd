@@ -261,8 +261,28 @@ coxph(Surv(time, status) ~ arm + age, data = trial) |>
 ```{r pr-cox-check}
 grade_this({
   pass_if_equal(message = "Age-adjusted HR 0.48, CI 0.26 to 0.91: the effect barely moves, so age was not doing the work. Adjustment in a Cox model is the same `+ age` it was everywhere else.")
-  fail("Close. `coxph(Surv(time, status) ~ arm + age, data = trial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  if (inherits(.result, "coxph")) {
+    fail("The model is fitted, but that's the raw model object. Pipe it into `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  }
+  if (is.data.frame(.result) && "term" %in% names(.result)) {
+    if (!"age" %in% .result$term) {
+      fail("Age isn't in the model yet. Adjusting for it means `Surv(time, status) ~ arm + age`.")
+    }
+    if (!"conf.low" %in% names(.result)) {
+      fail("The hazard ratios are there but the confidence interval isn't. Add `conf.int = TRUE` inside `tidy()`.")
+    }
+    if (length(.result$estimate) == length(.solution$estimate) &&
+        isTRUE(all.equal(.result$estimate, log(.solution$estimate)))) {
+      fail("The model is right, but those are log hazard ratios. Add `exponentiate = TRUE` inside `tidy()`.")
+    }
+  }
+  fail("Not quite: `coxph(Surv(time, status) ~ arm + age, data = trial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
 })
+```
+
+```{r pr-cox-wrong, eval=FALSE, include=FALSE}
+# expect: raw model object
+coxph(Surv(time, status) ~ arm + age, data = trial)
 ```
 
 ## Recap

@@ -208,8 +208,19 @@ lm(change ~ arm, data = bp_change) |>
 ```{r pr-crude-check}
 grade_this({
   pass_if_equal(message = "The crude effect: -4.8 mmHg, p = 0.039, the t-test's answer in regression clothing. Compare it with the baseline-adjusted -5.0 at p = 0.002 from earlier: same drug, sharper estimate.")
-  fail("Close. Fit `lm(change ~ arm, data = bp_change)` and pipe it into `tidy()`.")
+  if (inherits(.result, "lm")) {
+    fail("The model is fitted, but that's the raw model object. Pipe it into `tidy()` for the coefficient table.")
+  }
+  if (is.data.frame(.result) && "term" %in% names(.result) && "baseline" %in% .result$term) {
+    fail("This one wants the *unadjusted* model, so the formula is just `change ~ arm`, with no `baseline` term.")
+  }
+  fail("Not quite: fit `lm(change ~ arm, data = bp_change)` and pipe it into `tidy()`.")
 })
+```
+
+```{r pr-crude-wrong, eval=FALSE, include=FALSE}
+# expect: raw model object
+lm(change ~ arm, data = bp_change)
 ```
 
 **2.** Fit a logistic regression of `response` on `arm` **and** `age` in `trial`, and tidy it into odds ratios with confidence intervals.
@@ -232,8 +243,29 @@ glm(response ~ arm + age, data = trial, family = binomial) |>
 ```{r pr-adjor-check}
 grade_this({
   pass_if_equal(message = "Age-adjusted OR for the drug: 2.79, CI 1.21 to 6.70. Age itself shows no clear effect here (its CI straddles 1). Adding a predictor is only ever `+ age` away.")
-  fail("Close. The formula is `response ~ arm + age`, family binomial, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  if (inherits(.result, "glm")) {
+    fail("The model is fitted, but that's the raw model object. Pipe it into `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
+  }
+  if (is.data.frame(.result) && "term" %in% names(.result)) {
+    if (!"age" %in% .result$term) {
+      fail("Age isn't in the model yet. Adjusting for it means `response ~ arm + age`.")
+    }
+    if (!"conf.low" %in% names(.result)) {
+      fail("The odds ratios are there but the confidence interval isn't. Add `conf.int = TRUE` inside `tidy()`.")
+    }
+    if (length(.result$estimate) == length(.solution$estimate) &&
+        isTRUE(all.equal(.result$estimate, log(.solution$estimate)))) {
+      fail("The model is right, but those are log-odds rather than odds ratios. Add `exponentiate = TRUE` inside `tidy()`.")
+    }
+  }
+  fail("Not quite: `glm(response ~ arm + age, data = trial, family = binomial)`, then `tidy(exponentiate = TRUE, conf.int = TRUE)`.")
 })
+```
+
+```{r pr-adjor-wrong, eval=FALSE, include=FALSE}
+# expect: log-odds
+glm(response ~ arm + age, data = trial, family = binomial) |>
+  tidy(conf.int = TRUE)
 ```
 
 **3.** The scatter plot from the start of the lesson, from scratch: `change` against `baseline` in `bp_change`, points plus an `lm` smooth.

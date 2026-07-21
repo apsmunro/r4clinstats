@@ -117,6 +117,20 @@ grade_this({
 })
 ```
 
+### The key down the side
+
+That strip on the right of the plot is the **legend**, and it is your colour key: ggplot built it automatically from the column you mapped, so you never have to tell the reader which colour means which arm.
+
+It does take its title straight from the column name, which is rarely what you would want in a paper. `labs()` renames it. Press **Run Code**:
+
+```{r colour-legend, exercise=TRUE}
+ggplot(patients, aes(x = bmi, y = sbp, colour = arm)) +
+  geom_point() +
+  labs(colour = "Treatment arm")
+```
+
+`labs()` renames the axes the same way, and Lesson 8 puts it to work properly.
+
 Anything inside `aes()` is *mapped from the data*. If instead you wanted every point the same fixed colour, you would set it outside `aes()`, like `geom_point(colour = "steelblue")`.
 
 ## Box plots

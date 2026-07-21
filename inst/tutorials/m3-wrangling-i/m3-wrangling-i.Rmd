@@ -218,8 +218,17 @@ patients |>
 ```{r pr-filter-check}
 grade_this({
   pass_if_equal(message = "Spot on. {nrow(.result)} patients on the Active arm, picked out in one line.")
-  fail("Not quite. Use `filter(arm == \"Active\")`, with a double `==` and a capital A.")
+  if (is.data.frame(.result) && nrow(.result) == 0) {
+    fail("That came back empty, which nearly always means the text didn't match exactly. R is case-sensitive, so the arm is `\"Active\"`, with a capital A.")
+  }
+  fail("Not quite: keep the rows where `arm` is `\"Active\"`, using `filter()` and a double `==`.")
 })
+```
+
+```{r pr-filter-wrong, eval=FALSE, include=FALSE}
+# expect: case-sensitive
+patients |>
+  filter(arm == "active")
 ```
 
 **2.** Count how many patients are in each `smoker` group, then sort from most to fewest.
@@ -243,8 +252,18 @@ patients |>
 ```{r pr-count-check}
 grade_this({
   pass_if_equal(message = "That is the pattern: count to tally, then arrange to sort. `desc()` flips it to most-first.")
-  fail("Close. Count by `smoker`, then `arrange(desc(n))` to sort from most to fewest. The Hint lays out both steps.")
+  if (is.data.frame(.result) && setequal(names(.result), c("smoker", "n")) &&
+      !identical(.result$n, sort(.result$n, decreasing = TRUE))) {
+    fail("The tally itself is right, but the rows still need sorting from most to fewest. Add `arrange(desc(n))`.")
+  }
+  fail("Not quite: `count(smoker)` tallies each group, then `arrange(desc(n))` sorts from most to fewest. The Hint lays out both steps.")
 })
+```
+
+```{r pr-count-wrong, eval=FALSE, include=FALSE}
+# expect: sorting from most to fewest
+patients |>
+  count(smoker)
 ```
 
 **3.** In one pipeline, keep only patients older than 70, then show just their `id`, `age` and `arm`.
@@ -268,8 +287,23 @@ patients |>
 ```{r pr-pipeline-check}
 grade_this({
   pass_if_equal(message = "A three-step pipeline, written from scratch. Filter to choose rows, then select to choose columns.")
-  fail("Almost. Chain two steps with the pipe: `filter(age > 70)` and then `select(id, age, arm)`.")
+  if (is.data.frame(.result)) {
+    if (!identical(names(.result), c("id", "age", "arm"))) {
+      fail("Check the columns: `select(id, age, arm)` keeps those three, in that order.")
+    }
+    if (nrow(.result) > 0 && min(.result$age) <= 70) {
+      fail("The columns are right, but some patients aged 70 or under are still there. `filter(age > 70)` keeps only those *older* than 70.")
+    }
+  }
+  fail("Not quite: chain two steps with the pipe, `filter(age > 70)` and then `select(id, age, arm)`.")
 })
+```
+
+```{r pr-pipeline-wrong, eval=FALSE, include=FALSE}
+# expect: older
+patients |>
+  filter(age >= 70) |>
+  select(id, age, arm)
 ```
 
 ## You did it 🎉

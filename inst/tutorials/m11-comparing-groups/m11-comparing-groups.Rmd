@@ -248,8 +248,16 @@ t.test(change ~ arm, data = bp_change) |>
 ```{r pr-tidy-check}
 grade_this({
   pass_if_equal(message = "The trial's headline result, ready to report: a 4.8 mmHg bigger fall on the active arm, CI 0.2 to 9.4, p = 0.039.")
-  fail("Close. Run `t.test(change ~ arm, data = bp_change)` and pipe the result into `tidy()`.")
+  if (inherits(.result, "htest")) {
+    fail("The test itself is right. It just needs tidying: pipe it into `tidy()` to get the one-row data frame.")
+  }
+  fail("Not quite: run `t.test(change ~ arm, data = bp_change)` and pipe the result into `tidy()`.")
 })
+```
+
+```{r pr-tidy-wrong, eval=FALSE, include=FALSE}
+# expect: needs tidying
+t.test(change ~ arm, data = bp_change)
 ```
 
 ## Recap

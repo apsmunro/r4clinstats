@@ -238,8 +238,24 @@ patients |>
 ```{r pr-group-check}
 grade_this({
   pass_if_equal(message = "Mean (SD) of BMI for each smoking group, one line of code. That is a full row of a Table 1.")
-  fail("Close. Group by `smoker`, then `summarise(mean_bmi = mean(bmi), sd_bmi = sd(bmi))`, keeping those column names.")
+  if (is.data.frame(.result)) {
+    missing_cols <- setdiff(c("mean_bmi", "sd_bmi"), names(.result))
+    if (length(missing_cols)) {
+      fail("Still missing `{paste(missing_cols, collapse = '` and `')}`. Each summary is named on the left of its `=`, inside the same `summarise()`.")
+    }
+    if (nrow(.result) == 1) {
+      fail("That's one mean and SD for the whole cohort. Add `group_by(smoker)` before the `summarise()` for one row per smoking group.")
+    }
+  }
+  fail("Not quite: group by `smoker`, then `summarise(mean_bmi = mean(bmi), sd_bmi = sd(bmi))`.")
 })
+```
+
+```{r pr-group-wrong, eval=FALSE, include=FALSE}
+# expect: missing
+patients |>
+  group_by(smoker) |>
+  summarise(mean_bmi = mean(bmi))
 ```
 
 **3.** `time` is lopsided, so give it the right pair: the median and the IQR, from `outcomes`. Call them `median_time` and `iqr_time`.
@@ -262,8 +278,20 @@ outcomes |>
 ```{r pr-median-check}
 grade_this({
   pass_if_equal(message = "Median 365 days, IQR 192.5. For a lopsided variable this pair tells the truth that the mean cannot.")
-  fail("Close. Use `median(time)` and `IQR(time)` inside `summarise()`, with the names `median_time` and `iqr_time`.")
+  if (is.data.frame(.result)) {
+    missing_cols <- setdiff(c("median_time", "iqr_time"), names(.result))
+    if (length(missing_cols)) {
+      fail("Still missing `{paste(missing_cols, collapse = '` and `')}`. Each summary takes its name from the left of its `=`.")
+    }
+  }
+  fail("Not quite: `summarise(median_time = median(time), iqr_time = IQR(time))` on `outcomes`.")
 })
+```
+
+```{r pr-median-wrong, eval=FALSE, include=FALSE}
+# expect: missing
+outcomes |>
+  summarise(median_time = median(time))
 ```
 
 ## Recap
