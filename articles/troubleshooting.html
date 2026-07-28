@@ -79,14 +79,20 @@ offers to fix it.</p>
 <code>gradethis</code> is simply not on CRAN, the main package server,
 so the ordinary <code>install.packages("gradethis")</code> cannot find
 it and R blames your version instead of saying so.</p>
-<p>Let the course install it for you:</p>
+<p>Most often this means the course was installed without its packages.
+If you installed with a plain
+<code>remotes::install_github("apsmunro/r4clinstats")</code>, run it
+again with the missing part:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"apsmunro/r4clinstats"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Or let the course install what it needs:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apsmunro/r4clinstats" class="external-link">r4clinstats</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/check_setup.html">check_setup</a></span><span class="op">(</span>install <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>That looks in the right place (Posit’s R-universe server) and, if
 your network blocks that server, falls back to installing from GitHub
 automatically. To do it by hand instead, type this into the Console:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gradethis"</span>,</span>
 <span>                 repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://posit-dev.r-universe.dev"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -131,7 +137,7 @@ download the Windows <code>gradethis</code> bundle in your ordinary web
 browser from <a href="https://posit-dev.r-universe.dev/gradethis" class="external-link">posit-dev.r-universe.dev/gradethis</a>
 (the <code>.zip</code> under Downloads), then install the file
 directly:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"C:/path/to/the/downloaded/gradethis.zip"</span>,</span>
 <span>                 repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"win.binary"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -142,7 +148,7 @@ directly:</p>
 and R puts its package library there by default. OneDrive can lock files
 while it syncs, which corrupts installs. <code><a href="../reference/check_setup.html">check_setup()</a></code>
 spots this; the fix is one command:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apsmunro/r4clinstats" class="external-link">r4clinstats</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/use_local_library.html">use_local_library</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>It creates a package library outside OneDrive and points R at it.
@@ -163,7 +169,7 @@ again.</p>
 </h2>
 <p>A dependency occasionally missed when <code>finalfit</code> installs.
 Install it directly:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"reformulas"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

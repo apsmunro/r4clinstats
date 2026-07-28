@@ -24,7 +24,17 @@ not on CRAN, the main package server, so the ordinary
 `install.packages("gradethis")` cannot find it and R blames your version
 instead of saying so.
 
-Let the course install it for you:
+Most often this means the course was installed without its packages. If
+you installed with a plain
+`remotes::install_github("apsmunro/r4clinstats")`, run it again with the
+missing part:
+
+``` r
+
+remotes::install_github("apsmunro/r4clinstats", dependencies = TRUE)
+```
+
+Or let the course install what it needs:
 
 ``` r
 

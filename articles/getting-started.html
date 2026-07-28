@@ -89,10 +89,16 @@ on CRAN, so you install it from GitHub. Paste these two lines into the
 Console:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"apsmunro/r4clinstats"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"apsmunro/r4clinstats"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The first line fetches a small helper. The second downloads the
-course and the packages it needs. This can take a few minutes the first
-time, and some red progress text along the way is normal.</p>
+course together with every package the lessons need,
+<code>gradethis</code> among them, which marks your answers and comes
+from a different place to the rest.</p>
+<p>Keep the <code>dependencies = TRUE</code> part. Without it you get
+the course but none of the packages it runs on, and the first lesson
+stops with a complaint about <code>gradethis</code>.</p>
+<p>This takes a few minutes the first time, and red progress text along
+the way is normal.</p>
 </div>
 <div class="section level2">
 <h2 id="check-your-setup">3. Check your setup<a class="anchor" aria-label="anchor" href="#check-your-setup"></a>
@@ -101,11 +107,12 @@ time, and some red progress text along the way is normal.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apsmunro/r4clinstats" class="external-link">r4clinstats</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/check_setup.html">check_setup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="../reference/check_setup.html">check_setup()</a></code> looks over your machine, confirms the
-pieces are in place, and offers to install anything missing. That
-includes <code>gradethis</code>, which gives you the feedback in each
-exercise and comes from Posit’s R-universe rather than CRAN. Say yes to
-any prompts.</p>
+<p>This confirms the install worked. It looks at your R version, where
+your packages are stored, and whether your network can reach the package
+servers. If step 2 went cleanly you will see a column of
+<code>[OK ]</code> and nothing to do. If anything is missing,
+<code><a href="../reference/check_setup.html">check_setup()</a></code> names it and offers to install it, so say yes
+to any prompts.</p>
 </div>
 <div class="section level2">
 <h2 id="start-learning">4. Start learning<a class="anchor" aria-label="anchor" href="#start-learning"></a>

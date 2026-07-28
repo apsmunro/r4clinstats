@@ -27,12 +27,19 @@ you install it from GitHub. Paste these two lines into the Console:
 ``` r
 
 install.packages("remotes")
-remotes::install_github("apsmunro/r4clinstats")
+remotes::install_github("apsmunro/r4clinstats", dependencies = TRUE)
 ```
 
 The first line fetches a small helper. The second downloads the course
-and the packages it needs. This can take a few minutes the first time,
-and some red progress text along the way is normal.
+together with every package the lessons need, `gradethis` among them,
+which marks your answers and comes from a different place to the rest.
+
+Keep the `dependencies = TRUE` part. Without it you get the course but
+none of the packages it runs on, and the first lesson stops with a
+complaint about `gradethis`.
+
+This takes a few minutes the first time, and red progress text along the
+way is normal.
 
 ## 3. Check your setup
 
@@ -44,11 +51,12 @@ library(r4clinstats)
 check_setup()
 ```
 
+This confirms the install worked. It looks at your R version, where your
+packages are stored, and whether your network can reach the package
+servers. If step 2 went cleanly you will see a column of `[OK ]` and
+nothing to do. If anything is missing,
 [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md)
-looks over your machine, confirms the pieces are in place, and offers to
-install anything missing. That includes `gradethis`, which gives you the
-feedback in each exercise and comes from Posit’s R-universe rather than
-CRAN. Say yes to any prompts.
+names it and offers to install it, so say yes to any prompts.
 
 ## 4. Start learning
 
