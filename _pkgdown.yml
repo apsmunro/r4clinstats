@@ -12,12 +12,15 @@ home:
 
 navbar:
   structure:
-    left:  [getstarted, tryit, troubleshooting, reference]
+    left:  [getstarted, cribsheet, tryit, troubleshooting, reference]
     right: [search, github]
   components:
     getstarted:
       text: Get started
       href: articles/getting-started.html
+    cribsheet:
+      text: Crib sheet
+      href: articles/crib-sheet.html
     troubleshooting:
       text: Troubleshooting
       href: articles/troubleshooting.html
