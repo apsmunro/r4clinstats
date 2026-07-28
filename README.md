@@ -43,7 +43,7 @@ source("data-raw/labs.R")       # writes data/labs.rda  (run after patients.R)
 source("data-raw/outcomes.R")   # writes data/outcomes.rda  (run after patients.R)
 source("data-raw/linelist.R")   # writes data/linelist.rda
 devtools::document()            # regenerate NAMESPACE and man/ from the roxygen comments
-devtools::install()             # install the package locally
+devtools::install(dependencies = TRUE)   # install locally, with the course packages
 devtools::test()                # run the harness
 ```
 
@@ -71,11 +71,22 @@ settings, serving from the `gh-pages` branch.
 ## Get started (learner)
 
 ```r
+install.packages("remotes")
+remotes::install_github("apsmunro/r4clinstats", dependencies = TRUE)
+
 library(r4clinstats)
-check_setup()     # check your machine and install anything missing
+check_setup()     # confirm the install, and fix anything still missing
 learn()           # list the lessons
 learn("m0")       # start at the beginning
 ```
+
+`dependencies = TRUE` matters: the packages the tutorials run on (`gradethis`,
+the tidyverse, `finalfit`, `broom` and the rest) are in `Suggests`, which a
+plain `install_github()` skips. They are in `Suggests` deliberately, so that a
+missing `gradethis` cannot stop `library(r4clinstats)` from loading and taking
+you to `check_setup()`.
+
+The full walkthrough is the [Get started](https://apsmunro.github.io/r4clinstats/articles/getting-started.html) guide.
 
 ## Licence
 
