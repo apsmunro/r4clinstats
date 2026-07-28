@@ -67,7 +67,11 @@ The active arm's box sits lower: blood pressure fell more on the drug. The boxes
 
 ## The t-test
 
-`t.test()` compares the mean of a number between two groups. Its formula syntax reads naturally: `change ~ arm` means *"change, split by arm."* First, though, a deliberately boring example: comparing the arms' **baseline** blood pressure. **Run it:**
+`t.test()` compares the mean of a number between two groups, and it wants the comparison written as a **formula**: `change ~ arm`, which reads *"change, split by arm."*
+
+That `~` is a **tilde**, and it is worth a moment because it runs through the rest of the course. It is not a typo and not a minus sign. R uses it to mean "by", or "explained by": what you are measuring goes on the left, and what splits or explains it goes on the right. You have already met it in Lesson 8 as `facet_wrap(~ arm)`, meaning one panel *by* arm. Every test and model from here on is written the same way.
+
+First, though, a deliberately boring example: comparing the arms' **baseline** blood pressure. **Run it:**
 
 ```{r ttest-baseline, exercise=TRUE}
 t.test(sbp ~ arm, data = patients)
@@ -147,7 +151,11 @@ chisq.test(table(trial$arm, trial$adverse_event))
 
 ## Tidy results with broom
 
-Test output is written for reading, not for reuse. The `broom` package's `tidy()` turns any test or model into a one-row data frame, so results can be filtered, joined and reported with the tools you already know. **Fill in the function:**
+Test output is written for reading, not for reuse. `t.test()` prints a tidy little paragraph, and there is no easy way to pull the p-value out of a paragraph and into a table.
+
+**broom** is a small package that exists to solve exactly that. It takes the output of a test or a model and hands it back as a data frame, with plain column names like `estimate`, `conf.low` and `p.value`. Its main function is `tidy()`, and the same call works on a t-test, a chi-squared, a linear model or a survival model, which is why it appears in every lesson from here to the end. Once a result is a data frame, every verb from Lessons 3 and 4 works on it.
+
+**Fill in the function:**
 
 ```{r tidy-test, exercise=TRUE, exercise.blanks="___+"}
 t.test(change ~ arm, data = bp_change) |>

@@ -131,11 +131,31 @@ ggplot(patients, aes(x = bmi, y = sbp, colour = arm)) +
 
 `labs()` renames the axes the same way, and Lesson 8 puts it to work properly.
 
-Anything inside `aes()` is *mapped from the data*. If instead you wanted every point the same fixed colour, you would set it outside `aes()`, like `geom_point(colour = "steelblue")`.
+### When to use colour, and when to leave it out
+
+Colour earns its place when comparing groups is part of the question. "Does the link between BMI and blood pressure look different on the two arms?" needs `colour = arm`, and you get the answer in one picture instead of two.
+
+Leave it out when the third variable is not part of the question. A plain scatter of BMI against blood pressure answers "do these two move together?" perfectly well, and a colour the reader does not need makes the plot harder to read rather than easier. If you cannot say in one sentence what the colour is *for*, drop it.
+
+One more distinction, and it is the source of a common puzzle. Anything inside `aes()` is **mapped from the data**: each arm gets a colour, and ggplot adds the legend. Set a colour *outside* `aes()` and it is a fixed choice that carries no information at all:
+
+```{r colour-fixed, exercise=TRUE}
+ggplot(patients, aes(x = bmi, y = sbp)) +
+  geom_point(colour = "steelblue")
+```
+
+Every point is blue because you prefer blue, and there is no legend, because there is nothing to explain. Both are fine. Just know which one you are doing.
 
 ## Box plots
 
-A box plot compares a number across groups. The box holds the middle half of patients, the line inside is the median. Here we compare blood pressure between the two arms. **Fill in the geom**:
+A box plot compares a number across groups: one box per group, with the line inside marking the median and the box holding the middle half of patients. Press **Run Code** to compare BMI across smoking status:
+
+```{r box-demo, exercise=TRUE}
+ggplot(patients, aes(x = smoker, y = bmi)) +
+  geom_boxplot()
+```
+
+Three groups, three boxes, comparable at a glance. Now the same move on a different pair, comparing blood pressure between the two arms. **Fill in the geom**:
 
 ```{r box, exercise=TRUE, exercise.blanks="___+"}
 ggplot(patients, aes(x = arm, y = sbp)) +
@@ -167,7 +187,14 @@ grade_this({
 
 ## Bar charts
 
-A bar chart counts how many fall into each category. Put a category on the x-axis and `geom_bar()` does the counting. **Fill in the geom** to count patients by smoking status:
+A bar chart counts how many fall into each category. Put a category on the x-axis and `geom_bar()` does the counting for you, which is why there is no `y` to set. Press **Run Code** to count patients by treatment arm:
+
+```{r bar-demo, exercise=TRUE}
+ggplot(patients, aes(x = arm)) +
+  geom_bar()
+```
+
+Two bars, each as tall as the number of patients in that arm. Now count by smoking status instead. **Fill in the geom**:
 
 ```{r bar, exercise=TRUE, exercise.blanks="___+"}
 ggplot(patients, aes(x = smoker)) +

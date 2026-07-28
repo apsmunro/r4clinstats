@@ -161,7 +161,16 @@ glm(response ~ arm, data = trial, family = gaussian)
 
 ## Odds ratios
 
-A logistic model's natural summary is the **odds ratio** (OR): above 1 means the outcome is more likely, below 1 less likely. `tidy()` will exponentiate the coefficients into ORs and attach confidence intervals in one call. **Fill in the value:**
+A logistic model's natural summary is the **odds ratio** (OR): above 1 means the outcome is more likely, below 1 less likely.
+
+You cannot read one straight off the model, though. Logistic regression works internally in **log-odds**, a scale nobody thinks in. The treatment coefficient here comes out as 0.98, which means nothing to a clinical reader. Exponentiating it, undoing the logarithm, turns 0.98 into 2.66: an odds ratio you can put in a paper.
+
+`tidy()` does that conversion and attaches confidence intervals, but only if you ask. Both are **switches**, arguments you set to `TRUE` to turn a behaviour on, the same pattern as `p = TRUE` back in the tables lesson. Neither happens by default:
+
+- `exponentiate = TRUE` converts the log-odds into odds ratios
+- `conf.int = TRUE` adds the `conf.low` and `conf.high` columns
+
+**Fill in the value:**
 
 ```{r glm-or, exercise=TRUE, exercise.blanks="___+"}
 glm(response ~ arm, data = trial, family = binomial) |>

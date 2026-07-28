@@ -126,7 +126,13 @@ ggplot(bp_mean, aes(x = weeks, y = sbp, colour = weeks)) +
 
 ## Small multiples with faceting
 
-Instead of colouring, you can give each group its own panel with `facet_wrap()`. Read `~ arm` as *"one panel per arm."* **Fill in the column** to split the patient lines by arm:
+**Faceting** splits one crowded plot into a grid of small panels, one per group, every panel drawn to the same scale. That shared scale is the point: identical axes let you compare the panels directly by eye. The technique has a name of its own, *small multiples*.
+
+Reach for it when a single panel is too busy to read. The spaghetti plot earlier is the case in point: a hundred lines on top of one another, where even colouring by arm would leave the two sets tangled together. Give each arm its own panel and half the crowding goes away. That is the trade in general. Colour keeps everything in one frame and works well while the groups stay easy to tell apart; faceting spends space to buy clarity, and wins as soon as the groups start hiding each other.
+
+`facet_wrap()` does the splitting. Read `~ arm` as *"one panel per arm."* That squiggle is called a **tilde**, and it is R's way of saying "by": one panel *by* arm. You will meet it again in the analysis lessons, where models are written the same way.
+
+**Fill in the column** to split the patient lines by arm:
 
 ```{r facet, exercise=TRUE, exercise.blanks="___+"}
 ggplot(bp, aes(x = weeks, y = value, group = id)) +

@@ -110,6 +110,16 @@ Small expressions like `nrow(patients)` or `round(estimate, 1)` are all inline c
 
 Time to build. The six exercises below are the six analysis chunks of your report, and together they are the whole course in miniature. Everything you need is loaded: `patients`, `bp_change`, `bp_mean`, `trial`, and a fitted Kaplan-Meier estimate `km`, all built exactly as in Lessons 11 to 13 (with `Placebo` as the reference level).
 
+One function turns up in the feedback below that you have not used yet. **`kable()`** takes a data frame and typesets it as a proper table in the finished document, instead of the raw console output you see here in the sandbox. You use it by piping a table into it:
+
+```
+patients |>
+  summary_factorlist("arm", c("age", "sex")) |>
+  kable()
+```
+
+That is the same pipe you have used since Lesson 3, with `kable()` as the last step. It comes from the `knitr` package, which Quarto uses to build documents. The exercises below stop just short of it, because there is no document to typeset into until you leave this sandbox.
+
 ### The baseline table
 
 Every report opens by describing who was in it. Build the Table 1: `age`, `sex`, `smoker` and `bmi`, compared across `arm`, from `patients`.
@@ -382,7 +392,7 @@ It puts a file called `trial-report.qmd` in your working directory and opens it.
 
 Then work like this:
 
-1. **Press Render first**, before touching anything. The document builds as it stands: your first reproducible report, thirty seconds in. (RStudio ships with Quarto built in — if you can see the Render button, you have everything.)
+1. **Press Render first**, before touching anything. The **Render** button sits in the toolbar along the top of the editor pane, directly above your open document; the keyboard shortcut is `Ctrl+Shift+K` (`Cmd+Shift+K` on a Mac). Press it and RStudio builds the whole document and opens the result. That is your first reproducible report, thirty seconds in. RStudio ships with Quarto built in, so if you can see the button you already have everything you need.
 2. **Fill one TODO chunk**, using your code from the matching exercise above, and render again. The section appears. One difference from the sandbox: pipe each table into `kable()`, which typesets a data frame properly for a document.
 3. **Repeat** until all six are in. Then write the conclusion in your own words, quoting numbers with inline code the way the Patients paragraph already does.
 

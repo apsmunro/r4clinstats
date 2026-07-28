@@ -80,6 +80,19 @@ grade_this({
 })
 ```
 
+### Choosing a binwidth
+
+`binwidth = 5` puts each bar across a five-year span: 40 to 45, 45 to 50, and so on. The ages here run from 40 to 85, so that gives nine bars. The number is yours to choose, and it decides how much detail survives. **Run the same histogram** with a binwidth of 1:
+
+```{r hist-binwidth, exercise=TRUE}
+ggplot(patients, aes(x = age)) +
+  geom_histogram(binwidth = 1)
+```
+
+Spikier, and harder to read. Forty-five bars for a hundred patients leaves most of them one or two people high, so you are looking at noise rather than shape. Go the other way to `binwidth = 20` and the opposite happens: two or three fat bars that hide the shape completely.
+
+No value is correct, only useful. Aim for something that gives roughly ten bars across the range of your data, look at what you get, and adjust if it comes out either too jagged or too blocky. It is a knob you turn while looking, not a number you work out in advance.
+
 Age is a tidy hill. That shape is what makes the mean trustworthy here.
 
 ## Mean and standard deviation

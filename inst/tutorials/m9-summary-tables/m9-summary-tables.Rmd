@@ -29,6 +29,8 @@ The promises hold: nothing breaks, red text is normal, and **Hint** then **Solut
 
 ## A first Table 1
 
+Two names worth keeping apart, because they are easy to run together. **`finalfit`** is the *package*: a toolbox for clinical reporting, written by clinicians, which you loaded at the start of this lesson. **`summary_factorlist()`** is one *function* inside that toolbox, the one that builds a Table 1. The package is the box; the function is the tool you pick out of it.
+
 `summary_factorlist()` takes three things: the data, the **dependent** (the column to compare across, here the treatment `arm`), and the **explanatory** variables to describe. Press **Run Code**:
 
 ```{r first-table, exercise=TRUE}
