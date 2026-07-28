@@ -2,6 +2,8 @@
 
 ### All vignettes
 
+- [Crib sheet: every function in the
+  course](https://apsmunro.github.io/r4clinstats/articles/crib-sheet.md):
 - [Get
   started](https://apsmunro.github.io/r4clinstats/articles/getting-started.md):
 - [Troubleshooting: installing on a hospital or university

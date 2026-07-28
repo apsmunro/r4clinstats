@@ -73,6 +73,19 @@ Start at **m0** and work along in order.
 
 That is everything. The rest you learn by doing.
 
+## Keep the crib sheet open
+
+One habit worth starting with. Open the [Crib
+sheet](https://apsmunro.github.io/r4clinstats/articles/crib-sheet.md) in
+a second browser tab and leave it there while you work. It lists every
+function the course teaches, grouped by the job you want done, with the
+lesson each came from.
+
+You will want it from about Lesson 4 onwards, when you start needing
+something taught two lessons ago. A running lesson keeps hold of your R
+console, so you cannot look things up there, and hunting back through
+earlier lessons breaks your flow.
+
 ## If something goes wrong
 
 A few things trip people up. None of them are your fault.
