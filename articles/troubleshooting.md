@@ -113,6 +113,18 @@ It creates a package library outside OneDrive and points R at it.
 Restart R afterwards (**Session ▸ Restart R**), then reinstall the
 course packages with `check_setup(install = TRUE)`.
 
+## The console has no `>` prompt, or looks frozen
+
+Nothing is broken: a lesson is still running. A lesson holds on to your
+R console for as long as it is open, and closing the browser tab does
+not give it back, because the lesson runs in R rather than in the
+browser.
+
+Click into the **Console** and press `Esc`, or click the red stop button
+at the top right of the Console pane. The `>` prompt returns, and
+[`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
+brings back the menu.
+
 ## “No tutorials found for package ‘r4clinstats’”
 
 Your R session is holding an older view of the package, typically right

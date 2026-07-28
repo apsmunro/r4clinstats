@@ -139,6 +139,24 @@ console, so you cannot look things up there, and hunting back through
 earlier lessons breaks your flow.</p>
 </div>
 <div class="section level2">
+<h2 id="getting-back-to-the-menu">Getting back to the menu<a class="anchor" aria-label="anchor" href="#getting-back-to-the-menu"></a>
+</h2>
+<p>This one catches nearly everyone the first time. While a lesson is
+open it holds on to your R console, so the console shows no
+<code>&gt;</code> prompt and looks frozen. Closing the browser tab does
+not release it, because the lesson is running in R, not in the
+browser.</p>
+<p>To finish with a lesson, click into the <strong>Console</strong> and
+press <code>Esc</code>, or click the red stop button at the top right of
+the Console pane. The <code>&gt;</code> prompt comes back, and you are
+free to move on:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="op">)</span>        <span class="co"># the menu again</span></span>
+<span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="st">"m3"</span><span class="op">)</span>    <span class="co"># or straight to a particular lesson</span></span></code></pre></div>
+<p>Every lesson ends with a short reminder of this, so there is nothing
+to memorise.</p>
+</div>
+<div class="section level2">
 <h2 id="if-something-goes-wrong">If something goes wrong<a class="anchor" aria-label="anchor" href="#if-something-goes-wrong"></a>
 </h2>
 <p>A few things trip people up. None of them are your fault.</p>
@@ -150,7 +168,7 @@ again.</p>
 <p><strong>Install fails on a work or managed computer.</strong> Some
 workplaces store your documents in OneDrive, or lock down where programs
 may write, which R does not get along with. Run this once:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apsmunro/r4clinstats" class="external-link">r4clinstats</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/use_local_library.html">use_local_library</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>It sets up a private folder for your R packages in a location that

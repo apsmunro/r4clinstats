@@ -86,6 +86,26 @@ something taught two lessons ago. A running lesson keeps hold of your R
 console, so you cannot look things up there, and hunting back through
 earlier lessons breaks your flow.
 
+## Getting back to the menu
+
+This one catches nearly everyone the first time. While a lesson is open
+it holds on to your R console, so the console shows no `>` prompt and
+looks frozen. Closing the browser tab does not release it, because the
+lesson is running in R, not in the browser.
+
+To finish with a lesson, click into the **Console** and press `Esc`, or
+click the red stop button at the top right of the Console pane. The `>`
+prompt comes back, and you are free to move on:
+
+``` r
+
+learn()        # the menu again
+learn("m3")    # or straight to a particular lesson
+```
+
+Every lesson ends with a short reminder of this, so there is nothing to
+memorise.
+
 ## If something goes wrong
 
 A few things trip people up. None of them are your fault.

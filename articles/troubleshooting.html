@@ -158,6 +158,18 @@ reinstall the course packages with
 <code>check_setup(install = TRUE)</code>.</p>
 </div>
 <div class="section level2">
+<h2 id="the-console-has-no-prompt-or-looks-frozen">The console has no <code>&gt;</code> prompt, or looks frozen<a class="anchor" aria-label="anchor" href="#the-console-has-no-prompt-or-looks-frozen"></a>
+</h2>
+<p>Nothing is broken: a lesson is still running. A lesson holds on to
+your R console for as long as it is open, and closing the browser tab
+does not give it back, because the lesson runs in R rather than in the
+browser.</p>
+<p>Click into the <strong>Console</strong> and press <code>Esc</code>,
+or click the red stop button at the top right of the Console pane. The
+<code>&gt;</code> prompt returns, and <code><a href="../reference/learn.html">learn()</a></code> brings back
+the menu.</p>
+</div>
+<div class="section level2">
 <h2 id="no-tutorials-found-for-package-r4clinstats">“No tutorials found for package ‘r4clinstats’”<a class="anchor" aria-label="anchor" href="#no-tutorials-found-for-package-r4clinstats"></a>
 </h2>
 <p>Your R session is holding an older view of the package, typically
