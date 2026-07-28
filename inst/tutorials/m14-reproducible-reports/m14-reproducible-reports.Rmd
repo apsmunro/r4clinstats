@@ -428,3 +428,16 @@ A recap of the lesson, and of everything:
 Fourteen lessons ago you were promised you could not break anything, and you never did. You went from one line of R to a randomised trial analysed end to end — designed tidy, wrangled, cleaned, described, pictured, tested, modelled, survived, and now written up in a document that rebuilds itself on demand.
 
 That last part was always the point. The script is your method section. Go write one about something real.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # the full menu, to revisit any lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

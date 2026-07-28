@@ -284,3 +284,17 @@ Two moves, both about *shape* rather than content:
 - **`left_join()`** links two tables on a shared column
 
 Reshaping and joining are what make repeated-measures and multi-table clinical data workable, and both go far more smoothly when the tables were tidy to begin with. That thread runs through everything so far.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m6")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

@@ -272,3 +272,16 @@ The three messes you will meet most, and the tool for each:
 
 Cleaning is where analysis really begins, and it goes fastest when the data was collected tidily in the first place, the design habit from Lesson 1. Next you start turning clean data into pictures.
 
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m7")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

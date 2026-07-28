@@ -301,3 +301,17 @@ Three moves that turn a plot into a figure:
 - **`labs()` and a theme** make it readable, added last once the plot is right
 
 You have now seen the plot that shows a whole trial at a glance: two arms, starting together, parting over time. Next you turn those same variables into the summary table every paper opens with.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m9")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

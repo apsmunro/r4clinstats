@@ -316,3 +316,17 @@ Describing a variable is a two-step habit:
 - **`group_by()` + `summarise()`** turns either into a per-group description
 
 Next you stop describing differences and start testing them: is the gap between two groups more than chance could produce?
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m11")   # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

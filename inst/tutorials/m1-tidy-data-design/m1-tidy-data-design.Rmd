@@ -137,3 +137,17 @@ One idea, carried through the rest of the course:
 - you secure all of this by **designing the collection form backwards from your analysis**, choosing fixed options over free text
 
 Next you start writing R in earnest, in **The building blocks of R**.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m2")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

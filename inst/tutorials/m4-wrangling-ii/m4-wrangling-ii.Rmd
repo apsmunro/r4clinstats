@@ -278,3 +278,17 @@ Two verbs that do most of the work of reporting:
 - **`group_by()`** with **`summarise()`** reduces a column to one number per group
 
 Put these together with M3's `filter`, `count`, `arrange` and `select`, and you have the core of day-to-day analysis. Most of the "Table 1" you see in a clinical paper is a handful of lines like these.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m5")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

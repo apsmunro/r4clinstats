@@ -324,3 +324,17 @@ Every plot you drew today used the same three parts:
 - **`geom_`**: how to draw it, as points, boxes or bars
 
 Swap the geom and you change the picture; swap the aesthetics and you change what it shows. That small grammar covers a great deal of ground. Next you shape these into publication-ready clinical figures.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m8")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

@@ -84,3 +84,17 @@ You have made a start:
 - you ran your first line of R, and counted something useful with it
 
 Next is **Tidy data as design**, the one idea about how a table is shaped that makes everything afterwards easier.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m1")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

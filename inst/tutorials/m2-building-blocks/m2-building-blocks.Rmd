@@ -348,3 +348,17 @@ You now have the words the rest of the course uses without stopping to explain:
 - `class()` tells you which one you've got
 
 None of the later lessons assume more than this. With the vocabulary in place, you're ready to start wrangling.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m3")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

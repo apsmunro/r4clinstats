@@ -297,3 +297,17 @@ Time-to-event analysis in four moves:
 That completes the analysis toolkit. You can now take a trial from a raw spreadsheet to a survival curve and a hazard ratio: design the data, wrangle it, describe it, picture it, and test what it shows — every step written down, repeatable, and yours.
 
 One lesson remains, and it is the payoff for all of this: turning the whole analysis into a document you can hand to a colleague.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m14")   # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

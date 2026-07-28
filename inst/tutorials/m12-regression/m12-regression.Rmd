@@ -321,3 +321,17 @@ One formula syntax, two models:
 - set the **reference level** with `relevel()` so coefficients read the way you mean them
 
 You have also met regression to the mean, the reason control arms exist. One outcome type remains, the hardest and the most clinical: time until an event happens.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m13")   # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

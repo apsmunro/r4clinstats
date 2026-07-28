@@ -277,3 +277,17 @@ Two tests cover most clinical comparisons:
 - **`tidy()`** turns any result into a one-row data frame for reporting
 
 And the discipline underneath: test the *outcome*, not the baseline, and report the confidence interval alongside the p-value. Next, regression: the tool for when one comparison at a time is not enough.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m12")   # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.

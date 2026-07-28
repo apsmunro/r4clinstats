@@ -319,3 +319,17 @@ Look at what you can now do to a real clinical dataset, entirely in code:
 Every one of these worked first or second time, and that feeling of *"oh, I can actually do this"* is the whole point of today. The fancier analyses later are just more of these small, learnable steps stacked together.
 
 And the bigger lesson underneath it all: this was easy **because the data was tidy**, and the data was tidy **because someone designed the collection form with the analysis in mind.** That's the habit worth carrying into your own projects.
+
+### Finished this lesson?
+
+A lesson keeps hold of your R console while it is open, so closing the
+browser tab is not enough to get it back. Press `Esc` with your cursor in
+the **Console** (or click the red stop button at the top right of the
+Console pane) to close the lesson down. Then:
+
+```
+learn()        # back to the menu
+learn("m4")    # straight on to the next lesson
+```
+
+Nothing is lost by closing a lesson down and coming back to it later.
