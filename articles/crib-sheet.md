@@ -124,6 +124,8 @@ that draws it.
 | `facet_wrap(~ arm)` | One panel per group, all on the same scale. Use when a single panel is too crowded. | M8 |
 | `labs(x = "Weeks", y = "Systolic BP", colour = "Treatment arm")` | Readable axis and legend titles. | M7, M8 |
 | `theme_minimal()` | A cleaner look for a paper. | M8 |
+| `scale_colour_brewer(palette = "Dark2")` | Colours a reader with red-green colour blindness can still tell apart. Worth it from three groups up. Use `scale_fill_brewer()` for bars and boxes. | M8 |
+| `scale_colour_viridis_d()` | The same idea for an ordered variable; `scale_colour_viridis_c()` for a continuous one. | M8 |
 
 ## Tables and tests
 
