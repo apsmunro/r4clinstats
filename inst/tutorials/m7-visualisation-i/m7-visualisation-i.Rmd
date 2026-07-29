@@ -131,6 +131,8 @@ ggplot(patients, aes(x = bmi, y = sbp, colour = arm)) +
 
 `labs()` renames the axes the same way, and Lesson 8 puts it to work properly.
 
+Two colours is also the case where ggplot's defaults are at their safest. Once you colour by three groups or more, the defaults become hard to read for anyone with red-green colour blindness, and there is a one-line fix. Lesson 8 covers it, under tidying a figure for a paper.
+
 ### When to use colour, and when to leave it out
 
 Colour earns its place when comparing groups is part of the question. "Does the link between BMI and blood pressure look different on the two arms?" needs `colour = arm`, and you get the answer in one picture instead of two.

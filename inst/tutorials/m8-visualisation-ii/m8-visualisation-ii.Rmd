@@ -184,6 +184,30 @@ ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
 
 Same data, ready for a slide or a paper. The habit: get the plot right first, then add `labs()` and a theme last.
 
+### Colours everyone can read
+
+One more thing belongs in "ready for a paper", and almost nobody is taught it. Around one man in twelve has some form of red-green colour blindness, and ggplot's default colours do not allow for it.
+
+With two groups the defaults hold up, which is why every plot so far has been fine. At three they stop holding up: the default red and green are close to indistinguishable to a reader with the commonest form, so two of your three lines become one. The plot still looks right to you.
+
+The fix is a single layer. `scale_colour_brewer()` swaps in a palette built for categories:
+
+```{r cvd-palette, exercise=TRUE}
+ggplot(patients, aes(x = bmi, y = sbp, colour = smoker)) +
+  geom_point() +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(colour = "Smoking status") +
+  theme_minimal()
+```
+
+Three points worth keeping:
+
+- use **`scale_fill_brewer()`** instead when the colour fills a shape, as in bars and box plots
+- for an **ordered** variable, or a continuous one, `scale_colour_viridis_d()` and `scale_colour_viridis_c()` do the same job
+- neither needs an extra package; both come with `ggplot2`
+
+Journals increasingly ask about this, and a figure nobody can read is a figure that failed at its one job.
+
 ## Practice
 
 Three to finish, no blanks. Write each full plot yourself; **Hint** and **Solution** are there if you want them.
