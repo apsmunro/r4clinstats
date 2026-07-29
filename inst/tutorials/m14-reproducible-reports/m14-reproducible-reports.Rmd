@@ -129,8 +129,11 @@ Every report opens by describing who was in it. Build the Table 1: `age`, `sex`,
 
 ```
 
-```{r rep-table-hint}
-# Lesson 9's one-liner:
+```{r rep-table-hint-1}
+# Lesson 9's one-liner.
+```
+
+```{r rep-table-hint-2}
 # patients |> summary_factorlist("arm", c("age", "sex", "smoker", "bmi"))
 ```
 
@@ -170,8 +173,11 @@ The figure that shows the whole trial at a glance: from `bp_mean`, the mean bloo
 
 ```
 
-```{r rep-trend-hint}
-# Lesson 8's polished trend:
+```{r rep-trend-hint-1}
+# Lesson 8's polished trend.
+```
+
+```{r rep-trend-hint-2}
 # ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
 #   geom_line(linewidth = 1) +
 #   labs(y = "Mean systolic BP (mmHg)") +
@@ -218,7 +224,12 @@ The trial's headline model, from Lesson 12: `change` modelled on `baseline` and 
 
 ```
 
-```{r rep-model-hint}
+```{r rep-model-hint-1}
+# Lesson 12's baseline-adjusted model: change explained by baseline and arm
+# together. A report quotes intervals, so ask tidy() for them.
+```
+
+```{r rep-model-hint-2}
 # lm(change ~ baseline + arm, data = bp_change) |>
 #   tidy(conf.int = TRUE)
 ```
@@ -261,7 +272,12 @@ The response analysis: logistic regression of `response` on `arm` in `trial`, ti
 
 ```
 
-```{r rep-or-hint}
+```{r rep-or-hint-1}
+# Lesson 12's logistic model, treatment only. Both tidy() switches are
+# needed here: one to make odds ratios, one for the interval.
+```
+
+```{r rep-or-hint-2}
 # glm(response ~ arm, data = trial, family = binomial) |>
 #   tidy(exponentiate = TRUE, conf.int = TRUE)
 ```
@@ -305,7 +321,12 @@ The Kaplan-Meier staircases from Lesson 13: `km` is already fitted; tidy it and 
 
 ```
 
-```{r rep-km-hint}
+```{r rep-km-hint-1}
+# km is already fitted for you. Tidy it into a data frame first, then plot
+# the survival estimate against time, one coloured staircase per strata.
+```
+
+```{r rep-km-hint-2}
 # tidy(km) |>
 #   ggplot(aes(x = time, y = estimate, colour = strata)) +
 #   geom_step()
@@ -346,7 +367,12 @@ And the number that goes with it: the Cox model of the treatment effect in `tria
 
 ```
 
-```{r rep-cox-hint}
+```{r rep-cox-hint-1}
+# Lesson 13's Cox model, treatment only, with the Surv() outcome on the
+# left. Same two tidy() switches as the odds ratio, for a hazard ratio.
+```
+
+```{r rep-cox-hint-2}
 # coxph(Surv(time, status) ~ arm, data = trial) |>
 #   tidy(exponentiate = TRUE, conf.int = TRUE)
 ```

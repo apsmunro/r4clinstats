@@ -190,7 +190,12 @@ Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** a
 
 ```
 
-```{r pr-ttest-hint}
+```{r pr-ttest-hint-1}
+# Formula syntax: the number you are measuring, a tilde, then the column
+# that splits it into two groups. The table goes in the data argument.
+```
+
+```{r pr-ttest-hint-2}
 # t.test(bmi ~ arm, data = patients)
 ```
 
@@ -217,7 +222,12 @@ grade_this({
 
 ```
 
-```{r pr-chisq-hint}
+```{r pr-chisq-hint-1}
+# Two steps, one inside the other. Build the cross-tabulation of the two
+# columns first with table(), then hand that to the test.
+```
+
+```{r pr-chisq-hint-2}
 # chisq.test(table(patients$smoker, patients$arm))
 ```
 
@@ -244,7 +254,12 @@ grade_this({
 
 ```
 
-```{r pr-tidy-hint}
+```{r pr-tidy-hint-1}
+# Run the same change-score t-test as before, then pipe the whole result
+# into the broom function that turns it into a data frame.
+```
+
+```{r pr-tidy-hint-2}
 # t.test(change ~ arm, data = bp_change) |> tidy()
 ```
 

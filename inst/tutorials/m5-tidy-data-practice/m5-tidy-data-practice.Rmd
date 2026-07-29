@@ -168,8 +168,11 @@ Two tables and the two new moves. Write each one yourself; the **Hint** and **So
 
 ```
 
-```{r pr-pivot-hint}
-# Same shape as the sbp example, with measure == "weight":
+```{r pr-pivot-hint-1}
+# Same shape as the sbp example, with measure == "weight".
+```
+
+```{r pr-pivot-hint-2}
 # labs |> filter(measure == "weight") |> select(id, visit, value) |>
 #   pivot_wider(names_from = visit, values_from = value)
 ```
@@ -210,8 +213,11 @@ labs |>
 
 ```
 
-```{r pr-join-hint}
-# Select just the columns you need from patients before joining:
+```{r pr-join-hint-1}
+# Select just the columns you need from patients before joining.
+```
+
+```{r pr-join-hint-2}
 # labs |> left_join(select(patients, id, arm), by = "id")
 ```
 
@@ -248,8 +254,11 @@ labs |>
 
 ```
 
-```{r pr-count-arm-hint}
-# Join first, then count. You can use the full patients table here:
+```{r pr-count-arm-hint-1}
+# Join first, then count. You can use the full patients table here.
+```
+
+```{r pr-count-arm-hint-2}
 # labs |> left_join(patients, by = "id") |> count(arm)
 ```
 

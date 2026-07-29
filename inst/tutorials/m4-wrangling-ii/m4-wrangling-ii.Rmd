@@ -156,8 +156,11 @@ Your turn, no blanks. Write each one out. The **Hint** and **Solution** are a cl
 
 ```
 
-```{r pr-mutate-hint}
-# mutate() adds a column. A comparison gives TRUE/FALSE:
+```{r pr-mutate-hint-1}
+# mutate() adds a column. A comparison gives TRUE/FALSE.
+```
+
+```{r pr-mutate-hint-2}
 # patients |> mutate(high_bp = sbp > 140)
 ```
 
@@ -194,8 +197,11 @@ patients |>
 
 ```
 
-```{r pr-groupsum-hint}
-# Group first, then summarise:
+```{r pr-groupsum-hint-1}
+# Group first, then summarise.
+```
+
+```{r pr-groupsum-hint-2}
 # patients |> group_by(smoker) |> summarise(mean_bmi = mean(bmi))
 ```
 
@@ -233,8 +239,11 @@ patients |>
 
 ```
 
-```{r pr-combo-hint}
+```{r pr-combo-hint-1}
 # Three steps: filter the arm, group by smoker, then summarise.
+```
+
+```{r pr-combo-hint-2}
 # patients |> filter(arm == "Active") |> group_by(smoker) |> summarise(mean_sbp = mean(sbp))
 ```
 

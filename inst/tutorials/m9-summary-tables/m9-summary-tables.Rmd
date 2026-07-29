@@ -149,7 +149,12 @@ Three to finish, no blanks. Write each table yourself; **Hint** and **Solution**
 
 ```
 
-```{r pr-table-hint}
+```{r pr-table-hint-1}
+# One function call. The dependent comes first, in quotes, and the variables
+# to describe follow inside c(), each in quotes too.
+```
+
+```{r pr-table-hint-2}
 # patients |> summary_factorlist("arm", c("age", "bmi", "smoker"))
 ```
 
@@ -191,8 +196,11 @@ patients |>
 
 ```
 
-```{r pr-bysex-hint}
-# Swap the dependent from "arm" to "sex":
+```{r pr-bysex-hint-1}
+# Swap the dependent from "arm" to "sex".
+```
+
+```{r pr-bysex-hint-2}
 # patients |> summary_factorlist("sex", c("age", "bmi", "smoker"))
 ```
 
@@ -234,7 +242,12 @@ patients |>
 
 ```
 
-```{r pr-pvalues-hint}
+```{r pr-pvalues-hint-1}
+# Same shape as the last one, with only two variables this time, plus the
+# switch that turns the p-value column on.
+```
+
+```{r pr-pvalues-hint-2}
 # patients |> summary_factorlist("sex", c("age", "bmi"), p = TRUE)
 ```
 

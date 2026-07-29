@@ -255,6 +255,49 @@ test_that("every ungraded demo chunk runs without error", {
   expect_gt(total, 0L)
 })
 
+# Free-form exercises ("Your code here", no blanks) must offer a nudge before
+# the answer: `<label>-hint-1` holds the approach in prose, `<label>-hint-2`
+# holds the worked code, and learnr puts a "Next Hint" button between them. A
+# tester asked for the chance to try before being shown the answer, and a
+# single hint chunk cannot give her that. Guard it, since collapsing the two
+# back into one would quietly remove the option without failing anything else.
+test_that("free-form exercises offer a nudge before the answer", {
+  tut_root <- system.file("tutorials", package = "r4clinstats")
+  skip_if(tut_root == "", "tutorials not installed")
+  rmds <- list.files(tut_root, pattern = "\\.Rmd$", recursive = TRUE, full.names = TRUE)
+  skip_if(length(rmds) == 0L, "no tutorials found")
+
+  n <- 0L
+  for (rmd in rmds) {
+    rmd_lines <- readLines(rmd, warn = FALSE)
+    starts <- grep("^```\\{r[^}]*\\}", rmd_lines)
+    headers <- rmd_lines[starts]
+    labels <- trimws(sub("^```\\{r\\s*([^,}]+).*$", "\\1", headers))
+
+    free <- which(grepl("exercise\\s*=\\s*TRUE", headers) &
+                    !grepl("exercise.blanks", headers) &
+                    paste0(labels, "-check") %in% labels)
+
+    for (i in free) {
+      base <- labels[i]
+      where <- paste(basename(rmd), "/", base)
+      n <- n + 1L
+
+      expect_true(paste0(base, "-hint-1") %in% labels,
+                  info = paste(where, "has no -hint-1 (the nudge)"))
+      expect_true(paste0(base, "-hint-2") %in% labels,
+                  info = paste(where, "has no -hint-2 (the answer)"))
+
+      # The nudge must stay a nudge: comments only, no runnable code.
+      h1 <- extract_chunk_by_label(rmd_lines, paste0(base, "-hint-1"))
+      stripped <- trimws(sub("^#.*$", "", strsplit(h1, "\n", fixed = TRUE)[[1]]))
+      expect_false(any(nzchar(stripped)),
+                   info = paste(where, "-hint-1 contains code; it should only describe the approach"))
+    }
+  }
+  expect_gt(n, 0L)
+})
+
 # The solution runner above never executes the `-check` graders, so a typo
 # inside a grade_this() block would only surface when a learner submits an
 # answer. Guard the structure instead: every grader must at least parse, and

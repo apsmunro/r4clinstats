@@ -195,7 +195,13 @@ Three to finish, no blanks. Write each full plot yourself; **Hint** and **Soluti
 
 ```
 
-```{r pr-trend-hint}
+```{r pr-trend-hint-1}
+# Use bp_mean, which already holds one value per arm per visit.
+# Time goes across, the mean goes up, and mapping arm to colour gives
+# you one line per arm without any extra work.
+```
+
+```{r pr-trend-hint-2}
 # ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) + geom_line()
 ```
 
@@ -231,7 +237,12 @@ grade_this({
 
 ```
 
-```{r pr-facet-hint}
+```{r pr-facet-hint-1}
+# Start from the spaghetti plot: bp, with group = id so each patient gets
+# their own line. Then add one more layer with a + to split it into panels.
+```
+
+```{r pr-facet-hint-2}
 # ggplot(bp, aes(x = weeks, y = value, group = id)) + geom_line() + facet_wrap(~ arm)
 ```
 
@@ -267,7 +278,12 @@ grade_this({
 
 ```
 
-```{r pr-labs-hint}
+```{r pr-labs-hint-1}
+# The plot is the trend one again. Add a labs() layer with a + and name
+# the axis you want to rename, giving it the text a reader should see.
+```
+
+```{r pr-labs-hint-2}
 # ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +
 #   geom_line() +
 #   labs(y = "Mean systolic BP (mmHg)")

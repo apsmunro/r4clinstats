@@ -201,7 +201,12 @@ Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** a
 
 ```
 
-```{r pr-hist-hint}
+```{r pr-hist-hint-1}
+# A histogram needs only an x. The binwidth is an argument to the geom,
+# not something that belongs inside aes().
+```
+
+```{r pr-hist-hint-2}
 # ggplot(patients, aes(x = bmi)) + geom_histogram(binwidth = 2)
 ```
 
@@ -237,8 +242,11 @@ grade_this({
 
 ```
 
-```{r pr-group-hint}
-# Group, then summarise twice in one call:
+```{r pr-group-hint-1}
+# Group, then summarise twice in one call.
+```
+
+```{r pr-group-hint-2}
 # patients |> group_by(smoker) |> summarise(mean_bmi = mean(bmi), sd_bmi = sd(bmi))
 ```
 
@@ -278,8 +286,11 @@ patients |>
 
 ```
 
-```{r pr-median-hint}
-# median() and IQR() inside one summarise:
+```{r pr-median-hint-1}
+# median() and IQR() inside one summarise.
+```
+
+```{r pr-median-hint-2}
 # outcomes |> summarise(median_time = median(time), iqr_time = IQR(time))
 ```
 

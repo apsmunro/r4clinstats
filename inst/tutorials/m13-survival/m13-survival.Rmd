@@ -178,7 +178,12 @@ Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** a
 
 ```
 
-```{r pr-km-hint}
+```{r pr-km-hint-1}
+# Same call as the arm version, with one thing changed on the right of the
+# tilde. The outcome side, Surv(time, status), stays exactly as it was.
+```
+
+```{r pr-km-hint-2}
 # survfit(Surv(time, status) ~ sex, data = trial)
 ```
 
@@ -209,7 +214,13 @@ grade_this({
 km <- survfit(Surv(time, status) ~ arm, data = trial)
 ```
 
-```{r pr-plot-hint}
+```{r pr-plot-hint-1}
+# Tidy the fit first so it becomes a data frame you can plot, then pipe
+# that into ggplot. The column holding the survival probability is
+# `estimate`, and the one naming each arm is `strata`.
+```
+
+```{r pr-plot-hint-2}
 # tidy(km) |>
 #   ggplot(aes(x = time, y = estimate, colour = strata)) +
 #   geom_step()
@@ -248,7 +259,13 @@ grade_this({
 
 ```
 
-```{r pr-cox-hint}
+```{r pr-cox-hint-1}
+# The Cox model takes the same Surv() outcome as survfit did. Adjusting for
+# age is a + on the right of the tilde, and the hazard ratio needs the same
+# two tidy() switches you used for odds ratios.
+```
+
+```{r pr-cox-hint-2}
 # coxph(Surv(time, status) ~ arm + age, data = trial) |>
 #   tidy(exponentiate = TRUE, conf.int = TRUE)
 ```

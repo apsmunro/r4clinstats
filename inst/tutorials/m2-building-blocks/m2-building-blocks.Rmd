@@ -247,8 +247,11 @@ Three to finish, and no blanks this time. Write each one yourself. The **Hint** 
 
 ```
 
-```{r make-x-hint}
-# Put 10 into x with the arrow, then type x on its own line to show it:
+```{r make-x-hint-1}
+# Put 10 into x with the arrow, then type x on its own line to show it.
+```
+
+```{r make-x-hint-2}
 # x <- 10
 # x
 ```
@@ -279,8 +282,11 @@ grade_this({
 
 ```
 
-```{r make-size-hint}
-# Collect several values with c(), keeping each word in quotes:
+```{r make-size-hint-1}
+# Collect several values with c(), keeping each word in quotes.
+```
+
+```{r make-size-hint-2}
 # size <- c("small", "medium", "large")
 ```
 
@@ -314,8 +320,11 @@ size <- c("small", "medium", "large")
 
 ```
 
-```{r mk-factor-hint}
-# Give factor() the levels in the order you want, and switch ordering on:
+```{r mk-factor-hint-1}
+# Give factor() the levels in the order you want, and switch ordering on.
+```
+
+```{r mk-factor-hint-2}
 # factor(size, levels = c("small", "medium", "large"), ordered = TRUE)
 ```
 

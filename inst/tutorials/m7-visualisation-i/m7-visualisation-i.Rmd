@@ -235,7 +235,12 @@ Three to finish, no blanks. Write each full plot yourself; **Hint** and **Soluti
 
 ```
 
-```{r pr-scatter-hint}
+```{r pr-scatter-hint-1}
+# Three parts, always in this order: the data, then aes() saying which column
+# goes on which axis, then a + and the geom that draws one point per patient.
+```
+
+```{r pr-scatter-hint-2}
 # ggplot(patients, aes(x = age, y = bmi)) + geom_point()
 ```
 
@@ -264,7 +269,12 @@ grade_this({
 
 ```
 
-```{r pr-box-hint}
+```{r pr-box-hint-1}
+# A box plot needs the grouping column on x and the number on y.
+# The geom is the one that draws a box and whiskers per group.
+```
+
+```{r pr-box-hint-2}
 # ggplot(patients, aes(x = smoker, y = bmi)) + geom_boxplot()
 ```
 
@@ -293,7 +303,12 @@ grade_this({
 
 ```
 
-```{r pr-bar-hint}
+```{r pr-bar-hint-1}
+# Only one aesthetic is needed here. The bar geom counts the rows itself,
+# so there is no y to supply.
+```
+
+```{r pr-bar-hint-2}
 # ggplot(patients, aes(x = arm)) + geom_bar()
 ```
 

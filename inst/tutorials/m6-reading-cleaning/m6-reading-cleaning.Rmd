@@ -161,8 +161,11 @@ Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** a
 
 ```
 
-```{r pr-female-hint}
-# Clean sex first, then filter for the clean label:
+```{r pr-female-hint-1}
+# Clean sex first, then filter for the clean label.
+```
+
+```{r pr-female-hint-2}
 # linelist |> mutate(sex = if_else(tolower(sex) == "female", "Female", "Male")) |> filter(sex == "Female")
 ```
 
@@ -200,8 +203,11 @@ linelist |>
 
 ```
 
-```{r pr-factor-hint}
-# Same move as the building-blocks lesson, with the levels in the order you want:
+```{r pr-factor-hint-1}
+# Same move as the building-blocks lesson, with the levels in the order you want.
+```
+
+```{r pr-factor-hint-2}
 # factor(linelist$smoker, levels = c("never", "former", "current"), ordered = TRUE)
 ```
 
@@ -231,8 +237,11 @@ grade_this({
 
 ```
 
-```{r pr-active-hint}
-# filter() can take two conditions at once, separated by a comma:
+```{r pr-active-hint-1}
+# filter() can take two conditions at once, separated by a comma.
+```
+
+```{r pr-active-hint-2}
 # linelist |> filter(arm == "Active", !is.na(weight))
 ```
 

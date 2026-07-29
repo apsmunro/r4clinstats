@@ -205,7 +205,12 @@ Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** a
 
 ```
 
-```{r pr-crude-hint}
+```{r pr-crude-hint-1}
+# Unadjusted means one predictor only, so nothing on the right of the tilde
+# but the treatment column. Then pipe the model into tidy() as before.
+```
+
+```{r pr-crude-hint-2}
 # lm(change ~ arm, data = bp_change) |> tidy()
 ```
 
@@ -239,7 +244,13 @@ lm(change ~ arm, data = bp_change)
 
 ```
 
-```{r pr-adjor-hint}
+```{r pr-adjor-hint-1}
+# A yes/no outcome means glm() with the binomial family. Add the second
+# predictor with a +, and remember the two switches that turn the
+# coefficients into odds ratios and add a confidence interval.
+```
+
+```{r pr-adjor-hint-2}
 # glm(response ~ arm + age, data = trial, family = binomial) |>
 #   tidy(exponentiate = TRUE, conf.int = TRUE)
 ```
@@ -284,7 +295,12 @@ glm(response ~ arm + age, data = trial, family = binomial) |>
 
 ```
 
-```{r pr-scatter-hint}
+```{r pr-scatter-hint-1}
+# Two layers stacked with +: one to draw the patients, one to draw the
+# fitted line. The smooth needs telling which kind of line to fit.
+```
+
+```{r pr-scatter-hint-2}
 # ggplot(bp_change, aes(x = baseline, y = change)) +
 #   geom_point() +
 #   geom_smooth(method = "lm")

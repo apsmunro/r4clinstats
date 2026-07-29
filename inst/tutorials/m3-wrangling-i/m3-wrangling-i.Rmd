@@ -205,8 +205,11 @@ Four verbs, no blanks. Build each answer yourself; the **Hint** and **Solution**
 
 ```
 
-```{r pr-filter-hint}
-# filter() keeps matching rows. Match text with a double ==:
+```{r pr-filter-hint-1}
+# filter() keeps matching rows. Match text with a double ==.
+```
+
+```{r pr-filter-hint-2}
 # patients |> filter(arm == "Active")
 ```
 
@@ -238,8 +241,11 @@ patients |>
 
 ```
 
-```{r pr-count-hint}
-# Two steps joined by the pipe. desc() sorts largest first:
+```{r pr-count-hint-1}
+# Two steps joined by the pipe. desc() sorts largest first.
+```
+
+```{r pr-count-hint-2}
 # patients |> count(smoker) |> arrange(desc(n))
 ```
 
@@ -273,8 +279,11 @@ patients |>
 
 ```
 
-```{r pr-pipeline-hint}
-# filter() chooses rows, select() chooses columns. Chain them with the pipe:
+```{r pr-pipeline-hint-1}
+# filter() chooses rows, select() chooses columns. Chain them with the pipe.
+```
+
+```{r pr-pipeline-hint-2}
 # patients |> filter(age > 70) |> select(id, age, arm)
 ```
 
