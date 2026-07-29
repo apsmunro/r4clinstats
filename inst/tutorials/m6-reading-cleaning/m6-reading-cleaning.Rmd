@@ -59,6 +59,8 @@ We will fix them in that order.
 
 The fix for inconsistent text is to flatten it to a single form, then map it to the labels you want. `tolower()` puts everything in lower case, so `Female`, `female` and `FEMALE` all become `female`. Then `if_else()` sorts each row into a clean label.
 
+Both of those sit inside **`mutate()`**, the column-builder from Lesson 4, which is the workhorse of this whole lesson. One thing about it is worth saying plainly, because every cleaning step below relies on it: when the name you give `mutate()` already exists, as `sex` does here, the new value **replaces** that column rather than adding a second one. Cleaning a column is really overwriting it with a tidier version of itself.
+
 **Fill in the lower-case word** the test should match:
 
 ```{r clean-sex, exercise=TRUE, exercise.blanks="___+"}

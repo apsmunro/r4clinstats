@@ -198,6 +198,8 @@ head(smoker_ord   > "Never")   # a straight answer: has this patient ever smoked
 
 The plain factor returns `NA` for every patient with a warning that `>` is "not meaningful". The ordered one answers the question.
 
+(`head()` there is doing something small but useful: showing just the first few values instead of all 100. Wrap anything in it when the output would otherwise fill your screen.)
+
 So for most day-to-day clinical work, `levels =` is the part you need. Reach for `ordered = TRUE` when the categories are a real scale that you will compare or model as one: tumour stage, NYHA class, a Likert response.
 
 ## Yes / no answers: logical values

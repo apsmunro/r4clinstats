@@ -51,7 +51,7 @@ Three rows per patient, stacked. To compare visits, you want them spread across 
 
 ## Reshaping with `pivot_wider()`
 
-`pivot_wider()` turns rows into columns, and it needs two things from you: which column supplies the new **headings**, and which supplies the **numbers** that fill them. We first narrow to the three columns we care about (`id`, `visit`, `value`), then spread the visits out. **Fill in both blanks**:
+`pivot_wider()` turns rows into columns, and it needs two things from you: which column supplies the new **headings**, and which supplies the **numbers** that fill them. We first narrow to the three columns we care about with `select()` (Lesson 3), keeping `id`, `visit` and `value`, then spread the visits out. **Fill in both blanks**:
 
 ```{r pivot-wide, exercise=TRUE, exercise.blanks="___+"}
 labs |>
