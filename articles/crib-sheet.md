@@ -137,6 +137,33 @@ that draws it.
 | `chisq.test(table(patients$smoker, patients$arm))` | Tests whether two categories are associated. | M11 |
 | `tidy(result)` | Turns any test or model into a tidy data frame, with columns like `estimate` and `p.value`. From the `broom` package. | M11 |
 
+`tidy()` returns up to ten columns, and the output panel hides the ones
+that do not fit behind a small arrow at the top right, so the confidence
+interval and p-value are often out of sight. Keep the ones you would
+report:
+
+``` r
+
+t.test(change ~ arm, data = bp_change) |>
+  tidy() |>
+  select(estimate, conf.low, conf.high, p.value)
+```
+
+### Reading `e-17` and the like
+
+R writes very small numbers in **scientific notation**. `e-17` means
+“shift the decimal point 17 places left”, and the exponent does all the
+work:
+
+| R shows    | Means                 | Report as  |
+|------------|-----------------------|------------|
+| `6.78e-17` | 0.0000000000000000678 | p \< 0.001 |
+| `1.98e-03` | 0.00198               | p = 0.002  |
+| `4.20e-02` | 0.042                 | p = 0.042  |
+
+`1.98e-03` is 0.002, **not** 1.98. A p-value can never exceed 1, so if
+yours looks bigger, you have missed the exponent. (M12)
+
 ## Models
 
 All of them share the same formula shape: outcome, tilde, predictors.

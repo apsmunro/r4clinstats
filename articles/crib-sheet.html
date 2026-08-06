@@ -481,6 +481,48 @@ Leave it off a randomised baseline table.</td>
 </tr>
 </tbody>
 </table>
+<p><code>tidy()</code> returns up to ten columns, and the output panel
+hides the ones that do not fit behind a small arrow at the top right, so
+the confidence interval and p-value are often out of sight. Keep the
+ones you would report:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test</a></span><span class="op">(</span><span class="va">change</span> <span class="op">~</span> <span class="va">arm</span>, data <span class="op">=</span> <span class="va">bp_change</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidy</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">estimate</span>, <span class="va">conf.low</span>, <span class="va">conf.high</span>, <span class="va">p.value</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="reading-e-17-and-the-like">Reading <code>e-17</code> and the like<a class="anchor" aria-label="anchor" href="#reading-e-17-and-the-like"></a>
+</h3>
+<p>R writes very small numbers in <strong>scientific notation</strong>.
+<code>e-17</code> means “shift the decimal point 17 places left”, and
+the exponent does all the work:</p>
+<table class="table">
+<thead><tr class="header">
+<th>R shows</th>
+<th>Means</th>
+<th>Report as</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>6.78e-17</code></td>
+<td>0.0000000000000000678</td>
+<td>p &lt; 0.001</td>
+</tr>
+<tr class="even">
+<td><code>1.98e-03</code></td>
+<td>0.00198</td>
+<td>p = 0.002</td>
+</tr>
+<tr class="odd">
+<td><code>4.20e-02</code></td>
+<td>0.042</td>
+<td>p = 0.042</td>
+</tr>
+</tbody>
+</table>
+<p><code>1.98e-03</code> is 0.002, <strong>not</strong> 1.98. A p-value
+can never exceed 1, so if yours looks bigger, you have missed the
+exponent. (M12)</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="models">Models<a class="anchor" aria-label="anchor" href="#models"></a>
@@ -544,7 +586,7 @@ switches, and both are off by default.</td>
 </tbody>
 </table>
 <p>To draw the Kaplan-Meier curves, tidy the fit and step the line:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">km</span> <span class="op">&lt;-</span> <span class="fu">survfit</span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">arm</span>, data <span class="op">=</span> <span class="va">trial</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">tidy</span><span class="op">(</span><span class="va">km</span><span class="op">)</span> <span class="op">|&gt;</span></span>
