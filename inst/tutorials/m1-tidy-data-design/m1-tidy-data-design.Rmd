@@ -76,7 +76,13 @@ One variable per column, the right type in each, and the question answers itself
 
 ## The same data, two shapes
 
-Tidy still leaves you a choice of shape. Take one patient's blood pressure at three visits. Here it is **long**, one row per measurement:
+This section is about **repeated measurements**, so the first thing to do is work out whether it applies to you at all.
+
+If you measure each patient once, so that a single row holds their age, their sex and their result, then there is no shape question to answer. With one measurement per person, "one row per patient" and "one row per measurement" describe the very same table. A collection sheet like that is right as it stands, and nothing below asks you to change it.
+
+The question arrives the moment you record something **more than once for the same patient**: blood pressure at three visits, a repeat blood test, a before-and-after pair. Now the same information can sit in two different shapes, and you have a choice to make.
+
+Take one patient's blood pressure at three visits. Here it is **long**, one row per measurement:
 
 ```
   id     visit   sbp
@@ -92,7 +98,9 @@ And here is the very same information **wide**, one row per patient with the vis
   P001      150     142     138
 ```
 
-Both are tidy. Long form is the natural way to record and store repeated measurements, and most tools prefer it. Wide form is easier to read across, and it is what you want when you set visit 0 beside visit 2 to compare them. Moving between the two shapes is an everyday task, and you will do it yourself in Module 5.
+Both are tidy. Long form is the natural way to collect and store repeated measurements, and most tools prefer it: adding a fourth visit means adding a row, where the wide table would need a whole new column. Wide form is easier to read across, and it is what you want when you set visit 0 beside visit 2 to subtract one from the other.
+
+Neither choice is permanent. Moving between the two shapes is an everyday task and you will do it yourself in Module 5, so collect in whichever shape is easiest to fill in, and reshape when the analysis asks for the other.
 
 ## When the form lets you down
 
