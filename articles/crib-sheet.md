@@ -50,6 +50,19 @@ remotes::install_github("...")   # install_github(), from remotes
 It is a command to run in the Console. It is not a web address, and
 there is nothing to click.
 
+## Getting your data in
+
+| Code | What it does | Lesson |
+|----|----|----|
+| `read_csv(here("data", "file.csv"))` | Reads a CSV. `here()` builds the path from the top of your project, so it works on any computer. | M6 |
+| `read_excel(here("data", "file.xlsx"))` | Reads a spreadsheet directly, no export step. From the `readxl` package. | M6 |
+| `read_excel(path, sheet = "Baseline")` | Picks one sheet out of a workbook. | M6 |
+| `read_excel(path, skip = 2)` | Ignores rows above the real headers, such as a title or logo. | M6 |
+| `read_excel(path, na = c("", "N/A", "-"))` | Says what should count as missing. | M6 |
+
+Read the file, never edit it. Then `glimpse()` the result and check the
+row count and column types before going further.
+
 ## Looking at your data
 
 Start here when you meet a new table.

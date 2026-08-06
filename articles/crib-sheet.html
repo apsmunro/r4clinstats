@@ -99,6 +99,53 @@ means “this function, out of this package”:</p>
 there is nothing to click.</p>
 </div>
 <div class="section level2">
+<h2 id="getting-your-data-in">Getting your data in<a class="anchor" aria-label="anchor" href="#getting-your-data-in"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Code</th>
+<th>What it does</th>
+<th>Lesson</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>read_csv(here("data", "file.csv"))</code></td>
+<td>Reads a CSV. <code>here()</code> builds the path from the top of
+your project, so it works on any computer.</td>
+<td>M6</td>
+</tr>
+<tr class="even">
+<td><code>read_excel(here("data", "file.xlsx"))</code></td>
+<td>Reads a spreadsheet directly, no export step. From the
+<code>readxl</code> package.</td>
+<td>M6</td>
+</tr>
+<tr class="odd">
+<td><code>read_excel(path, sheet = "Baseline")</code></td>
+<td>Picks one sheet out of a workbook.</td>
+<td>M6</td>
+</tr>
+<tr class="even">
+<td><code>read_excel(path, skip = 2)</code></td>
+<td>Ignores rows above the real headers, such as a title or logo.</td>
+<td>M6</td>
+</tr>
+<tr class="odd">
+<td><code>read_excel(path, na = c("", "N/A", "-"))</code></td>
+<td>Says what should count as missing.</td>
+<td>M6</td>
+</tr>
+</tbody>
+</table>
+<p>Read the file, never edit it. Then <code>glimpse()</code> the result
+and check the row count and column types before going further.</p>
+</div>
+<div class="section level2">
 <h2 id="looking-at-your-data">Looking at your data<a class="anchor" aria-label="anchor" href="#looking-at-your-data"></a>
 </h2>
 <p>Start here when you meet a new table.</p>
