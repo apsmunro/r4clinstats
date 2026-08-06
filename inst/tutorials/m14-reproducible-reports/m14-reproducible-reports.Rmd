@@ -434,7 +434,7 @@ Your next report will not use course data, so here is the shape of a real projec
 
 1. In RStudio: **File ▸ New Project ▸ New Directory**. A project keeps one analysis in one folder.
 2. Make a `data/` folder inside it and put your raw file there. **Never edit the raw file again** (Lesson 6's rule).
-3. Start a `.qmd`, and in its setup chunk read the data with `read_csv(here("data", "yourfile.csv"))`.
+3. Start a `.qmd`, and in its setup chunk read the data: `read_csv(here("data", "yourfile.csv"))`, or `read_excel(here("data", "yourfile.xlsx"))` if it is a spreadsheet. Lesson 6 covers the Excel side, including which sheet and how to skip a title row.
 4. Clean, describe, analyse — chunk by chunk, rendering as you go. Every tool you need is in the thirteen lessons behind you.
 5. When a collaborator asks "what exactly did you do?", send the `.qmd`. That is the whole answer.
 

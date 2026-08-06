@@ -37,7 +37,50 @@ library(here)
 linelist <- read_csv(here("data", "linelist.csv"))
 ```
 
-For this lesson the data is already loaded, so we can go straight to the cleaning. The habit worth keeping: store raw data in a file, read it in with code, and never edit the raw file by hand. That way every change you make is written down and undoable.
+The habit worth keeping: store raw data in a file, read it in with code, and never edit the raw file by hand. That way every change you make is written down and undoable.
+
+### Getting it out of Excel
+
+Most clinical data starts life in a spreadsheet, and you do not have to convert it to anything first. The **`readxl`** package opens `.xlsx` files directly:
+
+```r
+library(readxl)
+library(here)
+
+patients <- read_excel(here("data", "trial-data.xlsx"))
+```
+
+If you installed the course with `dependencies = TRUE`, `readxl` is already there. If not, `install.packages("readxl")` fetches it.
+
+Read the workbook itself rather than saving it as a CSV first. Not because CSV is bad, but because the export is a manual step you have to remember, repeat, and get right every time the data changes. Pointing your script at the `.xlsx` means it rebuilds from the original file, and the original is never touched.
+
+Three arguments handle most real spreadsheets:
+
+```r
+# a workbook usually has several sheets: name the one you want
+read_excel(here("data", "trial.xlsx"), sheet = "Baseline")
+
+# a title or logo above the headers: skip those rows
+read_excel(here("data", "trial.xlsx"), skip = 2)
+
+# what should count as missing, beyond an empty cell
+read_excel(here("data", "trial.xlsx"), na = c("", "NA", "N/A", "-", "unknown"))
+```
+
+Then, always, `glimpse()` the result. Check the number of rows matches what you expect and that each column arrived as the type you wanted, because that is where the first surprise usually is.
+
+### What trips up a spreadsheet import
+
+Four things, all of them fixable in the sheet rather than in R:
+
+- **Merged cells.** Excel stores the value in the first cell and leaves the rest empty, so a merged block arrives as one value followed by `NA`s. Unmerge before you export.
+- **A header that is not the first row.** Titles, logos and blank spacer rows all push the real headers down. Count them and use `skip =`.
+- **Column names with spaces**, like `Date of birth`. R accepts them but you then need backticks every time you type one. Underscores are kinder: `date_of_birth`.
+- **Notes at the bottom.** A "Total" line or a comment under the data becomes a row of mostly `NA`s, which then contaminates your counts.
+
+Every one of these is the design point from Lesson 1 arriving late. A sheet built as a plain rectangle, one row per observation and one header row at the top, imports without any of this.
+
+For this lesson the data is already loaded, so we can go straight to the cleaning.
 
 ## Meet the mess
 
