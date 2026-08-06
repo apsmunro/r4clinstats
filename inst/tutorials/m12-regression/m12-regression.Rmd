@@ -99,6 +99,34 @@ grade_this({
 })
 ```
 
+### Reading `e-17`: R's shorthand for very small numbers
+
+Page across to the `p.value` column and you will see something like `6.781245e-17`. That is not a typo, and it is not a p-value of 6.78.
+
+**`e-17` means "shift the decimal point 17 places to the left."** So `6.78e-17` is 0.0000000000000000678. R switches to this **scientific notation** whenever a number is very small or very large, because writing the zeros out would be unreadable.
+
+The part to be careful about is the exponent, because it does all the work:
+
+| What R shows | What it means | How you would report it |
+|---|---|---|
+| `6.78e-17` | 0.0000000000000000678 | p < 0.001 |
+| `1.98e-03` | 0.00198 | p = 0.002 |
+| `4.20e-02` | 0.042 | p = 0.042 |
+| `0.39` | 0.39 | p = 0.39 |
+
+Read the middle row twice. `1.98e-03` is **0.002**, not 1.98. A p-value can never be above 1, so any time you think you are looking at one bigger than that, the exponent is the thing you have missed.
+
+For a paper you would round these anyway. **Run this** to see the same model reported the way you would write it up, narrowed to the columns that matter with `select()` and rounded with `round()`:
+
+```{r lm-report, exercise=TRUE}
+lm(change ~ baseline, data = bp_change) |>
+  tidy(conf.int = TRUE) |>
+  select(term, estimate, conf.low, conf.high, p.value) |>
+  mutate(across(where(is.numeric), \(x) round(x, 3)))
+```
+
+The baseline p-value now reads `0`, and that is worth pausing on, because it is the one place rounding can mislead you. The p-value is not zero. Rounding to three decimal places has flattened 0.0000000000000000678 down to nothing, which is a display choice, not a result. In a paper you would write **p < 0.001**. Never write "p = 0".
+
 ## More than one predictor
 
 Here is where regression earns its keep. Add `+ arm` to the formula and the model estimates the treatment effect *while holding baseline constant*. **Fill in the second predictor:**

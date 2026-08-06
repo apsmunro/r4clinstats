@@ -179,6 +179,22 @@ grade_this({
 })
 ```
 
+### The columns you cannot see
+
+Look at the top right of that result. It says something like **1-4 of 10 columns**, with a small arrow beside it.
+
+`tidy()` hands back *everything* the test produced, and for a t-test that is ten columns. The output panel is only so wide, so it shows the first few and hides the rest behind that arrow. The confidence interval and the p-value are among the hidden ones, which is worth knowing before you conclude they are missing. Click the arrow to page across.
+
+Hunting through ten columns gets old. Since the result is now an ordinary data frame, `select()` from Lesson 3 works on it, and you can keep just the columns you would actually report. **Run this:**
+
+```{r tidy-select, exercise=TRUE}
+t.test(change ~ arm, data = bp_change) |>
+  tidy() |>
+  select(estimate, conf.low, conf.high, p.value)
+```
+
+Four columns, all visible at once: the difference between the arms, the interval around it, and the p-value. That is the whole result of the trial, and it is the habit to carry into the modelling lessons, where the tables get wider still.
+
 ## Practice
 
 Three to finish, no blanks. Write each one yourself; **Hint** and **Solution** are there if you want them.
