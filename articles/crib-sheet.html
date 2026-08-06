@@ -88,6 +88,15 @@ explains it goes on the right:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">change</span> <span class="op">~</span> <span class="va">arm</span>          <span class="co"># change, by arm</span></span>
 <span><span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">arm</span><span class="op">)</span>     <span class="co"># one panel, by arm</span></span></code></pre></div>
+<p>A third piece of punctuation is worth knowing even though it is not a
+symbol you type often.
+<strong><code>package::function()</code></strong>, with two colons,
+means “this function, out of this package”:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">r4clinstats</span><span class="fu">::</span><span class="fu"><a href="../reference/start_report.html">start_report</a></span><span class="op">(</span><span class="op">)</span>      <span class="co"># start_report(), from r4clinstats</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"..."</span><span class="op">)</span>   <span class="co"># install_github(), from remotes</span></span></code></pre></div>
+<p>It is a command to run in the Console. It is not a web address, and
+there is nothing to click.</p>
 </div>
 <div class="section level2">
 <h2 id="looking-at-your-data">Looking at your data<a class="anchor" aria-label="anchor" href="#looking-at-your-data"></a>
@@ -225,7 +234,7 @@ shape, median and IQR when it is lopsided.</td>
 </table>
 <p>The two you will reach for most are a sorted tally, and a summary per
 group:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">patients</span> <span class="op">|&gt;</span>                        <span class="co"># tally, most common first</span></span>
 <span>  <span class="fu">count</span><span class="op">(</span><span class="va">smoker</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span>
@@ -392,40 +401,47 @@ you.</td>
 <td>M8</td>
 </tr>
 <tr class="even">
+<td><code>geom_line(linewidth = 1)</code></td>
+<td>Thicker lines, which survive being shrunk into a paper. Set outside
+<code>aes()</code>, because it is a fixed choice rather than something
+read from the data.</td>
+<td>M8</td>
+</tr>
+<tr class="odd">
 <td><code>geom_step()</code></td>
 <td>Draws a staircase rather than a sloped line, which is the correct
 shape for a survival curve.</td>
 <td>M13</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>geom_smooth(method = "lm")</code></td>
 <td>Adds a fitted straight line through the points.</td>
 <td>M12</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>facet_wrap(~ arm)</code></td>
 <td>One panel per group, all on the same scale. Use when a single panel
 is too crowded.</td>
 <td>M8</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>labs(x = "Weeks", y = "Systolic BP", colour = "Treatment arm")</code></td>
 <td>Readable axis and legend titles.</td>
 <td>M7, M8</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>theme_minimal()</code></td>
 <td>A cleaner look for a paper.</td>
 <td>M8</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>scale_colour_brewer(palette = "Dark2")</code></td>
 <td>Colours a reader with red-green colour blindness can still tell
 apart. Worth it from three groups up. Use
 <code>scale_fill_brewer()</code> for bars and boxes.</td>
 <td>M8</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>scale_colour_viridis_d()</code></td>
 <td>The same idea for an ordered variable;
 <code>scale_colour_viridis_c()</code> for a continuous one.</td>
@@ -485,7 +501,7 @@ Leave it off a randomised baseline table.</td>
 hides the ones that do not fit behind a small arrow at the top right, so
 the confidence interval and p-value are often out of sight. Keep the
 ones you would report:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test</a></span><span class="op">(</span><span class="va">change</span> <span class="op">~</span> <span class="va">arm</span>, data <span class="op">=</span> <span class="va">bp_change</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tidy</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">estimate</span>, <span class="va">conf.low</span>, <span class="va">conf.high</span>, <span class="va">p.value</span><span class="op">)</span></span></code></pre></div>
@@ -586,7 +602,7 @@ switches, and both are off by default.</td>
 </tbody>
 </table>
 <p>To draw the Kaplan-Meier curves, tidy the fit and step the line:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">km</span> <span class="op">&lt;-</span> <span class="fu">survfit</span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">arm</span>, data <span class="op">=</span> <span class="va">trial</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">tidy</span><span class="op">(</span><span class="va">km</span><span class="op">)</span> <span class="op">|&gt;</span></span>

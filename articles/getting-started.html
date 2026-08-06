@@ -95,6 +95,13 @@ Console:</p>
 course together with every package the lessons need,
 <code>gradethis</code> among them, which marks your answers and comes
 from a different place to the rest.</p>
+<p>The two colons in <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github</a></code> are worth a
+word, because they look stranger than they are.
+<code>package::function()</code> is R’s way of saying “this function,
+out of this package”: here, <code>install_github()</code> from
+<code>remotes</code>. You will meet the pattern again. It is a command
+to type, not a web address, and there is nothing to click or search
+for.</p>
 <p>Keep the <code>dependencies = TRUE</code> part. Without it you get
 the course but none of the packages it runs on, and the first lesson
 stops with a complaint about <code>gradethis</code>.</p>

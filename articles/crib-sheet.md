@@ -37,6 +37,19 @@ change ~ arm          # change, by arm
 facet_wrap(~ arm)     # one panel, by arm
 ```
 
+A third piece of punctuation is worth knowing even though it is not a
+symbol you type often. **`package::function()`**, with two colons, means
+“this function, out of this package”:
+
+``` r
+
+r4clinstats::start_report()      # start_report(), from r4clinstats
+remotes::install_github("...")   # install_github(), from remotes
+```
+
+It is a command to run in the Console. It is not a web address, and
+there is nothing to click.
+
 ## Looking at your data
 
 Start here when you meet a new table.
@@ -119,6 +132,7 @@ that draws it.
 | `geom_bar()` | Counts rows per category. No `y` needed, it counts for you. | M7 |
 | `geom_histogram(binwidth = 5)` | The shape of one number. Aim for about ten bars, then adjust. | M10 |
 | `geom_line()` with `aes(group = id)` | Joins each patient’s readings into their own line. | M8 |
+| `geom_line(linewidth = 1)` | Thicker lines, which survive being shrunk into a paper. Set outside `aes()`, because it is a fixed choice rather than something read from the data. | M8 |
 | `geom_step()` | Draws a staircase rather than a sloped line, which is the correct shape for a survival curve. | M13 |
 | `geom_smooth(method = "lm")` | Adds a fitted straight line through the points. | M12 |
 | `facet_wrap(~ arm)` | One panel per group, all on the same scale. Use when a single panel is too crowded. | M8 |

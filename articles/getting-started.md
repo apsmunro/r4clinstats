@@ -34,6 +34,14 @@ The first line fetches a small helper. The second downloads the course
 together with every package the lessons need, `gradethis` among them,
 which marks your answers and comes from a different place to the rest.
 
+The two colons in
+[`remotes::install_github`](https://remotes.r-lib.org/reference/install_github.html)
+are worth a word, because they look stranger than they are.
+`package::function()` is R’s way of saying “this function, out of this
+package”: here, `install_github()` from `remotes`. You will meet the
+pattern again. It is a command to type, not a web address, and there is
+nothing to click or search for.
+
 Keep the `dependencies = TRUE` part. Without it you get the course but
 none of the packages it runs on, and the first lesson stops with a
 complaint about `gradethis`.
