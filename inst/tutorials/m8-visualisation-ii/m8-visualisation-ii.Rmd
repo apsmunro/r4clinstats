@@ -168,7 +168,11 @@ grade_this({
 
 ## Tidying for a paper
 
-The plot is right, but the labels are raw column names and the grey background is busy. `labs()` sets readable titles, and a **theme** changes the overall look. The one below is `theme_minimal()`, which trades ggplot's grey panel for a light grid; it reproduces better in print, and it is the one to reach for first. Every theme comes as a layer you add with a `+`, like any other. **Run this** to see the same trend, tidied:
+The plot is right, but the labels are raw column names and the grey background is busy. `labs()` sets readable titles, and a **theme** changes the overall look. The one below is `theme_minimal()`, which trades ggplot's grey panel for a light grid; it reproduces better in print, and it is the one to reach for first. Every theme comes as a layer you add with a `+`, like any other.
+
+One small thing appears in the code below too. **`linewidth = 1`** draws the lines a little thicker than the default, so they hold up when a figure is shrunk into a paper or thrown onto a projector. Note where it sits: *outside* `aes()`, because it is a fixed choice you are making, not a value read from the data. That is the same inside-or-outside rule you met with colour in Lesson 7.
+
+**Run this** to see the same trend, tidied:
 
 ```{r polish, exercise=TRUE}
 ggplot(bp_mean, aes(x = weeks, y = sbp, colour = arm)) +

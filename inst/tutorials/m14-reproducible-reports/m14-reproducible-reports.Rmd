@@ -408,11 +408,13 @@ coxph(Surv(time, status) ~ arm, data = trial)
 
 ## Now build the real thing
 
-Here is where you leave the sandbox. Over in **RStudio's console** (not in this tutorial), run:
+Here is where you leave the sandbox. Over in **RStudio's console** (not in this tutorial, and not in a web browser), type this line and press Enter:
 
 ```
 r4clinstats::start_report()
 ```
+
+That is a command to run, not an address to look up. The two colons are R's shorthand for "this function, out of this package": `start_report()`, from `r4clinstats`. It is the same pattern you used to install the course in the first place.
 
 It puts a file called `trial-report.qmd` in your working directory and opens it. Look around: the YAML header, the prose, the setup chunk that builds `bp_change` and `trial` exactly as this lesson did, and six TODO chunks with the same names as the six exercises you just passed.
 
