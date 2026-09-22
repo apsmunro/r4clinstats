@@ -39,11 +39,25 @@ check_setup <- function(install = interactive()) {
   }
 
   ## 3. Connectivity --------------------------------------------------------
-  cran_ok  <- .can_reach("https://cran.r-project.org")
-  runiv_ok <- .can_reach("https://posit-dev.r-universe.dev")
+  cran_ok <- .can_reach("https://cran.r-project.org")
   cat(sprintf("[%s]  Reach CRAN\n", if (cran_ok) "OK " else "FIX"))
-  cat(sprintf("[%s]  Reach R-universe (for gradethis)\n", if (runiv_ok) "OK " else "FIX"))
-  if (!cran_ok || !runiv_ok) {
+
+  # Not "can we reach the server" but "is gradethis actually on it". The two
+  # came apart once already, and the reachable-but-empty case looked fine.
+  gt <- .gradethis_status()
+  runiv_ok <- identical(gt, "ok")
+  cat(sprintf("[%s]  gradethis available from R-universe\n",
+              if (runiv_ok) "OK " else "FIX"))
+  if (identical(gt, "missing")) {
+    cat(sprintf("       %s answers but no longer lists gradethis.\n",
+                .gradethis_repo()))
+    cat("       It has most likely moved again, which the course cannot fix\n")
+    cat("       by itself. Please report it at\n")
+    cat("       https://github.com/apsmunro/r4clinstats/issues\n")
+  } else if (identical(gt, "unreachable")) {
+    cat(sprintf("       Cannot reach %s.\n", .gradethis_repo()))
+  }
+  if (!cran_ok || identical(gt, "unreachable")) {
     cat("       Behind a proxy? Set it in RStudio > Tools > Global Options > Packages,\n")
     cat("       or via the http_proxy / https_proxy environment variables.\n")
   }

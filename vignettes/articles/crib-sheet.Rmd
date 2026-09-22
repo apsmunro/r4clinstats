@@ -32,8 +32,8 @@ facet_wrap(~ arm)     # one panel, by arm
 A third piece of punctuation is worth knowing even though it is not a symbol you type often. **`package::function()`**, with two colons, means "this function, out of this package":
 
 ```r
-r4clinstats::start_report()      # start_report(), from r4clinstats
-remotes::install_github("...")   # install_github(), from remotes
+r4clinstats::start_report()        # start_report(), from r4clinstats
+dplyr::filter(patients, age > 65)  # filter(), from dplyr
 ```
 
 It is a command to run in the Console. It is not a web address, and there is nothing to click.

@@ -51,7 +51,7 @@ devtools::test()                # run the harness
 
 ```r
 install.packages("gradethis",
-                 repos = c("https://posit-dev.r-universe.dev", getOption("repos")))
+                 repos = c("https://rstudio.r-universe.dev", getOption("repos")))
 ```
 
 ## The portal (this website)
@@ -71,8 +71,11 @@ settings, serving from the `gh-pages` branch.
 ## Get started (learner)
 
 ```r
-install.packages("remotes")
-remotes::install_github("apsmunro/r4clinstats", dependencies = TRUE)
+install.packages("r4clinstats",
+                 repos = c("https://apsmunro.r-universe.dev",
+                           "https://rstudio.r-universe.dev",
+                           CRAN = "https://cloud.r-project.org"),
+                 dependencies = TRUE)
 
 library(r4clinstats)
 check_setup()     # confirm the install, and fix anything still missing
@@ -82,9 +85,15 @@ learn("m0")       # start at the beginning
 
 `dependencies = TRUE` matters: the packages the tutorials run on (`gradethis`,
 the tidyverse, `finalfit`, `broom` and the rest) are in `Suggests`, which a
-plain `install_github()` skips. They are in `Suggests` deliberately, so that a
-missing `gradethis` cannot stop `library(r4clinstats)` from loading and taking
-you to `check_setup()`.
+plain install skips. They are in `Suggests` deliberately, so that a missing
+`gradethis` cannot stop `library(r4clinstats)` from loading and taking you to
+`check_setup()`.
+
+Installing from [apsmunro.r-universe.dev](https://apsmunro.r-universe.dev)
+rather than with `remotes::install_github()` keeps learners clear of GitHub's
+anonymous API limit of 60 requests an hour per network address, which a shared
+hospital or university connection exhausts quickly when a group installs
+together.
 
 The full walkthrough is the [Get started](https://apsmunro.github.io/r4clinstats/articles/getting-started.html) guide.
 

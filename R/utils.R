@@ -9,6 +9,28 @@
   }, error = function(e) FALSE))
 }
 
+# The repository that serves gradethis. Posit has moved it between R-universe
+# accounts before, so it is named once here rather than in every caller.
+.gradethis_repo <- function() "https://rstudio.r-universe.dev"
+
+# Is gradethis actually being served, or does the server merely answer?
+# Returns "ok", "missing" (server up, package no longer on it) or
+# "unreachable". The distinction matters: when gradethis moved off
+# posit-dev.r-universe.dev, the old server kept answering, so a reachability
+# test reported everything fine while installs failed. Source packages are
+# checked because a pure-R package installs from source when no binary is
+# built for the learner's R version.
+.gradethis_status <- function(repo = .gradethis_repo(), timeout = 10L) {
+  old <- options(timeout = timeout)
+  on.exit(options(old), add = TRUE)
+  db <- tryCatch(
+    utils::available.packages(repos = repo, type = "source"),
+    error = function(e) NULL, warning = function(w) NULL
+  )
+  if (is.null(db) || nrow(db) == 0L) return("unreachable")
+  if ("gradethis" %in% rownames(db)) "ok" else "missing"
+}
+
 # Packages the tutorials need at run time. gradethis is not on CRAN, so
 # installing these must go through .install_missing() and its extra repository;
 # a plain install.packages("gradethis") fails with a misleading message about
@@ -30,7 +52,7 @@
 .install_missing <- function(pkgs) {
   try(utils::install.packages(
     pkgs,
-    repos = c("https://posit-dev.r-universe.dev",
+    repos = c(.gradethis_repo(),
               CRAN = "https://cloud.r-project.org")
   ))
 
@@ -45,13 +67,14 @@
       !requireNamespace("gradethis", quietly = TRUE)) {
     cat("\ngradethis could not be installed automatically. To install it by hand:\n")
     cat("  1. In your web browser, open:\n")
-    cat("       https://posit-dev.r-universe.dev/gradethis\n")
+    cat(sprintf("       %s/gradethis\n", .gradethis_repo()))
     cat("  2. Download the Windows binary (.zip) from the 'Downloads' section.\n")
     cat("  3. In R, run (with the path to the file you downloaded):\n")
     cat('       install.packages("C:/path/to/gradethis.zip", repos = NULL,\n')
     cat('                        type = "win.binary")\n')
     cat("If that fails too, ask your IT team to allow access to\n")
-    cat("posit-dev.r-universe.dev, or contact the course author.\n")
+    cat(sprintf("%s, or contact the course author.\n",
+                sub("^https://", "", .gradethis_repo())))
   }
 }
 
