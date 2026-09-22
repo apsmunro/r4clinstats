@@ -22,29 +22,29 @@ type or paste a line, then press Enter.
 ## 2. Install the course
 
 The course is an R package called `r4clinstats`. It is not on CRAN, the
-server R looks in by default, so the command below tells R the other two
-places to look. Paste the whole thing into the Console, all four lines
-together:
+server R looks in by default, so the command below names the course’s
+own server alongside it. Paste the whole thing into the Console, all
+four lines together:
 
 ``` r
 
 install.packages("r4clinstats",
                  repos = c("https://apsmunro.r-universe.dev",
-                           "https://rstudio.r-universe.dev",
                            CRAN = "https://cloud.r-project.org"),
                  dependencies = TRUE)
 ```
 
-The three addresses in `repos` are the course’s own server, the one that
-supplies `gradethis` (which marks your answers), and CRAN for everything
-else. R tries them in that order and takes the first copy it finds.
-
 Keep the `dependencies = TRUE` part. Without it you get the course but
-none of the packages it runs on, and the first lesson stops with a
-complaint about `gradethis`.
+none of the packages it runs on.
 
 This takes a few minutes the first time, and red progress text along the
 way is normal.
+
+Near the end R will note that one package, `gradethis`, is not
+available. That is expected and step 3 installs it. `gradethis` is the
+part that marks your answers, and it is the one piece of the course that
+is not on CRAN, so it comes from elsewhere and is fetched on its own
+rather than with everything else.
 
 ## 3. Check your setup
 
@@ -61,7 +61,9 @@ packages are stored, and whether your network can reach the package
 servers. If step 2 went cleanly you will see a column of `[OK ]` and
 nothing to do. If anything is missing,
 [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md)
-names it and offers to install it, so say yes to any prompts.
+names it and offers to install it, so say yes to any prompts. This is
+where `gradethis` arrives, so expect it to install something the first
+time you run it.
 
 You will also meet commands written as
 [`r4clinstats::check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md).

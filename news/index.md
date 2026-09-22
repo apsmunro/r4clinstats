@@ -1,5 +1,23 @@
 # Changelog
 
+## r4clinstats 0.3.2
+
+- The install no longer names the rstudio R-universe alongside CRAN.
+  That universe also serves development builds of `learnr` and
+  `rmarkdown`, and
+  [`install.packages()`](https://rdrr.io/r/utils/install.packages.html)
+  takes the highest version it can see rather than the first repository
+  listed, so the one-command install in 0.3.1 quietly put learners on an
+  unreleased `learnr`: the engine every lesson runs on. The course now
+  installs from CRAN and its own R-universe, and
+  [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md)
+  fetches `gradethis` on its own afterwards. `.install_missing()` keeps
+  the two apart for the same reason.
+- `install-check` tests the two-step guide as written and fails if a
+  development build of `learnr` or `rmarkdown` reaches a learner’s
+  library. This was found by running that job against a genuinely clean
+  machine, which is the only place it was visible.
+
 ## r4clinstats 0.3.1
 
 - `gradethis` moved from Posit’s `posit-dev` R-universe to `rstudio`.

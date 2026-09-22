@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">r4clinstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,24 +86,24 @@ the commands below go: type or paste a line, then press Enter.</p>
 <h2 id="install-the-course">2. Install the course<a class="anchor" aria-label="anchor" href="#install-the-course"></a>
 </h2>
 <p>The course is an R package called <code>r4clinstats</code>. It is not
-on CRAN, the server R looks in by default, so the command below tells R
-the other two places to look. Paste the whole thing into the Console,
-all four lines together:</p>
+on CRAN, the server R looks in by default, so the command below names
+the course’s own server alongside it. Paste the whole thing into the
+Console, all four lines together:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"r4clinstats"</span>,</span>
 <span>                 repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://apsmunro.r-universe.dev"</span>,</span>
-<span>                           <span class="st">"https://rstudio.r-universe.dev"</span>,</span>
 <span>                           CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span>,</span>
 <span>                 dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The three addresses in <code>repos</code> are the course’s own
-server, the one that supplies <code>gradethis</code> (which marks your
-answers), and CRAN for everything else. R tries them in that order and
-takes the first copy it finds.</p>
 <p>Keep the <code>dependencies = TRUE</code> part. Without it you get
-the course but none of the packages it runs on, and the first lesson
-stops with a complaint about <code>gradethis</code>.</p>
+the course but none of the packages it runs on.</p>
 <p>This takes a few minutes the first time, and red progress text along
 the way is normal.</p>
+<p>Near the end R will note that one package, <code>gradethis</code>, is
+not available. That is expected and step 3 installs it.
+<code>gradethis</code> is the part that marks your answers, and it is
+the one piece of the course that is not on CRAN, so it comes from
+elsewhere and is fetched on its own rather than with everything
+else.</p>
 </div>
 <div class="section level2">
 <h2 id="check-your-setup">3. Check your setup<a class="anchor" aria-label="anchor" href="#check-your-setup"></a>
@@ -117,7 +117,8 @@ your packages are stored, and whether your network can reach the package
 servers. If step 2 went cleanly you will see a column of
 <code>[OK ]</code> and nothing to do. If anything is missing,
 <code><a href="../reference/check_setup.html">check_setup()</a></code> names it and offers to install it, so say yes
-to any prompts.</p>
+to any prompts. This is where <code>gradethis</code> arrives, so expect
+it to install something the first time you run it.</p>
 <p>You will also meet commands written as
 <code><a href="../reference/check_setup.html">r4clinstats::check_setup()</a></code>. The two colons look stranger
 than they are: <code>package::function()</code> is R’s way of saying

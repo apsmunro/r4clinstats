@@ -83,7 +83,6 @@ no such limit:
 
 install.packages("r4clinstats",
                  repos = c("https://apsmunro.r-universe.dev",
-                           "https://rstudio.r-universe.dev",
                            CRAN = "https://cloud.r-project.org"),
                  dependencies = TRUE)
 ```
