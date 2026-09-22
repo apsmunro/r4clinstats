@@ -1,3 +1,12 @@
+# r4clinstats 0.3.3
+
+- `learn()` with no argument now lists the lessons and returns to the `>`
+  prompt, without the numbered pick-list. That list numbered from 1 while the
+  modules start at m0, so a learner who typed 10 for "m10 Describing data" was
+  taken to m9, Summary tables. Its `Selection:` prompt also rejected R code,
+  and a tester typed `learn("m10")` into it twice before trying a number.
+  `learn("m10")` is now the one way to open a lesson, everywhere.
+
 # r4clinstats 0.3.2
 
 - The install no longer names the rstudio R-universe alongside CRAN. That

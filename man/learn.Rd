@@ -8,15 +8,21 @@ learn(module = NULL)
 }
 \arguments{
 \item{module}{Optional module id, such as \code{"m3"}. If \code{NULL}, the modules are
-listed and (in an interactive session) you are offered a menu.}
+listed.}
 }
 \value{
 Invisibly \code{NULL}. Called for the side effect of launching a tutorial.
 }
 \description{
 Lists the course modules and opens one as an interactive tutorial in your
-browser. With no argument it shows the menu; pass a module id (for example
-\code{"m3"} or \code{3}) to go straight there.
+browser. With no argument it lists the modules and returns you to the
+prompt; pass a module id (for example \code{"m3"} or \code{3}) to open that one.
+}
+\details{
+There is deliberately no numbered pick-list. \code{utils::menu()} numbers from 1,
+so its numbers could never match module ids that start at m0, and a learner
+typing 10 for "m10" would open m9. One way in, \code{learn("m10")}, avoids both
+that and the separate \verb{Selection:} mode, which rejects R code.
 }
 \examples{
 \dontrun{

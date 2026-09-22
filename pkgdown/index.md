@@ -63,7 +63,7 @@ Each interactive lesson ends with open practice exercises, graded as you go.
 
 1. Install R and RStudio, both free.
 2. Install the course package.
-3. Run `learn()` and pick a lesson.
+3. Run `learn()` to see the lessons, then `learn("m0")` to open the first.
 
 The [Get started](articles/getting-started.html) guide walks through each step with the exact commands. In a hurry? [Try R in your browser](articles/try-in-your-browser.html) first, with nothing to install.
 

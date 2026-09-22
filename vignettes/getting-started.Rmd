@@ -55,7 +55,7 @@ learn()        # list the lessons
 learn("m0")    # open the first one
 ```
 
-`learn()` shows the menu. `learn("m0")` opens a lesson in your browser, where you read a little, run real code in the boxes, and get feedback as you go. Start at **m0** and work along in order.
+`learn()` lists the lessons and hands you back the `>` prompt. To open one, type `learn()` with the lesson's id in quotes: `learn("m0")` for the first, `learn("m10")` for Describing data. It opens in your browser, where you read a little, run real code in the boxes, and get feedback as you go. Start at **m0** and work along in order.
 
 That is everything. The rest you learn by doing.
 
@@ -65,15 +65,15 @@ One habit worth starting with. Open the [Crib sheet](crib-sheet.html) in a secon
 
 You will want it from about Lesson 4 onwards, when you start needing something taught two lessons ago. A running lesson keeps hold of your R console, so you cannot look things up there, and hunting back through earlier lessons breaks your flow.
 
-## Getting back to the menu
+## Finishing a lesson
 
 This one catches nearly everyone the first time. While a lesson is open it holds on to your R console, so the console shows no `>` prompt and looks frozen. Closing the browser tab does not release it, because the lesson is running in R, not in the browser.
 
 To finish with a lesson, click into the **Console** and press `Esc`, or click the red stop button at the top right of the Console pane. The `>` prompt comes back, and you are free to move on:
 
 ```r
-learn()        # the menu again
-learn("m3")    # or straight to a particular lesson
+learn()        # list the lessons again
+learn("m3")    # open a particular lesson
 ```
 
 Every lesson ends with a short reminder of this, so there is nothing to memorise.

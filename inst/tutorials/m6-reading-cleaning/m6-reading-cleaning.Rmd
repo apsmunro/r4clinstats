@@ -334,7 +334,7 @@ the **Console** (or click the red stop button at the top right of the
 Console pane) to close the lesson down. Then:
 
 ```
-learn()        # back to the menu
+learn()        # list all the lessons
 learn("m7")    # straight on to the next lesson
 ```
 

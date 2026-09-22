@@ -465,7 +465,7 @@ the **Console** (or click the red stop button at the top right of the
 Console pane) to close the lesson down. Then:
 
 ```
-learn()        # the full menu, to revisit any lesson
+learn()        # list all the lessons, to revisit any of them
 ```
 
 Nothing is lost by closing a lesson down and coming back to it later.
