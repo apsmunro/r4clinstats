@@ -1,7 +1,8 @@
 # Starting-point CI. Builds the datasets, then runs R CMD check (which runs the
 # testthat harness). Tutorials that need gradethis are exercised by the harness
-# only where it is installed; gradethis comes from R-universe via
-# Additional_repositories in DESCRIPTION.
+# only where it is installed; gradethis is not on CRAN and comes from the
+# rstudio R-universe, named in extra-repositories below (Additional_repositories
+# in DESCRIPTION is read by R CMD check, not by the dependency solver).
 on:
   push:
     branches: [main, master]
@@ -34,6 +35,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
+          extra-repositories: https://rstudio.r-universe.dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:

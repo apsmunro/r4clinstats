@@ -17,7 +17,12 @@
   such limit and serves a Windows binary. Troubleshooting gained an entry for
   the 403, with a tarball fallback for networks that block R-universe.
 - Dropped the `Remotes:` field, which made every install resolve a second
-  GitHub repository.
+  GitHub repository. CI now names the R-universe in `extra-repositories`
+  instead: that field, not `Additional_repositories`, is what the dependency
+  solver reads, and removing `Remotes:` without it broke both workflows.
+- A weekly `install-check` job installs the course from R-universe on Windows
+  exactly as a learner would, then runs `check_setup()`. The next time this
+  path breaks, CI notices rather than a clinician.
 
 # r4clinstats 0.3.0
 
