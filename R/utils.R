@@ -45,16 +45,31 @@
   pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
 }
 
-# Install packages, looking at R-universe (for gradethis) as well as CRAN.
+# Install missing course packages. Everything but gradethis comes from CRAN,
+# and gradethis alone from the R-universe. Keeping the two apart matters: the
+# R-universe also serves development builds of learnr and rmarkdown, and
+# install.packages() takes the highest version it can see rather than the
+# first repository listed, so naming both repositories at once quietly puts
+# learners on unreleased builds of the engine their lessons run on.
+#
 # Institutional networks sometimes block R-universe while allowing CRAN and
 # GitHub, so if gradethis is still missing afterwards we fall back to
 # installing it from GitHub, and failing that print manual instructions.
 .install_missing <- function(pkgs) {
-  try(utils::install.packages(
-    pkgs,
-    repos = c(.gradethis_repo(),
-              CRAN = "https://cloud.r-project.org")
-  ))
+  from_cran <- setdiff(pkgs, "gradethis")
+  if (length(from_cran)) {
+    try(utils::install.packages(
+      from_cran,
+      repos = c(CRAN = "https://cloud.r-project.org")
+    ))
+  }
+
+  if ("gradethis" %in% pkgs) {
+    try(utils::install.packages(
+      "gradethis",
+      repos = c(.gradethis_repo(), CRAN = "https://cloud.r-project.org")
+    ))
+  }
 
   if ("gradethis" %in% pkgs &&
       !requireNamespace("gradethis", quietly = TRUE)) {

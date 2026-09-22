@@ -73,7 +73,6 @@ settings, serving from the `gh-pages` branch.
 ```r
 install.packages("r4clinstats",
                  repos = c("https://apsmunro.r-universe.dev",
-                           "https://rstudio.r-universe.dev",
                            CRAN = "https://cloud.r-project.org"),
                  dependencies = TRUE)
 
@@ -83,11 +82,18 @@ learn()           # list the lessons
 learn("m0")       # start at the beginning
 ```
 
-`dependencies = TRUE` matters: the packages the tutorials run on (`gradethis`,
-the tidyverse, `finalfit`, `broom` and the rest) are in `Suggests`, which a
-plain install skips. They are in `Suggests` deliberately, so that a missing
+`dependencies = TRUE` matters: the packages the tutorials run on (the
+tidyverse, `finalfit`, `broom` and the rest) are in `Suggests`, which a plain
+install skips. They are in `Suggests` deliberately, so that a missing
 `gradethis` cannot stop `library(r4clinstats)` from loading and taking you to
 `check_setup()`.
+
+`gradethis` is fetched separately by `check_setup()`, from the rstudio
+R-universe. It is deliberately not named in the `repos` above: that universe
+also carries development builds of `learnr` and `rmarkdown`, and
+`install.packages()` takes the highest version it can see rather than the
+first repository listed, so naming it there would quietly put every learner on
+an unreleased build of the engine the lessons run on.
 
 Installing from [apsmunro.r-universe.dev](https://apsmunro.r-universe.dev)
 rather than with `remotes::install_github()` keeps learners clear of GitHub's

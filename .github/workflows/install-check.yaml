@@ -25,12 +25,11 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Install the course the way the Get started guide says to
+      - name: Step 2 of the guide - install the course
         shell: Rscript {0}
         run: |
           install.packages("r4clinstats",
                            repos = c("https://apsmunro.r-universe.dev",
-                                     "https://rstudio.r-universe.dev",
                                      CRAN = "https://cloud.r-project.org"),
                            dependencies = TRUE)
           if (!requireNamespace("r4clinstats", quietly = TRUE)) {
@@ -38,7 +37,7 @@ jobs:
           }
           cat("installed r4clinstats", format(packageVersion("r4clinstats")), "\n")
 
-      - name: Run the check a learner runs next
+      - name: Step 3 of the guide - check_setup() fetches gradethis
         shell: Rscript {0}
         run: |
           library(r4clinstats)
@@ -55,4 +54,25 @@ jobs:
               stop(p, " is missing after a clean learner install")
             }
             cat(p, format(packageVersion(p)), "OK\n")
+          }
+
+      # The rstudio R-universe also serves development builds of learnr and
+      # rmarkdown. Learners must end up on the CRAN releases; if a dev build
+      # leaks in through the install path, fail here rather than let a cohort
+      # run the course on an unreleased engine.
+      - name: No development builds leaked in
+        shell: Rscript {0}
+        run: |
+          cran <- available.packages(repos = c(CRAN = "https://cloud.r-project.org"))
+          bad <- character()
+          for (p in c("learnr", "rmarkdown")) {
+            if (!requireNamespace(p, quietly = TRUE)) next
+            have <- packageVersion(p)
+            want <- package_version(cran[p, "Version"])
+            cat(sprintf("%s installed=%s CRAN=%s\n", p, have, want))
+            if (have > want) bad <- c(bad, sprintf("%s %s is ahead of CRAN %s", p, have, want))
+          }
+          if (length(bad)) {
+            stop("development build leaked into a learner install:\n  ",
+                 paste(bad, collapse = "\n  "))
           }
