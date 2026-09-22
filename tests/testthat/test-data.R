@@ -82,3 +82,43 @@ test_that("linelist has the locked messy shape and seed", {
   cleaned_sex <- ifelse(tolower(linelist$sex) == "female", "Female", "Male")
   expect_equal(sum(cleaned_sex == "Female"), 21L)
 })
+
+# bp_change as the M11 and M12 setup chunks build it, in base R so these tests
+# need nothing beyond broom.
+bp_change_base <- function(patients, labs) {
+  sbp <- labs[labs$measure == "sbp", ]
+  v0 <- sbp[sbp$visit == 0L, c("id", "value")]
+  v2 <- sbp[sbp$visit == 2L, c("id", "value")]
+  bp <- merge(merge(v0, v2, by = "id", suffixes = c("_0", "_2")),
+              patients[, c("id", "arm")], by = "id")
+  data.frame(arm = bp$arm, baseline = bp$value_0,
+             change = bp$value_2 - bp$value_0)
+}
+
+test_that("the M11 t-test gives the numbers its column key quotes", {
+  patients <- get_data("patients")
+  labs <- get_data("labs")
+  skip_if(is.null(patients) || is.null(labs), "patients or labs not built yet")
+  skip_if_not_installed("broom")
+
+  res <- broom::tidy(stats::t.test(change ~ arm, data = bp_change_base(patients, labs)))
+  expect_equal(round(res$estimate, 2), -4.84)
+  expect_equal(round(res$estimate1, 2), -4.97)   # Active, first alphabetically
+  expect_equal(round(res$estimate2, 2), -0.13)   # Placebo
+  expect_equal(round(c(res$conf.low, res$conf.high), 2), c(-9.43, -0.25))
+  expect_equal(round(res$statistic, 2), -2.09, ignore_attr = TRUE)
+  expect_equal(round(res$parameter, 1), 97.9, ignore_attr = TRUE)
+  expect_equal(round(res$p.value, 3), 0.039)
+})
+
+test_that("most M12 points sit outside the confidence band, as the lesson says", {
+  patients <- get_data("patients")
+  labs <- get_data("labs")
+  skip_if(is.null(patients) || is.null(labs), "patients or labs not built yet")
+
+  bp <- bp_change_base(patients, labs)
+  band <- stats::predict(stats::lm(change ~ baseline, data = bp),
+                         interval = "confidence")
+  inside <- mean(bp$change >= band[, "lwr"] & bp$change <= band[, "upr"])
+  expect_true(inside > 0.2 && inside < 0.3)   # "about three-quarters" outside
+})

@@ -65,6 +65,14 @@ ggplot(bp_change, aes(x = baseline, y = change)) +
 
 `geom_smooth(method = "lm")` overlays the best-fitting straight line, and it slopes firmly downward: patients who started higher fell further. Linear regression is that line, written as numbers.
 
+### What `se = FALSE` does
+
+Left to itself, `geom_smooth()` draws a grey band around the line, and `se = FALSE` switches the band off so this first look is about the line alone. `se` stands for standard error. The band is the 95% confidence interval for the line, which R works out from the standard error.
+
+**Delete `, se = FALSE` from the code above and run it again** to see the band.
+
+The band shows how sure you can be of where the line runs: the average change for patients with a given baseline. It does not show where individual patients fall, and about three-quarters of these points sit outside it. It is narrowest in the middle, where most of the patients are, and widens towards the ends, where there are fewer. The band is the picture of the `conf.low` and `conf.high` columns from the last lesson.
+
 ## Fitting the line: `lm()`
 
 `lm()` (linear model) uses the same formula syntax as `t.test()`: outcome, tilde, predictors. **Run it:**

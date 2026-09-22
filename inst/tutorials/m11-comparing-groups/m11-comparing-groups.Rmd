@@ -185,6 +185,27 @@ Look at the top right of that result. It says something like **1-4 of 10 columns
 
 `tidy()` hands back *everything* the test produced, and for a t-test that is ten columns. The output panel is only so wide, so it shows the first few and hides the rest behind that arrow. The confidence interval and the p-value are among the hidden ones, which is worth knowing before you conclude they are missing. Click the arrow to page across.
 
+### What the ten columns mean
+
+The first three rows below are the ones you would put in a paper. The rest are the workings behind them.
+
+| Column | What it holds | In this test |
+|---|---|---|
+| `estimate` | The difference between the two group means | -4.84 |
+| `conf.low`, `conf.high` | The 95% confidence interval for that difference | -9.43 to -0.25 |
+| `p.value` | The p-value | 0.039 |
+| `estimate1` | The mean change in the first group, Active | -4.97 |
+| `estimate2` | The mean change in the second group, Placebo | -0.13 |
+| `statistic` | The t statistic, which the p-value is worked out from | -2.09 |
+| `parameter` | The degrees of freedom | 97.9 |
+| `method`, `alternative` | Which test ran, and that it was two-sided | |
+
+The degrees of freedom are not a whole number because R's `t.test()` runs Welch's version by default, which does not assume the two groups are equally spread. The name is in the `method` column.
+
+**Read the sign of `estimate` with care.** It is always `estimate1` minus `estimate2`, and R puts the groups in alphabetical order. Here that is Active minus Placebo: -4.97 minus -0.13 gives -4.84. Negative means the active arm's blood pressure fell further, and the interval, -9.43 to -0.25, is the "0.2 to 9.4 mmHg further" from the t-test page, written with its minus signs. If the arms had been called Treatment and Control, Control would come first alphabetically and every sign would flip. Before you report a difference, check which group was taken from which.
+
+These columns belong to the t-test. Tidy a chi-squared test and there is no `estimate` at all, since there is no single difference to report, and the models in the next lesson bring columns of their own. The four you report, `estimate`, `conf.low`, `conf.high` and `p.value`, mean the same thing wherever they appear.
+
 Hunting through ten columns gets old. Since the result is now an ordinary data frame, `select()` from Lesson 3 works on it, and you can keep just the columns you would actually report. **Run this:**
 
 ```{r tidy-select, exercise=TRUE}
