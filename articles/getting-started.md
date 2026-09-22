@@ -81,7 +81,10 @@ learn("m0")    # open the first one
 ```
 
 [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
-shows the menu. `learn("m0")` opens a lesson in your browser, where you
+lists the lessons and hands you back the `>` prompt. To open one, type
+[`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
+with the lesson’s id in quotes: `learn("m0")` for the first,
+`learn("m10")` for Describing data. It opens in your browser, where you
 read a little, run real code in the boxes, and get feedback as you go.
 Start at **m0** and work along in order.
 
@@ -100,7 +103,7 @@ something taught two lessons ago. A running lesson keeps hold of your R
 console, so you cannot look things up there, and hunting back through
 earlier lessons breaks your flow.
 
-## Getting back to the menu
+## Finishing a lesson
 
 This one catches nearly everyone the first time. While a lesson is open
 it holds on to your R console, so the console shows no `>` prompt and
@@ -113,8 +116,8 @@ prompt comes back, and you are free to move on:
 
 ``` r
 
-learn()        # the menu again
-learn("m3")    # or straight to a particular lesson
+learn()        # list the lessons again
+learn("m3")    # open a particular lesson
 ```
 
 Every lesson ends with a short reminder of this, so there is nothing to

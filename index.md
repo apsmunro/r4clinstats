@@ -100,7 +100,7 @@ go.
 2.  Install the course package.
 3.  Run
     [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
-    and pick a lesson.
+    to see the lessons, then `learn("m0")` to open the first.
 
 The [Get
 started](https://apsmunro.github.io/r4clinstats/articles/getting-started.md)

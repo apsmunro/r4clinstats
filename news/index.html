@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">r4clinstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,14 @@
       <small>Source: <a href="https://github.com/apsmunro/r4clinstats/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.3" id="r4clinstats-033">r4clinstats 0.3.3<a class="anchor" aria-label="anchor" href="#r4clinstats-033"></a></h2>
+<ul><li>
+<code><a href="../reference/learn.html">learn()</a></code> with no argument now lists the lessons and returns to the <code>&gt;</code> prompt, without the numbered pick-list. That list numbered from 1 while the modules start at m0, so a learner who typed 10 for “m10 Describing data” was taken to m9, Summary tables. Its <code>Selection:</code> prompt also rejected R code, and a tester typed <code>learn("m10")</code> into it twice before trying a number. <code>learn("m10")</code> is now the one way to open a lesson, everywhere.</li>
+<li>Comparing groups explains the ten columns <code>tidy()</code> returns for a t-test, and how to read the sign of <code>estimate</code>: it is the first group minus the second, in alphabetical order, so renaming the arms can flip it.</li>
+<li>Regression explains <code>se = FALSE</code>, and what the grey band it hides actually shows: a confidence interval for the line, not the spread of patients.</li>
+<li>The crib sheet is written so it works on any data. Each entry is a template with the parts you replace highlighted, and an example from the lessons beneath it, so it is clear which words are yours and which are R’s. That matters most for quote marks, which <code>summary_factorlist()</code> needs round column names and <code><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter()</a></code> does not.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="r4clinstats-032">r4clinstats 0.3.2<a class="anchor" aria-label="anchor" href="#r4clinstats-032"></a></h2>
 <ul><li>The install no longer names the rstudio R-universe alongside CRAN. That universe also serves development builds of <code>learnr</code> and <code>rmarkdown</code>, and <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code> takes the highest version it can see rather than the first repository listed, so the one-command install in 0.3.1 quietly put learners on an unreleased <code>learnr</code>: the engine every lesson runs on. The course now installs from CRAN and its own R-universe, and <code><a href="../reference/check_setup.html">check_setup()</a></code> fetches <code>gradethis</code> on its own afterwards. <code>.install_missing()</code> keeps the two apart for the same reason.</li>

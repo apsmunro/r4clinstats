@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">r4clinstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -132,10 +132,12 @@ to click or search for.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="op">)</span>        <span class="co"># list the lessons</span></span>
 <span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="st">"m0"</span><span class="op">)</span>    <span class="co"># open the first one</span></span></code></pre></div>
-<p><code><a href="../reference/learn.html">learn()</a></code> shows the menu. <code>learn("m0")</code> opens a
-lesson in your browser, where you read a little, run real code in the
-boxes, and get feedback as you go. Start at <strong>m0</strong> and work
-along in order.</p>
+<p><code><a href="../reference/learn.html">learn()</a></code> lists the lessons and hands you back the
+<code>&gt;</code> prompt. To open one, type <code><a href="../reference/learn.html">learn()</a></code> with
+the lesson’s id in quotes: <code>learn("m0")</code> for the first,
+<code>learn("m10")</code> for Describing data. It opens in your browser,
+where you read a little, run real code in the boxes, and get feedback as
+you go. Start at <strong>m0</strong> and work along in order.</p>
 <p>That is everything. The rest you learn by doing.</p>
 </div>
 <div class="section level2">
@@ -150,7 +152,7 @@ console, so you cannot look things up there, and hunting back through
 earlier lessons breaks your flow.</p>
 </div>
 <div class="section level2">
-<h2 id="getting-back-to-the-menu">Getting back to the menu<a class="anchor" aria-label="anchor" href="#getting-back-to-the-menu"></a>
+<h2 id="finishing-a-lesson">Finishing a lesson<a class="anchor" aria-label="anchor" href="#finishing-a-lesson"></a>
 </h2>
 <p>This one catches nearly everyone the first time. While a lesson is
 open it holds on to your R console, so the console shows no
@@ -162,8 +164,8 @@ press <code>Esc</code>, or click the red stop button at the top right of
 the Console pane. The <code>&gt;</code> prompt comes back, and you are
 free to move on:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="op">)</span>        <span class="co"># the menu again</span></span>
-<span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="st">"m3"</span><span class="op">)</span>    <span class="co"># or straight to a particular lesson</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="op">)</span>        <span class="co"># list the lessons again</span></span>
+<span><span class="fu"><a href="../reference/learn.html">learn</a></span><span class="op">(</span><span class="st">"m3"</span><span class="op">)</span>    <span class="co"># open a particular lesson</span></span></code></pre></div>
 <p>Every lesson ends with a short reminder of this, so there is nothing
 to memorise.</p>
 </div>

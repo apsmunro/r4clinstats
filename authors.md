@@ -10,13 +10,13 @@ Source:
 [`DESCRIPTION`](https://github.com/apsmunro/r4clinstats/blob/master/DESCRIPTION)
 
 Munro A (2026). *r4clinstats: Learn R for Clinical Statistics,
-Interactively*. R package version 0.3.2,
+Interactively*. R package version 0.3.3,
 <https://github.com/apsmunro/r4clinstats>.
 
     @Manual{,
       title = {r4clinstats: Learn R for Clinical Statistics, Interactively},
       author = {A. P. S. Munro},
       year = {2026},
-      note = {R package version 0.3.2},
+      note = {R package version 0.3.3},
       url = {https://github.com/apsmunro/r4clinstats},
     }

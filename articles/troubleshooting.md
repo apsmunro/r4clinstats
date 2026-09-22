@@ -156,7 +156,7 @@ browser.
 Click into the **Console** and press `Esc`, or click the red stop button
 at the top right of the Console pane. The `>` prompt returns, and
 [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
-brings back the menu.
+lists the lessons again.
 
 ## “No tutorials found for package ‘r4clinstats’”
 

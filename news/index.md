@@ -1,5 +1,29 @@
 # Changelog
 
+## r4clinstats 0.3.3
+
+- [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
+  with no argument now lists the lessons and returns to the `>` prompt,
+  without the numbered pick-list. That list numbered from 1 while the
+  modules start at m0, so a learner who typed 10 for “m10 Describing
+  data” was taken to m9, Summary tables. Its `Selection:` prompt also
+  rejected R code, and a tester typed `learn("m10")` into it twice
+  before trying a number. `learn("m10")` is now the one way to open a
+  lesson, everywhere.
+- Comparing groups explains the ten columns `tidy()` returns for a
+  t-test, and how to read the sign of `estimate`: it is the first group
+  minus the second, in alphabetical order, so renaming the arms can flip
+  it.
+- Regression explains `se = FALSE`, and what the grey band it hides
+  actually shows: a confidence interval for the line, not the spread of
+  patients.
+- The crib sheet is written so it works on any data. Each entry is a
+  template with the parts you replace highlighted, and an example from
+  the lessons beneath it, so it is clear which words are yours and which
+  are R’s. That matters most for quote marks, which
+  `summary_factorlist()` needs round column names and
+  [`filter()`](https://rdrr.io/r/stats/filter.html) does not.
+
 ## r4clinstats 0.3.2
 
 - The install no longer names the rstudio R-universe alongside CRAN.
