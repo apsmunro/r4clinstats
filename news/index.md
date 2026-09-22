@@ -1,5 +1,37 @@
 # Changelog
 
+## r4clinstats 0.3.1
+
+- `gradethis` moved from Posit’s `posit-dev` R-universe to `rstudio`.
+  The old server still answers, so installs failed with R’s misleading
+  “package ‘gradethis’ is not available for this version of R” rather
+  than anything pointing at the real cause. Every reference now names
+  the new server:
+  [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md),
+  the automatic installer, `DESCRIPTION` and the guides.
+- [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md)
+  now asks whether `gradethis` is actually in the repository rather than
+  whether the server answers. Through the whole outage above the old
+  check reported `[OK ]`, because the server it tested stayed up after
+  the package left it. A moved package is now named as such, with
+  somewhere to report it.
+- The course installs from <https://apsmunro.r-universe.dev> instead of
+  [`remotes::install_github()`](https://remotes.r-lib.org/reference/install_github.html).
+  GitHub allows 60 anonymous API requests an hour per network address,
+  which a hospital or university shares across everyone behind it, so a
+  group installing together hit HTTP 403. R-universe has no such limit
+  and serves a Windows binary. Troubleshooting gained an entry for the
+  403, with a tarball fallback for networks that block R-universe.
+- Dropped the `Remotes:` field, which made every install resolve a
+  second GitHub repository. CI now names the R-universe in
+  `extra-repositories` instead: that field, not
+  `Additional_repositories`, is what the dependency solver reads, and
+  removing `Remotes:` without it broke both workflows.
+- A weekly `install-check` job installs the course from R-universe on
+  Windows exactly as a learner would, then runs
+  [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md).
+  The next time this path breaks, CI notices rather than a clinician.
+
 ## r4clinstats 0.3.0
 
 - M14, Reproducible reports: the capstone, and the course is complete.

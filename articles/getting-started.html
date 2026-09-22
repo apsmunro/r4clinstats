@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">r4clinstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,22 +86,19 @@ the commands below go: type or paste a line, then press Enter.</p>
 <h2 id="install-the-course">2. Install the course<a class="anchor" aria-label="anchor" href="#install-the-course"></a>
 </h2>
 <p>The course is an R package called <code>r4clinstats</code>. It is not
-on CRAN, so you install it from GitHub. Paste these two lines into the
-Console:</p>
+on CRAN, the server R looks in by default, so the command below tells R
+the other two places to look. Paste the whole thing into the Console,
+all four lines together:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"apsmunro/r4clinstats"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The first line fetches a small helper. The second downloads the
-course together with every package the lessons need,
-<code>gradethis</code> among them, which marks your answers and comes
-from a different place to the rest.</p>
-<p>The two colons in <code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github</a></code> are worth a
-word, because they look stranger than they are.
-<code>package::function()</code> is R’s way of saying “this function,
-out of this package”: here, <code>install_github()</code> from
-<code>remotes</code>. You will meet the pattern again. It is a command
-to type, not a web address, and there is nothing to click or search
-for.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"r4clinstats"</span>,</span>
+<span>                 repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://apsmunro.r-universe.dev"</span>,</span>
+<span>                           <span class="st">"https://rstudio.r-universe.dev"</span>,</span>
+<span>                           CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span>,</span>
+<span>                 dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>The three addresses in <code>repos</code> are the course’s own
+server, the one that supplies <code>gradethis</code> (which marks your
+answers), and CRAN for everything else. R tries them in that order and
+takes the first copy it finds.</p>
 <p>Keep the <code>dependencies = TRUE</code> part. Without it you get
 the course but none of the packages it runs on, and the first lesson
 stops with a complaint about <code>gradethis</code>.</p>
@@ -121,6 +118,12 @@ servers. If step 2 went cleanly you will see a column of
 <code>[OK ]</code> and nothing to do. If anything is missing,
 <code><a href="../reference/check_setup.html">check_setup()</a></code> names it and offers to install it, so say yes
 to any prompts.</p>
+<p>You will also meet commands written as
+<code><a href="../reference/check_setup.html">r4clinstats::check_setup()</a></code>. The two colons look stranger
+than they are: <code>package::function()</code> is R’s way of saying
+“this function, out of this package”, and it saves loading the package
+first. It is a command to type, not a web address, and there is nothing
+to click or search for.</p>
 </div>
 <div class="section level2">
 <h2 id="start-learning">4. Start learning<a class="anchor" aria-label="anchor" href="#start-learning"></a>

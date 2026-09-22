@@ -43,8 +43,8 @@ symbol you type often. **`package::function()`**, with two colons, means
 
 ``` r
 
-r4clinstats::start_report()      # start_report(), from r4clinstats
-remotes::install_github("...")   # install_github(), from remotes
+r4clinstats::start_report()        # start_report(), from r4clinstats
+dplyr::filter(patients, age > 65)  # filter(), from dplyr
 ```
 
 It is a command to run in the Console. It is not a web address, and

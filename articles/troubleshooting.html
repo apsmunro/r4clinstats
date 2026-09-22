@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">r4clinstats</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,22 +80,18 @@ offers to fix it.</p>
 <code>gradethis</code> is simply not on CRAN, the main package server,
 so the ordinary <code>install.packages("gradethis")</code> cannot find
 it and R blames your version instead of saying so.</p>
-<p>Most often this means the course was installed without its packages.
-If you installed with a plain
-<code>remotes::install_github("apsmunro/r4clinstats")</code>, run it
-again with the missing part:</p>
+<p>Most often this means the course was installed without its packages,
+which happens when the <code>dependencies = TRUE</code> part of the
+install command is left off. Let the course install what it needs:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"apsmunro/r4clinstats"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Or let the course install what it needs:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apsmunro/r4clinstats" class="external-link">r4clinstats</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/check_setup.html">check_setup</a></span><span class="op">(</span>install <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>That looks in the right place (Posit’s R-universe server) and, if
 your network blocks that server, falls back to installing from GitHub
 automatically. To do it by hand instead, type this into the Console:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"gradethis"</span>,</span>
-<span>                 repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://posit-dev.r-universe.dev"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>                 repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://rstudio.r-universe.dev"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="the-tutorial-is-missing-required-packages-and-cannot-be-rendered">“The tutorial is missing required packages and cannot be
@@ -118,6 +114,40 @@ the command. Copy commands from this website or from the <a href="getting-starte
 hand. Never copy R code out of an email.</p>
 </div>
 <div class="section level2">
+<h2 id="http-error-403-or-api-rate-limit-exceeded">“HTTP error 403” or “API rate limit exceeded”<a class="anchor" aria-label="anchor" href="#http-error-403-or-api-rate-limit-exceeded"></a>
+</h2>
+<p>Nothing on your computer is broken, and the cause is not anything you
+did. This appears when the course is installed from GitHub with
+<code><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">remotes::install_github()</a></code> rather than with the command in
+the <a href="getting-started.html">Get started guide</a>.</p>
+<p>GitHub allows 60 anonymous requests an hour from any one network
+address, and a hospital or university sends everybody’s traffic out
+through a single shared address. Colleagues installing the course on the
+same morning spend that allowance between them, and whoever arrives
+after it runs out sees the 403. The message names the hour at which it
+resets, so waiting is a fix in itself.</p>
+<p>The better answer is to install from the course’s own server, which
+has no such limit:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"r4clinstats"</span>,</span>
+<span>                 repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://apsmunro.r-universe.dev"</span>,</span>
+<span>                           <span class="st">"https://rstudio.r-universe.dev"</span>,</span>
+<span>                           CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span>,</span>
+<span>                 dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Should your network block that server too, download the course as an
+ordinary file. A plain download does not count against the GitHub
+limit:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_url.html" class="external-link">install_url</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://github.com/apsmunro/r4clinstats/archive/refs/heads/master.tar.gz"</span>,</span>
+<span>  dependencies <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>The <code>dependencies = FALSE</code> is deliberate: it stops R going
+back to GitHub for the rest. Follow it with
+<code>check_setup(install = TRUE)</code>, which fetches the course
+packages from CRAN and R-universe.</p>
+</div>
+<div class="section level2">
 <h2 id="nothing-installs-at-all">Nothing installs at all<a class="anchor" aria-label="anchor" href="#nothing-installs-at-all"></a>
 </h2>
 <p>Some networks only allow traffic through a proxy server, and R does
@@ -135,10 +165,10 @@ variables.</li>
 likely blocking the R-universe server; the automatic GitHub fallback
 described above usually gets around it. Should every route fail,
 download the Windows <code>gradethis</code> bundle in your ordinary web
-browser from <a href="https://posit-dev.r-universe.dev/gradethis" class="external-link">posit-dev.r-universe.dev/gradethis</a>
+browser from <a href="https://rstudio.r-universe.dev/gradethis" class="external-link">rstudio.r-universe.dev/gradethis</a>
 (the <code>.zip</code> under Downloads), then install the file
 directly:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"C:/path/to/the/downloaded/gradethis.zip"</span>,</span>
 <span>                 repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"win.binary"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -149,7 +179,7 @@ directly:</p>
 and R puts its package library there by default. OneDrive can lock files
 while it syncs, which corrupts installs. <code><a href="../reference/check_setup.html">check_setup()</a></code>
 spots this; the fix is one command:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apsmunro/r4clinstats" class="external-link">r4clinstats</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/use_local_library.html">use_local_library</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>It creates a package library outside OneDrive and points R at it.
@@ -182,7 +212,7 @@ again.</p>
 </h2>
 <p>A dependency occasionally missed when <code>finalfit</code> installs.
 Install it directly:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"reformulas"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

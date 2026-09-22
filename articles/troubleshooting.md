@@ -24,17 +24,9 @@ not on CRAN, the main package server, so the ordinary
 `install.packages("gradethis")` cannot find it and R blames your version
 instead of saying so.
 
-Most often this means the course was installed without its packages. If
-you installed with a plain
-`remotes::install_github("apsmunro/r4clinstats")`, run it again with the
-missing part:
-
-``` r
-
-remotes::install_github("apsmunro/r4clinstats", dependencies = TRUE)
-```
-
-Or let the course install what it needs:
+Most often this means the course was installed without its packages,
+which happens when the `dependencies = TRUE` part of the install command
+is left off. Let the course install what it needs:
 
 ``` r
 
@@ -49,7 +41,7 @@ automatically. To do it by hand instead, type this into the Console:
 ``` r
 
 install.packages("gradethis",
-                 repos = c("https://posit-dev.r-universe.dev", getOption("repos")))
+                 repos = c("https://rstudio.r-universe.dev", getOption("repos")))
 ```
 
 ## “The tutorial is missing required packages and cannot be rendered”
@@ -69,6 +61,48 @@ command. Copy commands from this website or from the [Get started
 guide](https://apsmunro.github.io/r4clinstats/articles/getting-started.md),
 or type them in by hand. Never copy R code out of an email.
 
+## “HTTP error 403” or “API rate limit exceeded”
+
+Nothing on your computer is broken, and the cause is not anything you
+did. This appears when the course is installed from GitHub with
+[`remotes::install_github()`](https://remotes.r-lib.org/reference/install_github.html)
+rather than with the command in the [Get started
+guide](https://apsmunro.github.io/r4clinstats/articles/getting-started.md).
+
+GitHub allows 60 anonymous requests an hour from any one network
+address, and a hospital or university sends everybody’s traffic out
+through a single shared address. Colleagues installing the course on the
+same morning spend that allowance between them, and whoever arrives
+after it runs out sees the 403. The message names the hour at which it
+resets, so waiting is a fix in itself.
+
+The better answer is to install from the course’s own server, which has
+no such limit:
+
+``` r
+
+install.packages("r4clinstats",
+                 repos = c("https://apsmunro.r-universe.dev",
+                           "https://rstudio.r-universe.dev",
+                           CRAN = "https://cloud.r-project.org"),
+                 dependencies = TRUE)
+```
+
+Should your network block that server too, download the course as an
+ordinary file. A plain download does not count against the GitHub limit:
+
+``` r
+
+install.packages("remotes")
+remotes::install_url(
+  "https://github.com/apsmunro/r4clinstats/archive/refs/heads/master.tar.gz",
+  dependencies = FALSE)
+```
+
+The `dependencies = FALSE` is deliberate: it stops R going back to
+GitHub for the rest. Follow it with `check_setup(install = TRUE)`, which
+fetches the course packages from CRAN and R-universe.
+
 ## Nothing installs at all
 
 Some networks only allow traffic through a proxy server, and R does not
@@ -86,7 +120,7 @@ If CRAN works and only `gradethis` fails, your network is likely
 blocking the R-universe server; the automatic GitHub fallback described
 above usually gets around it. Should every route fail, download the
 Windows `gradethis` bundle in your ordinary web browser from
-[posit-dev.r-universe.dev/gradethis](https://posit-dev.r-universe.dev/gradethis)
+[rstudio.r-universe.dev/gradethis](https://rstudio.r-universe.dev/gradethis)
 (the `.zip` under Downloads), then install the file directly:
 
 ``` r
