@@ -1,5 +1,15 @@
 # Changelog
 
+## r4clinstats 0.3.4
+
+- [`check_setup()`](https://apsmunro.github.io/r4clinstats/reference/check_setup.md)
+  tests CRAN by contacting <https://cloud.r-project.org>, the mirror the
+  course installs from. It used to contact `cran.r-project.org`, a
+  single server, which stopped answering within five seconds in late
+  October 2026. Learners then saw `[FIX] Reach CRAN` and an overall
+  failure even though every package had installed, and the weekly
+  `install-check` failed twice for the same reason.
+
 ## r4clinstats 0.3.3
 
 - [`learn()`](https://apsmunro.github.io/r4clinstats/reference/learn.md)
