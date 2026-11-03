@@ -39,7 +39,10 @@ check_setup <- function(install = interactive()) {
   }
 
   ## 3. Connectivity --------------------------------------------------------
-  cran_ok <- .can_reach("https://cran.r-project.org")
+  # Probe the mirror the installs use. cran.r-project.org is a single server
+  # that can stop answering while the cloud mirror keeps serving, and then
+  # this check failed although every package installed.
+  cran_ok <- .can_reach("https://cloud.r-project.org")
   cat(sprintf("[%s]  Reach CRAN\n", if (cran_ok) "OK " else "FIX"))
 
   # Not "can we reach the server" but "is gradethis actually on it". The two
